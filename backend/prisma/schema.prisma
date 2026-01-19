@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// like @Entity User in Spring Boot
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  resumes   Resume[]
+  jobs      Job[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// resume document
+model Resume {
+  id        String          @id @default(uuid())
+  name      String
+  source    String          @db.Text    // latex source code
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions  ResumeVersion[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+// each saved version of a resume
+model ResumeVersion {
+  id        String   @id @default(uuid())
+  source    String   @db.Text    // latex source at this point in time
+  pdfUrl    String?              // S3 URL to compiled PDF
+  resumeId  String
+  resume    Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobs      Job[]                // jobs this version was sent to
+  createdAt DateTime @default(now())
+}
+
+// job application
+model Job {
+  id              String         @id @default(uuid())
+  company         String
+  position        String
+  url             String?
+  status          JobStatus      @default(APPLIED)
+  appliedAt       DateTime       @default(now())
+  followUpAt      DateTime?
+  notes           String?        @db.Text
+  resumeVersionId String?
+  resumeVersion   ResumeVersion? @relation(fields: [resumeVersionId], references: [id])
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+enum JobStatus {
+  SAVED
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+  GHOSTED
+}
