@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import prisma from "./config/database";
 import { timeStamp } from "node:console";
+import compileRoutes from "./routes/compileRoutes";
 
 // load .env file
 dotenv.config();
@@ -33,6 +34,12 @@ app.get("/api/health", async (req, res) => {
     });
   }
 });
+
+// mount compilte routes at /api/compile
+// like @RequestMapping("/api/compile") but done here, how about that
+// take all routes defined under compileRoutes and mount them under /api/compile
+// so router.post("/") become POST /api/compile     router.get('/:id') become GET /api/compile/:id
+app.use("/api/compile", compileRoutes);
 
 // shutdown (for connection pooling)
 process.on("beforeExit", async () => {
