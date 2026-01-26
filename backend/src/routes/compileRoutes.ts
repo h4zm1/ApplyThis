@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { compile } from "../controllers/compileController";
+import { compile, compileAndSave } from "../controllers/compileController";
 
 const router = Router();
 
@@ -7,4 +7,6 @@ const router = Router();
 // like @PostMapping("/api/compile") in spring
 router.post("/", compile);
 
+// POST /api/compile/save (compile and save to s3)
+router.post("/save", compileAndSave);
 export default router;

@@ -1,12 +1,13 @@
-import express from "express";
-import cors from "cors";
+// load env vars first before any imports
 import dotenv from "dotenv";
-import prisma from "./config/database";
-import { timeStamp } from "node:console";
-import compileRoutes from "./routes/compileRoutes";
-
 // load .env file
 dotenv.config();
+
+import express from "express";
+import cors from "cors";
+import prisma from "./config/database";
+import compileRoutes from "./routes/compileRoutes";
+import logger from "./config/logger";
 
 // create express app
 const app = express();
@@ -48,5 +49,5 @@ process.on("beforeExit", async () => {
 
 // start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`Server running on port ${PORT}`);
 });
