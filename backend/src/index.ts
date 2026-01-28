@@ -7,6 +7,7 @@ import express from "express";
 import cors from "cors";
 import prisma from "./config/database";
 import compileRoutes from "./routes/compileRoutes";
+import authRoutes from "./routes/authRoutes";
 import logger from "./config/logger";
 
 // create express app
@@ -41,7 +42,7 @@ app.get("/api/health", async (req, res) => {
 // take all routes defined under compileRoutes and mount them under /api/compile
 // so router.post("/") become POST /api/compile     router.get('/:id') become GET /api/compile/:id
 app.use("/api/compile", compileRoutes);
-
+app.use("/api/auth", authRoutes);
 // shutdown (for connection pooling)
 process.on("beforeExit", async () => {
   await prisma.$disconnect();
