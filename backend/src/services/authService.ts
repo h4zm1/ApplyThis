@@ -28,7 +28,7 @@ export function generateTokens(userId: string, email: string) {
     expiresIn: process.env.JWT_ACCESS_EXPIRES as any, // apparently casting is needed here cause expireIn requires StringValue and not string
   });
 
-  const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
+  const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRETE!, {
     expiresIn: process.env.JWT_REFRESH_EXPIRES as any,
   });
 

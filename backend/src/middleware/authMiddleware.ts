@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verifyAccessToken } from "../services/autheService";
+import { verifyAccessToken } from "../services/authService";
 import { AuthRequest } from "../types/auth";
 import logger from "../config/logger";
 
@@ -19,7 +19,7 @@ export function authenticate(
   const authHeader = req.headers.authorization;
 
   // check format (if contains token) "Bearer <token>"
-  if (!authHeader || authHeader.startsWith("Bearer ")) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "no token provided" });
   }
 

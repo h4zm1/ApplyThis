@@ -3,7 +3,7 @@ import {
   loginUser,
   refreshTokens,
   registerUser,
-} from "../services/autheService";
+} from "../services/authService";
 import logger from "../config/logger";
 
 export async function register(req: Request, res: Response) {
@@ -24,11 +24,17 @@ export async function register(req: Request, res: Response) {
     const token = await registerUser(email, password);
     return res.status(201).json(token);
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message === "email already registered"
-    ) {
-      return res.status(409).json({ error: "email already exist" }); // 409 for conflict
+    if (error instanceof Error) {
+      logger.error(
+        {
+          message: error.message,
+          stack: error.stack,
+        },
+        "registration failed",
+      );
+      if (error.message === "email already registered") {
+        return res.status(409).json({ error: "email already exist" }); // 409 for conflict
+      }
     }
     logger.error({ error }, "registration failed");
     res.status(500).json({ error: "registration failed" }); // 500 server error

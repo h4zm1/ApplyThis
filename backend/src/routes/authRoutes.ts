@@ -7,7 +7,7 @@ const router = Router();
 router.post("/register", register);
 
 // POST /api/auth/login
-router.post("/log", login);
+router.post("/login", login);
 
 // POST /api/auth/refresh
 router.post("/refresh", refresh);
