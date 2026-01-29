@@ -8,7 +8,10 @@ import cors from "cors";
 import prisma from "./config/database";
 import compileRoutes from "./routes/compileRoutes";
 import authRoutes from "./routes/authRoutes";
+import testRoutes from "./routes/testRoutes";
 import logger from "./config/logger";
+import redis from "./config/redis";
+import { demoWorker } from "./jobs/testJob";
 
 // create express app
 const app = express();
@@ -23,9 +26,12 @@ app.get("/api/health", async (req, res) => {
   try {
     // test database connection
     await prisma.$connect();
+    const redisStatus = redis.status === "ready" ? "connected" : "disconnected";
+
     res.json({
       status: "ok",
       database: "connected",
+      redis: redisStatus,
       timeStamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -43,9 +49,13 @@ app.get("/api/health", async (req, res) => {
 // so router.post("/") become POST /api/compile     router.get('/:id') become GET /api/compile/:id
 app.use("/api/compile", compileRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/test", testRoutes);
+
 // shutdown (for connection pooling)
 process.on("beforeExit", async () => {
   await prisma.$disconnect();
+  await demoWorker.close();
+  redis.disconnect();
 });
 
 // start server

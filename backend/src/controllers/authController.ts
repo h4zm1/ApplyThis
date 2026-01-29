@@ -63,13 +63,13 @@ export async function login(req: Request, res: Response) {
 
 export async function refresh(req: Request, res: Response) {
   try {
-    const { token } = req.body;
+    const { refreshToken } = req.body;
 
-    if (!token) {
+    if (!refreshToken) {
       return res.status(400).json({ error: "refresh token required" });
     }
 
-    const refreshedToken = refreshTokens(token);
+    const refreshedToken = refreshTokens(refreshToken);
     return res.json(refreshedToken);
   } catch (error) {
     // token invalid or expired

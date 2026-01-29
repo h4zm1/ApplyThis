@@ -97,7 +97,7 @@ export async function loginUser(email: string, password: string) {
   return generateTokens(user.id, user.email);
 }
 
-// refresh toekn
+// refresh token
 export function refreshTokens(refreshToken: string) {
   // verify refresh token
   const payload = verifyRefreshToken(refreshToken);
