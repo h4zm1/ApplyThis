@@ -12,6 +12,9 @@ import testRoutes from "./routes/testRoutes";
 import logger from "./config/logger";
 import redis from "./config/redis";
 import { demoWorker } from "./jobs/testJob";
+import { notFoundHandler } from "./middleware/notFoundHandler";
+import { errorHandler } from "./middleware/errorHandler";
+import { requestLogger } from "./middleware/requestLogger";
 
 // create express app
 const app = express();
@@ -20,6 +23,7 @@ const PORT = process.env.PORT || 3000;
 // middleware : run on every request
 app.use(cors()); // alow to create cross origin requests
 app.use(express.json()); // like @RequestBody in spring (parse json bodies)
+app.use(requestLogger); // display some info about every request
 
 // health check endpoint
 app.get("/api/health", async (req, res) => {
@@ -42,7 +46,7 @@ app.get("/api/health", async (req, res) => {
     });
   }
 });
-
+//         routes
 // mount compilte routes at /api/compile
 // like @RequestMapping("/api/compile") but done here, how about that
 // take all routes defined under compileRoutes and mount them under /api/compile
@@ -50,6 +54,13 @@ app.get("/api/health", async (req, res) => {
 app.use("/api/compile", compileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
+
+// 404 handler
+// this need to placed under all routes, if it were at the top it will catch all requests and get "not found" for all routes
+app.use(notFoundHandler);
+
+// error handler
+app.use(errorHandler);
 
 // shutdown (for connection pooling)
 process.on("beforeExit", async () => {

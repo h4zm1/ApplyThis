@@ -1,6 +1,6 @@
 import { CompileResule } from "../types/latex";
 
-const LATEX_API = "http://latex.ytotech.com/builds/sync";
+const LATEX_API = process.env.LATEX_API!;
 const TIMEOUT_MS = 30000; // 30 secs
 
 export async function compilationLatex(source: string): Promise<CompileResule> {
