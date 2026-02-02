@@ -9,6 +9,7 @@ import prisma from "./config/database";
 import compileRoutes from "./routes/compileRoutes";
 import authRoutes from "./routes/authRoutes";
 import testRoutes from "./routes/testRoutes";
+import resumeRoutes from "./routes/resumeRoutes";
 import logger from "./config/logger";
 import redis from "./config/redis";
 import { demoWorker } from "./jobs/testJob";
@@ -54,6 +55,7 @@ app.get("/api/health", async (req, res) => {
 app.use("/api/compile", compileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
+app.use("/api/resumes", resumeRoutes);
 
 // 404 handler
 // this need to placed under all routes, if it were at the top it will catch all requests and get "not found" for all routes

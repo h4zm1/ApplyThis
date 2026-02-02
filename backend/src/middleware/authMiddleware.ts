@@ -4,7 +4,7 @@ import { AuthRequest } from "../types/auth";
 import logger from "../config/logger";
 
 /*
- *NOTE: so how middleware works here in express is Request comes in => Middleware 1 (cors) => 
+ *NOTE: so how middleware works here in express is Request comes in => Middleware 1 (cors) =>
         Middlewarze 2 (json parser) => middleware 3 (authentication) (this one) => controller (route handler) => 
         response goes out
         so next() is passwing control to the next middleware/controller
