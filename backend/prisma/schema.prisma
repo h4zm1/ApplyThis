@@ -28,23 +28,14 @@ model Resume {
   id        String          @id @default(uuid())
   name      String
   source    String          @db.Text    // latex source code
+  pdfUrl    String?          // compiled pdf is stored here (s3 url)
   userId    String
   user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  versions  ResumeVersion[]
+  jobs      Job[]           // jobs this resume was sent to
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
 }
 
-// each saved version of a resume
-model ResumeVersion {
-  id        String   @id @default(uuid())
-  source    String   @db.Text    // latex source at this point in time
-  pdfUrl    String?              // S3 URL to compiled PDF
-  resumeId  String
-  resume    Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  jobs      Job[]                // jobs this version was sent to
-  createdAt DateTime @default(now())
-}
 
 // job application
 model Job {
@@ -56,8 +47,8 @@ model Job {
   appliedAt       DateTime       @default(now())
   followUpAt      DateTime?
   notes           String?        @db.Text
-  resumeVersionId String?
-  resumeVersion   ResumeVersion? @relation(fields: [resumeVersionId], references: [id])
+  resumeId        String?        // link to resume
+  resume          Resume? @relation(fields: [resumeId], references: [id])
   userId          String
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())

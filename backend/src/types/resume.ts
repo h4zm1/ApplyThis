@@ -5,14 +5,15 @@ export interface CreateResumeDto {
 }
 
 export interface UpateResumeDto {
-  name: string;
-  source: string;
+  name?: string;
+  source?: string;
 }
 
 // what we return to client
 export interface ResumeResponse {
   id: string;
   name: string;
+  pdfUrl: string | null;
   source: string;
   createdAt: Date;
   updatedAt: Date;

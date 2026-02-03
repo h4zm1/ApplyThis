@@ -13,13 +13,10 @@ export async function getUserResume(userId: string) {
     select: {
       id: true,
       name: true,
+      pdfUrl: true,
       source: true,
       createdAt: true,
       updatedAt: true,
-      // @query with COUNT
-      _count: {
-        select: { versions: true },
-      },
     },
   });
 }
@@ -30,13 +27,6 @@ export async function getResumeById(id: string, userId: string) {
     where: {
       id,
       userId, // user can only access their own resume
-    },
-    include: {
-      // JOIN FETCH
-      versions: {
-        orderBy: { createdAt: "desc" },
-        take: 5, // last 5 version (might reduce if i find out the overhead if too much in s3)
-      },
     },
   });
 
@@ -94,27 +84,21 @@ export async function deleteResume(id: string, userId: string) {
   // check ownership
   const resume = await prisma.resume.findFirst({
     where: { id, userId },
-    include: {
-      versions: true, // fetch all it's versions
-    },
   });
 
   if (!resume) {
     throw new Error("resume not found");
   }
 
-  // delete all versions of the pdf from s3
-  for (const version of resume.versions) {
-    // manual clean up for s3 files
-    if (version.pdfUrl) {
-      try {
-        // try/catch to keep on deleting if something happen (already gone) and not stop
-        // get filename from url cause deletePdf function in storage service attach file extesnsion by itself (to guarantee consistancy)
-        const filename = version.pdfUrl.split("/").pop()?.replace(".pdf", "");
-        if (filename) await deletePdf(filename);
-      } catch (error) {
-        logger.warn({ versionId: version.id }, "failed to delete pdf from s3");
-      }
+  // manual clean up for s3 files
+  if (resume.pdfUrl) {
+    try {
+      // try/catch to keep on deleting if something happen (already gone) and not stop
+      // get filename from url cause deletePdf function in storage service attach file extesnsion by itself (to guarantee consistancy)
+      const filename = resume.pdfUrl.split("/").pop()?.replace(".pdf", "");
+      if (filename) await deletePdf(filename);
+    } catch (error) {
+      logger.warn({ resumeId: resume.id }, "failed to delete pdf from s3");
     }
   }
 
