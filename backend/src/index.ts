@@ -8,6 +8,7 @@ import cors from "cors";
 import prisma from "./config/database";
 import compileRoutes from "./routes/compileRoutes";
 import authRoutes from "./routes/authRoutes";
+import jobRoutes from "./routes/jobRoutes";
 import testRoutes from "./routes/testRoutes";
 import resumeRoutes from "./routes/resumeRoutes";
 import logger from "./config/logger";
@@ -56,7 +57,7 @@ app.use("/api/compile", compileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/resumes", resumeRoutes);
-
+app.use("/api/jobs", jobRoutes);
 // 404 handler
 // this need to placed under all routes, if it were at the top it will catch all requests and get "not found" for all routes
 app.use(notFoundHandler);

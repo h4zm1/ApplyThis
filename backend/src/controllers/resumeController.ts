@@ -33,7 +33,6 @@ export async function getResume(req: AuthRequest, res: Response) {
 
 // POST /api/resumes
 export async function create(req: AuthRequest, res: Response) {
-  logger.info(" inside create resume controller");
   try {
     const { name, source } = req.body;
 

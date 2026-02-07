@@ -109,3 +109,32 @@ export async function deleteResume(id: string, userId: string) {
 
   logger.info({ resumeId: id, userId }, "resume deleted");
 }
+
+// update the pdfurl of already existing resume
+export async function updateResumePdfUrl(
+  resumeId: string,
+  userId: string,
+  pdfUrl: string,
+) {
+  const resume = await prisma.resume.findFirst({
+    where: { id: resumeId, userId },
+  });
+
+  if (!resume) throw new Error("resume not found");
+
+  // delete old PDF from s3 if exist (to avoid orphan files in s3)
+  if (resume.pdfUrl) {
+    try {
+      const oldPDFName = resume.pdfUrl.split("/").pop()!.replace(".pdf", "");
+      await deletePdf(oldPDFName);
+    } catch (error) {
+      logger.warn("failed to delete old pdf from s3");
+    }
+  }
+
+  await prisma.resume.update({
+    where: { id: resumeId },
+    data: { pdfUrl },
+  });
+  logger.info({ resumeId, pdfUrl }, "resume pdf url updated");
+}
