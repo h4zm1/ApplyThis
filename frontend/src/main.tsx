@@ -3,11 +3,14 @@ import { createRoot } from "react-dom/client"; // react18 way of mounting the ap
 import App from "./App";
 import { BrowserRouter } from "react-router-dom"; // enable client side routing
 import "./styles/global.scss";
+import { AuthProvider } from "./context/AuthContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );
