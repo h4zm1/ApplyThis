@@ -64,6 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
+
+    // decode and set user
+    const payload = JSON.parse(atob(accessToken.split(".")[1]));
+    setUser({ userId: payload.userId, email: payload.email });
   };
 
   // create new user and automaticly log them in

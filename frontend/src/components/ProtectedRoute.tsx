@@ -5,7 +5,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-// this like authguard in angular
+// this like authguard in angular, neeed to (manually) be wrapped arround routes in App.tsx to be in effect
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation(); // a hook that take a snapshot of current page (contain 'pathname')
@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return <>(children)</>;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
