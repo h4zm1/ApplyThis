@@ -13,13 +13,14 @@ const Register = () => {
   const navigate = useNavigate();
 
   if (isAuthenticated) {
+    // if already logged in force go to dashboard and prevent going back (one user one session less headache for me)
     navigate("/dashboard", { replace: true });
-    return null;
+    return null; // component must return ui or nothing
   }
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError("");
+    e.preventDefault(); // prevent browser from refreshing page on submit (text fields don't get wiped out)
+    setError(""); // clean up errors (if there's any up)
 
     // make sure both passwords match
     if (password !== confirmPassword) {
@@ -36,11 +37,14 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
+      // send data to register function inside our authProvider
       await register({ email, password });
+      // if successful go to dashboard page
       navigate("/dashboard", { replace: true });
     } catch (error: any) {
       setError(error.response?.data?.error || "registration failed");
     } finally {
+      // whether the registration fail or succeed, we just stop loading
       setIsSubmitting(false);
     }
   };
@@ -48,6 +52,7 @@ const Register = () => {
   return (
     <div>
       <h1>register</h1>
+      {error && <div>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email">Email</label>
