@@ -4,6 +4,7 @@ import type {
   UpdateResumeRequest,
 } from "../types/resume";
 import api from "./api";
+import logger from "./logger";
 
 // get all user resumes
 export async function getResumes(): Promise<Resume[]> {
@@ -19,6 +20,7 @@ export async function getResume(id: string): Promise<Resume> {
 
 // create new resume
 export async function createResume(data: CreateResumeRequest): Promise<Resume> {
+  logger.log("create resume");
   const response = await api.post<Resume>("/resumes", data);
   return response.data;
 }
