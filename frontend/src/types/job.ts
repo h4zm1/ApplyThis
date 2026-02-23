@@ -3,9 +3,9 @@ export type JobStatus = "SAVED" | "APPLIED" | "GHOSTED" | "REJECTED";
 export interface Job {
   id: string;
   company: string;
-  position: JobStatus;
+  position: string;
   url: string;
-  status: string;
+  status: JobStatus;
   appliedAt: string;
   followUpAt: string;
   notes: string;
