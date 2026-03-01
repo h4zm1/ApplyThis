@@ -1,0 +1,38 @@
+.layout {
+  display: flex;
+  flex-direction: row;
+  height: -webkit-fill-available;
+}
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-top: 2rem;
+  // background-color: lightcoral;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-self: anchor-center;
+}
+.logo-nav {
+  background-color: red;
+  margin-top: auto;
+  align-self: center;
+  // margin-bottom: 2rem;
+  rotate: 270deg;
+  width: 0rem;
+}
+.main-content {
+  background-color: white;
+  padding-left: 1rem;
+  box-shadow: 1px 4px 16px #95959557;
+  height: -webkit-fill-available;
+  border-top-left-radius: 7px;
+}
+.main-holder {
+  width: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+}

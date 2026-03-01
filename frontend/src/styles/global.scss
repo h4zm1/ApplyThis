@@ -1,8 +1,18 @@
 @use "variables" as *;
+@use "layout";
+@use "header";
 
 * {
 }
-
+body {
+  height: -webkit-fill-available;
+  background-color: #e3e3e385;
+  margin: 0rem;
+}
 html {
   font-size: 16px;
+  height: -webkit-fill-available;
+}
+#root {
+  height: -webkit-fill-available;
 }
