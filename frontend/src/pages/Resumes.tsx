@@ -9,6 +9,7 @@ import {
 import { Edit, Notebook, Trash, Trash2 } from "lucide-react";
 import Popup from "../components/popUp";
 import ResumeForm from "../components/ResumeForm";
+import { Link } from "react-router-dom";
 
 const Resumes = () => {
   // data state
@@ -106,10 +107,8 @@ const Resumes = () => {
         <p>Manage resume</p>
       </div>
       <div>
-        <div>
-          {resumes.length} resume{resumes.length !== 1 ? "s" : ""}
-          <button onClick={handleCreate}>New Resume</button>
-        </div>
+        {resumes.length} resume{resumes.length !== 1 ? "s" : ""}
+        <button onClick={handleCreate}>New Resume</button>
       </div>
       <div>
         {resumes.length === 0 ? (
@@ -117,30 +116,48 @@ const Resumes = () => {
         ) : (
           <div>
             {resumes.map((resume) => (
-              <div key={resume.id}>
-                <div>
-                  <h3>{resume.name}</h3>
-                  <p>{resume.pdfUrl ? "PDF compiled" : "Not compiled yet"}</p>
-                </div>
-                <div>
-                  {/* show pdf linked if compiled */}
-                  {resume.pdfUrl && (
-                    <a
-                      href={resume.pdfUrl}
-                      target="_blank" // open in new tab
-                      rel="noopener noreferer"
+              <div className="resume" key={resume.id}>
+                <Link to={`/editor/${resume.id}`}>
+                  <div className="resume-body">
+                    <div>
+                      <p>
+                        {resume.pdfUrl ? "PDF compiled" : "Not compiled yet"}
+                      </p>
+                      {/* show pdf linked if compiled */}
+                      {resume.pdfUrl && (
+                        <a
+                          href={resume.pdfUrl}
+                          target="_blank" // open in new tab
+                          rel="noopener noreferer"
+                        >
+                          View PDF
+                        </a>
+                      )}
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleEdit(resume);
+                      }}
                     >
-                      View PDF
-                    </a>
-                  )}
+                      <Edit />
+                      Edit
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        handleDelete(resume);
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Trash />
+                    </button>
+                  </div>
+                </Link>
+                <div className="resume-title">
+                  <h1 className="title">{resume.name}</h1>
                 </div>
-                <button onClick={() => handleEdit(resume)}>
-                  <Edit />
-                  Edit
-                </button>
-                <button onClick={() => handleDelete(resume)}>
-                  <Trash />
-                </button>
               </div>
             ))}
           </div>

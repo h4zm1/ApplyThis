@@ -10,7 +10,7 @@ export interface Resume {
 // sperate request types for what the client will send (easier, cleaner and safer to handle)
 export interface CreateResumeRequest {
   name: string;
-  source: string;
+  source?: string;
 }
 
 export interface UpdateResumeRequest {

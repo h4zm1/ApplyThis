@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Resumes from "./pages/Resumes";
+import Editor from "./pages/Editor";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/resumes" element={<Resumes />} />
         <Route path="/Jobs" element={<Jobs />} />
+        <Route path="/editor/:resumeId" element={<Editor />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

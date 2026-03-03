@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { CreateResumeRequest, Resume } from "../types/resume";
+import LateXEditor from "./LaTeXEditor";
 
 interface ResumeFormProps {
   resume: Resume | null; // existing resume to edit (null for creating new)
@@ -16,17 +17,15 @@ const ResumeForm = ({
 }: ResumeFormProps) => {
   // initialize with existing resume data or start empty
   const [name, setName] = useState(resume?.name || "");
-  const [source, setSource] = useState(resume?.source || getDefaultTamplate());
 
   // update form when resume prop change
   useEffect(() => {
     setName(resume?.name || "");
-    setSource(resume?.source || getDefaultTamplate());
   }, [resume]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSubmit({ name, source });
+    onSubmit({ name });
   }
 
   return (
@@ -42,17 +41,6 @@ const ResumeForm = ({
           required
         />
       </div>
-      <div>
-        <label htmlFor="source">LaTeX source</label>
-        <textarea
-          id="source"
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          placeholder="enter your latex code.."
-          rows={10}
-          required
-        />
-      </div>
       <button type="button" onClick={onCancel} disabled={isSubmitting}>
         Cancel
       </button>
@@ -62,24 +50,5 @@ const ResumeForm = ({
     </form>
   );
 };
-
-// return basic latex template for new resumes
-function getDefaultTamplate(): string {
-  return `\\documentclass{article}
-
-    \\begin{document}
-
-    \\section* {NAME}
-    Contact info.
-
-    \\section* {Experience}
-    Experience here.
-
-    \\section* {Education}
-    Education here.
-
-\\end{document}
-    `;
-}
 
 export default ResumeForm;
