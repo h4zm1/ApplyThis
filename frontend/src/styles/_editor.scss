@@ -1,0 +1,27 @@
+.editor {
+  height: -webkit-fill-available;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.editor-side {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  background-color: white;
+  padding-top: 1rem;
+}
+.preview-side {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  background-color: white;
+  padding-top: 1rem;
+  width: -webkit-fill-available;
+}
+.display-holder {
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+}
+iframe {
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+}

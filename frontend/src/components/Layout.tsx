@@ -17,17 +17,17 @@ const Layout = () => {
             to="/dashboard"
             end // 'end' means exact match only
           >
-            <LayoutDashboard size={20} />
+            <LayoutDashboard size={21} />
             {/* Dashboard */}
           </NavLink>
 
           <NavLink to="/resumes" title="resumes">
-            <FileText size={20} />
+            <FileText size={21} />
             {/* Resumes */}
           </NavLink>
 
           <NavLink to="/jobs" title="jobs">
-            <Briefcase size={20} />
+            <Briefcase size={21} />
             {/* Jobs */}
           </NavLink>
         </nav>
@@ -36,7 +36,7 @@ const Layout = () => {
           {/* <div> */}
           {/* <span>{user?.email}</span> */}
           <button onClick={logout}>
-            <LogOut size={16} />
+            <LogOut size={17} />
           </button>
           {/* </div> */}
         </div>

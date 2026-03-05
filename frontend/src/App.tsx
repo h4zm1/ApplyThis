@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Resumes from "./pages/Resumes";
 import Editor from "./pages/Editor";
+import { ActionProvider } from "./context/AppContext";
 
 function App() {
   return (
@@ -18,7 +19,9 @@ function App() {
       <Route
         element={
           <ProtectedRoute>
-            <Layout />
+            <ActionProvider>
+              <Layout />
+            </ActionProvider>
           </ProtectedRoute>
         }
       >
