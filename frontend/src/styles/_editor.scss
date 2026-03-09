@@ -2,13 +2,36 @@
   height: -webkit-fill-available;
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  // gap: 1rem;
 }
+
+.editor-container {
+  overflow: unset !important;
+}
+
 .editor-side {
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
   background-color: white;
-  padding-top: 1rem;
+  box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
+}
+.separator {
+  // background-color: red;
+  align-content: center;
+  cursor: col-resize !important;
+  &:focus-visible {
+    outline: none !important;
+  }
+  &:hover {
+    cursor: col-resize !important;
+  }
+  // padding-top: 1rem;
+  // margin-inline: 0.2rem;
+  .grip-vertical {
+    margin-inline: -0.3rem;
+    // cursor: col-resize !important;
+    color: #959595;
+  }
 }
 .preview-side {
   border-top-left-radius: 7px;
