@@ -8,7 +8,15 @@
 .editor-container {
   overflow: unset !important;
 }
-
+.ghost-page {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+}
+.new-page {
+  z-index: 2;
+}
 .editor-side {
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
@@ -18,12 +26,12 @@
 .separator {
   // background-color: red;
   align-content: center;
-  cursor: col-resize !important;
+  // cursor: col-resize !important;
   &:focus-visible {
     outline: none !important;
   }
   &:hover {
-    cursor: col-resize !important;
+    // cursor: col-resize !important;
   }
   // padding-top: 1rem;
   // margin-inline: 0.2rem;
@@ -36,9 +44,10 @@
 .preview-side {
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
-  background-color: white;
+  // background-color: white;
   padding-top: 1rem;
   width: -webkit-fill-available;
+  background-color: #dcdcdc99;
 }
 .display-holder {
   width: -webkit-fill-available;

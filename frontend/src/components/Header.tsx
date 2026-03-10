@@ -1,7 +1,13 @@
 import { useAction } from "../context/AppContext";
 
 const Header = () => {
-  const { PreviewAction, isCompiling, CompileAndSaveAction } = useAction();
+  const {
+    PreviewAction,
+    isCompiling,
+    CompileAndSaveAction,
+    zoomInAction,
+    zoomOutAction,
+  } = useAction();
 
   return (
     <div className="header">
@@ -12,6 +18,13 @@ const Header = () => {
         </button>
         <button onClick={CompileAndSaveAction?.run}>
           {isCompiling ? "Compiling..." : "Compile and Save"}
+        </button>
+        <button className="zoom-in" onClick={zoomInAction?.run}>
+          +
+        </button>
+
+        <button className="zoom-out" onClick={zoomOutAction?.run}>
+          -
         </button>
       </div>
     </div>

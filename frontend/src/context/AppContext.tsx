@@ -5,6 +5,10 @@ interface ActionContextType {
   setPreviewAction: (action: { run: () => void } | null) => void;
   CompileAndSaveAction: { run: () => void } | null;
   setCompileAndSaveAction: (action: { run: () => void } | null) => void;
+  zoomInAction: { run: () => void } | null;
+  setZoomInAction: (action: { run: () => void } | null) => void;
+  zoomOutAction: { run: () => void } | null;
+  setZoomOutAction: (action: { run: () => void } | null) => void;
   isCompiling: boolean;
   setIsCompiling: (val: boolean) => void;
 }
@@ -16,6 +20,12 @@ export function ActionProvider({ children }: { children: ReactNode }) {
     run: () => void;
   } | null>(null);
   const [CompileAndSaveAction, setCompileAndSaveAction] = useState<{
+    run: () => void;
+  } | null>(null);
+  const [zoomInAction, setZoomInAction] = useState<{
+    run: () => void;
+  } | null>(null);
+  const [zoomOutAction, setZoomOutAction] = useState<{
     run: () => void;
   } | null>(null);
 
@@ -30,6 +40,10 @@ export function ActionProvider({ children }: { children: ReactNode }) {
         setIsCompiling,
         CompileAndSaveAction,
         setCompileAndSaveAction,
+        zoomInAction,
+        setZoomInAction,
+        zoomOutAction,
+        setZoomOutAction,
       }}
     >
       {children}
