@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import logger from "../services/logger";
-
+import "pdfjs-dist/web/pdf_viewer.css";
 // worker runs pdf parsing in a separate thread so UI doesn't freeze
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.mjs",
@@ -28,6 +28,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
   // we queue the new scale and handle it later after current renfer finish
   const pendingScaleRef = useRef<number | null>(null);
 
+  const pageTextLayersRef = useRef<Map<number, HTMLDivElement>>(new Map());
   const [numPages, setNumPages] = useState(0);
   const [scale, setScale] = useState(1.5);
 
@@ -57,6 +58,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
           pageDiv.className = "pdf-page";
 
           canvas = document.createElement("canvas");
+          canvas.style.display = "block";
           pageDiv.appendChild(canvas);
           container.appendChild(pageDiv);
 
@@ -89,6 +91,35 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
           viewport: viewport,
           canvas: canvas,
         }).promise;
+
+        // === text layer ===
+
+        // remove old text layer if it exist (scale changed, position is wrong)
+        const oldTextLayer = pageTextLayersRef.current.get(i);
+        if (oldTextLayer) oldTextLayer.remove();
+
+        // create new div to hold the text layer
+        const textLayerDiv = document.createElement("div");
+        textLayerDiv.className = "textLayer";
+        textLayerDiv.style.width = `${Math.floor(viewport.width)}px`;
+        textLayerDiv.style.height = `${Math.floor(viewport.height)}px`;
+        pageDiv.appendChild(textLayerDiv);
+
+        // get the text content from the pdf page
+        // this should return the actual string and their position in PDF coordinates
+        const textContent = await page.getTextContent();
+
+        // render the text layer (PDF.js create invisible <span> elements)
+        // and position them on top of the canvas text
+        const textLayer = new pdfjsLib.TextLayer({
+          container: textLayerDiv,
+          textContentSource: textContent,
+          viewport: viewport,
+        });
+        await textLayer.render();
+
+        // store reference so we remove it on next zoom
+        pageTextLayersRef.current.set(i, textLayerDiv);
       }
 
       // renderedScaleRef.current = targetScale;
@@ -115,6 +146,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
         pdfDocRef.current = null;
       }
       pageCanvasesRef.current.clear();
+      pageTextLayersRef.current.clear();
 
       const container = containerRef.current;
       if (container) container.innerHTML = "";
@@ -149,6 +181,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
         pdfDocRef.current = null;
       }
       pageCanvasesRef.current.clear();
+      pageTextLayersRef.current.clear();
     };
   }, [pdfBlob, pdfUrl]);
 
@@ -165,7 +198,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
     if (!container) return;
 
     const handleZoom = (e: WheelEvent) => {
-      logger.log("zooming");
+      // logger.log("zooming");
       if (e.ctrlKey) {
         e.preventDefault();
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
@@ -182,7 +215,20 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
 
   return (
     <div>
-      <div ref={containerRef} />
+      <div
+        ref={containerRef}
+        // this needed to make the text layer render on top of the canvas
+        style={{
+          flex: 1,
+          overflow: "auto",
+          padding: "16px",
+          backgroundColor: "#404040",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "12px",
+        }}
+      />
 
       {!hasContent && <div>No preview available</div>}
     </div>

@@ -9,7 +9,7 @@ const Layout = () => {
 
   return (
     <div className="layout">
-      <div className="sidebar">
+      <div className="side-bar">
         <nav className="sidebar-nav">
           {/* navlink will auto update styles when 'to' prop match current url*/}
           <NavLink
