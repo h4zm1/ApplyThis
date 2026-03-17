@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import logger from "../services/logger";
-import "pdfjs-dist/web/pdf_viewer.css";
+// import "pdfjs-dist/web/pdf_viewer.css";
 // worker runs pdf parsing in a separate thread so UI doesn't freeze
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.mjs",
@@ -58,6 +58,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
           pageDiv.className = "pdf-page";
 
           canvas = document.createElement("canvas");
+          canvas.className = "preview-canvas";
           canvas.style.display = "block";
           pageDiv.appendChild(canvas);
           container.appendChild(pageDiv);
@@ -101,12 +102,27 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
         // create new div to hold the text layer
         const textLayerDiv = document.createElement("div");
         textLayerDiv.className = "textLayer";
-        textLayerDiv.style.width = `${Math.floor(viewport.width)}px`;
-        textLayerDiv.style.height = `${Math.floor(viewport.height)}px`;
+
+        // apparently PDF.js need these 3 custom properties
+        // to set the width, height and font size for the text layer
+        // they were all undefinied in inspect element
+        //
+        // --scale-factor:       zoom level
+        // --total-scale-factor: for our case this should be the same as scale factor
+        // --scale-round-x/y:    rounding precision, 1px should work fine
+        const totalScale = targetScale;
+        textLayerDiv.style.setProperty("--scale-factor", String(targetScale));
+        textLayerDiv.style.setProperty(
+          "--total-scale-factor",
+          String(totalScale),
+        );
+        textLayerDiv.style.setProperty("--scale-round-x", "1px");
+        textLayerDiv.style.setProperty("--scale-round-y", "1px");
         pageDiv.appendChild(textLayerDiv);
 
         // get the text content from the pdf page
         // this should return the actual string and their position in PDF coordinates
+        // const textContent = await page.getTextContent();
         const textContent = await page.getTextContent();
 
         // render the text layer (PDF.js create invisible <span> elements)
@@ -217,6 +233,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
     <div>
       <div
         ref={containerRef}
+        className="pdf-container"
         // this needed to make the text layer render on top of the canvas
         style={{
           flex: 1,
@@ -225,7 +242,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
           backgroundColor: "#404040",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          // alignItems: "center",
           gap: "12px",
         }}
       />

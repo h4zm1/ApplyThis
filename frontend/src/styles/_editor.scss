@@ -48,6 +48,7 @@
   padding-top: 1rem;
   width: -webkit-fill-available;
   background-color: #dcdcdc99;
+  contain: size; // preventing the overload from leaking
 }
 .display-holder {
   width: -webkit-fill-available;
@@ -57,33 +58,73 @@ iframe {
   width: -webkit-fill-available;
   height: -webkit-fill-available;
 }
-
+.pdf-container {
+  background-color: unset !important;
+  padding: unset !important;
+}
 .pdf-page {
   position: relative;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  background: white;
-  // line-height: 0;
+  // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  // background: white;
+  line-height: 0;
+  text-align: center;
 }
 
-.pdf-page .textLayer {
+// // gonna let pdf_viewer.css take care of all text layer positioning
+// .pdf-page .textLayer ::selection {
+//   background: rgba(0, 100, 200, 0.3);
+// }
+//
+.preview-canvas {
+  display: unset !important;
+}
+// .pdf-page {
+//   position: relative;
+//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+//   background: white;
+//   line-height: 0;
+// }
+
+/* === text layer base === */
+.textLayer {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
+  text-align: initial;
+  inset: 0;
+  overflow: clip;
+  opacity: 1;
+  line-height: 1;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+  z-index: 0;
+  place-self: anchor-center;
 }
 
-.pdf-page .textLayer span {
-  position: absolute;
+/*  === text layer sizing === */
+.textLayer {
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+
+/* === text spans === */
+.textLayer :is(span, br) {
   color: transparent;
-  // color: #ec0000;
+  // color: red;
+  position: absolute;
   white-space: pre;
-  pointer-events: all;
-  font-family: unset !important;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.textLayer > :not(.markedContent),
+.textLayer .markedContent span:not(.markedContent) {
+  --font-height: 0;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
 }
 
 /* text selecting hightlight color*/
-.pdf-page .textLayer ::selection {
+.textLayer ::selection {
   background: rgba(0, 100, 200, 0.3);
 }
