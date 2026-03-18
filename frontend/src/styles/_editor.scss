@@ -61,6 +61,7 @@ iframe {
 .pdf-container {
   background-color: unset !important;
   padding: unset !important;
+  overflow: unset !important;
 }
 .pdf-page {
   position: relative;
@@ -110,12 +111,14 @@ iframe {
 
 /* === text spans === */
 .textLayer :is(span, br) {
-  color: transparent;
-  // color: red;
+  // color: transparent;
+  color: red;
   position: absolute;
   white-space: pre;
   cursor: text;
   transform-origin: 0% 0%;
+  font-family: unset !important;
+  --font-height: 10.66px !important;
 }
 
 .textLayer > :not(.markedContent),

@@ -41,7 +41,7 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
         latex(), // latex language support
         bracketMatching(), // hightlight brackets when near any of the two ends
         history(), // enable undo/redo
-
+        EditorView.lineWrapping,
         // keymaps
         keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
         syntaxHighlighting(defaultHighlightStyle), // synstax highlighting
