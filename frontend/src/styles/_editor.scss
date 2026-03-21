@@ -36,19 +36,21 @@
   // padding-top: 1rem;
   // margin-inline: 0.2rem;
   .grip-vertical {
-    margin-inline: -0.3rem;
-    // cursor: col-resize !important;
-    color: #959595;
+    margin-inline: -0.4rem;
+    color: #959595a3;
   }
 }
 .preview-side {
-  border-top-left-radius: 7px;
-  border-top-right-radius: 7px;
-  // background-color: white;
-  padding-top: 1rem;
-  width: -webkit-fill-available;
-  background-color: #dcdcdc99;
-  contain: size; // preventing the overload from leaking
+  // border-top-left-radius: 7px;
+  // border-top-right-radius: 7px;
+  // // background-color: white;
+  // padding-top: 1rem;
+  // width: -webkit-fill-available;
+  // background-color: #dcdcdc99;
+  // contain: size; // preventing the overload from leaking
+  // padding-bottom: 1rem;
+  // scrollbar-width: thin;
+  overflow: unset !important;
 }
 .display-holder {
   width: -webkit-fill-available;
@@ -58,39 +60,52 @@ iframe {
   width: -webkit-fill-available;
   height: -webkit-fill-available;
 }
+.preview-header {
+  display: flex;
+  justify-content: center;
+}
+.zoom-btn {
+  padding: 0px 6px;
+  border: solid #9c9c9c 1px;
+  color: #4b4b4b;
+  font-size: 20px;
+  background-color: #f0f0f0;
+}
+.zoom-label {
+  border: solid #9c9c9c 1px;
+  border-left-width: 0;
+  border-right-width: 0;
+  font-size: 16px;
+  width: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+}
 .pdf-container {
-  background-color: unset !important;
-  padding: unset !important;
-  overflow: unset !important;
+  contain: size;
+  height: calc(100vh - 3.6rem);
+  scrollbar-width: thin;
+  background-color: #dcdcdc99 !important;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
 }
 .pdf-page {
   position: relative;
-  // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  // background: white;
   line-height: 0;
   text-align: center;
+  margin: 2rem auto;
+  width: fit-content;
 }
 
-// // gonna let pdf_viewer.css take care of all text layer positioning
-// .pdf-page .textLayer ::selection {
-//   background: rgba(0, 100, 200, 0.3);
-// }
-//
 .preview-canvas {
-  display: unset !important;
+  display: block;
 }
-// .pdf-page {
-//   position: relative;
-//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-//   background: white;
-//   line-height: 0;
-// }
-
 /* === text layer base === */
 .textLayer {
   position: absolute;
-  text-align: initial;
   inset: 0;
+  text-align: initial;
   overflow: clip;
   opacity: 1;
   line-height: 1;
@@ -99,7 +114,6 @@ iframe {
   forced-color-adjust: none;
   transform-origin: 0 0;
   z-index: 0;
-  place-self: anchor-center;
 }
 
 /*  === text layer sizing === */

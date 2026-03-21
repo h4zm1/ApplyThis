@@ -29,6 +29,8 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
   const pendingScaleRef = useRef<number | null>(null);
 
   const pageTextLayersRef = useRef<Map<number, HTMLDivElement>>(new Map());
+  const renderingRef = useRef(false);
+  const renderedScaleRef = useRef<number | null>(null);
   const [numPages, setNumPages] = useState(0);
   const [scale, setScale] = useState(1.5);
 
@@ -38,6 +40,13 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
     const container = containerRef.current;
     if (!pdf || !container) return;
 
+    if (renderingRef.current) {
+      pendingScaleRef.current = targetScale;
+      return;
+    }
+    if (renderedScaleRef.current === targetScale) return;
+
+    renderingRef.current = true;
     try {
       for (let i = 1; i <= pdf.numPages; i++) {
         // get the page object, which contains the drawing instructions
@@ -142,7 +151,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
     } catch (error: any) {
       console.error("Render error:", error);
     } finally {
-      // renderingRef.current = false;
+      renderingRef.current = false;
 
       // if zoom got triggerd again whle we were rendering, do that zoom now
       if (pendingScaleRef.current !== null) {
@@ -230,7 +239,35 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
   const hasContent = pdfBlob || pdfUrl;
 
   return (
-    <div>
+    <div className="preview-content">
+      <div className="preview-header">
+        <button
+          className="zoom-btn"
+          onClick={() =>
+            setScale((s) => Math.max(0.25, Math.round((s - 0.25) * 100) / 100))
+          }
+          style={{ borderRadius: "6px 0px 0px 6px" }}
+        >
+          −
+        </button>
+
+        <span
+          className="zoom-label"
+          style={{ minWidth: "50px", textAlign: "center" }}
+        >
+          {Math.round(scale * 100)}%
+        </span>
+
+        <button
+          className="zoom-btn"
+          onClick={() =>
+            setScale((s) => Math.min(5.0, Math.round((s + 0.25) * 100) / 100))
+          }
+          style={{ borderRadius: "0px 6px 6px 0px" }}
+        >
+          +
+        </button>
+      </div>
       <div
         ref={containerRef}
         className="pdf-container"
