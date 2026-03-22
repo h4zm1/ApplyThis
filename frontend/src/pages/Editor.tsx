@@ -25,6 +25,19 @@ const Editor = () => {
   const [isSaving, setIsSaving] = useState(false);
   const { setPreviewAction, setCompileAndSaveAction } = useAction();
 
+  useEffect(() => {
+    const mainC = document.getElementsByClassName("main-content");
+    if (mainC.length > 0) {
+      (mainC[0] as HTMLElement).style.boxShadow = "unset !important";
+      (mainC[0] as HTMLElement).style.backgroundColor = "unset";
+    }
+    return () => {
+      (mainC[0] as HTMLElement).style.boxShadow =
+        "0px 4px 12px rgba(89, 85, 101, 0.2);";
+      (mainC[0] as HTMLElement).style.backgroundColor = "white";
+    };
+  }, []);
+
   // load resume on mount
   useEffect(() => {
     if (resumeId) loadResume(resumeId);

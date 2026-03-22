@@ -17,11 +17,35 @@
 .new-page {
   z-index: 2;
 }
+
+// == editor styles ===
+.editor-header {
+  background-color: transparent;
+  padding-bottom: 1.1rem;
+}
 .editor-side {
+  overflow: unset !important;
+  // border-top-left-radius: 7px;
+  // border-top-right-radius: 7px;
+  // background-color: white;
+  // box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
+}
+.latex-editor-wrapper {
+  box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
+  padding-top: 0.2rem;
+  background-color: #ffffff;
+}
+.latex-editor {
   background-color: white;
-  box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
+  height: calc(100vh - 5.1rem);
+  // box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
+  // border-top-left-radius: 7px;
+  // border-top-right-radius: 7px;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: darkgray transparent;
 }
 .separator {
   // background-color: red;
@@ -37,20 +61,13 @@
   // margin-inline: 0.2rem;
   .grip-vertical {
     margin-inline: -0.4rem;
+    scale: 0.7;
     color: #959595a3;
   }
 }
 .preview-side {
-  // border-top-left-radius: 7px;
-  // border-top-right-radius: 7px;
-  // // background-color: white;
-  // padding-top: 1rem;
-  // width: -webkit-fill-available;
-  // background-color: #dcdcdc99;
-  // contain: size; // preventing the overload from leaking
-  // padding-bottom: 1rem;
-  // scrollbar-width: thin;
   overflow: unset !important;
+  margin-right: 0.6rem;
 }
 .display-holder {
   width: -webkit-fill-available;
@@ -62,14 +79,15 @@ iframe {
 }
 .preview-header {
   display: flex;
-  justify-content: center;
+  padding-bottom: 0.7rem;
+  // justify-content: center;
 }
 .zoom-btn {
-  padding: 0px 6px;
+  padding: 2px 8px;
   border: solid #9c9c9c 1px;
   color: #4b4b4b;
   font-size: 20px;
-  background-color: #f0f0f0;
+  background-color: white;
 }
 .zoom-label {
   border: solid #9c9c9c 1px;
@@ -80,26 +98,28 @@ iframe {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f0f0;
+  background-color: white;
 }
 .pdf-container {
   contain: size;
-  height: calc(100vh - 3.6rem);
+  height: calc(100vh - 6.6rem);
   scrollbar-width: thin;
-  background-color: #dcdcdc99 !important;
+  background-color: #e6eaed !important;
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
+  scrollbar-color: darkgray transparent;
 }
 .pdf-page {
   position: relative;
   line-height: 0;
   text-align: center;
-  margin: 2rem auto;
   width: fit-content;
+  margin: 1rem auto;
 }
 
 .preview-canvas {
   display: block;
+  box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
 }
 /* === text layer base === */
 .textLayer {

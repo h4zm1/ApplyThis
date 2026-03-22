@@ -15,6 +15,7 @@ import {
 } from "@codemirror/language";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { searchKeymap } from "@codemirror/search";
+import { useAction } from "../context/AppContext";
 
 interface LaTeXEditorProps {
   value: string; // latex source code
@@ -84,8 +85,23 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
       });
     }
   }, [value]);
+  const { PreviewAction, isCompiling, CompileAndSaveAction } = useAction();
 
-  return <div ref={containerRef} className="latex-editor"></div>;
+  return (
+    <div className="editor-content">
+      <div className="editor-header">
+        <button onClick={PreviewAction?.run}>
+          {isCompiling ? "Compiling..." : "Preview"}
+        </button>
+        <button onClick={CompileAndSaveAction?.run}>
+          {isCompiling ? "Compiling..." : "Compile and Save"}
+        </button>
+      </div>
+      <div className="latex-editor-wrapper">
+        <div ref={containerRef} className="latex-editor"></div>;
+      </div>
+    </div>
+  );
 };
 
 export default LateXEditor;

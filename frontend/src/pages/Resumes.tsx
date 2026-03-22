@@ -101,7 +101,7 @@ const Resumes = () => {
   }
 
   return (
-    <div>
+    <div className="resume">
       <div>
         <h1>Resumes</h1>
         <p>Manage resume</p>

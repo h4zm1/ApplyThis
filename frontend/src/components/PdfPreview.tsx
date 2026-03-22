@@ -32,7 +32,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
   const renderingRef = useRef(false);
   const renderedScaleRef = useRef<number | null>(null);
   const [numPages, setNumPages] = useState(0);
-  const [scale, setScale] = useState(1.5);
+  const [scale, setScale] = useState(1);
 
   // === render all pages into their canvases with giving scale ===
   const renderPages = useCallback(async (targetScale: number) => {
