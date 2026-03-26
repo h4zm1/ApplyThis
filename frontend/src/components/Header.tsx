@@ -7,25 +7,29 @@ const Header = () => {
     CompileAndSaveAction,
     zoomInAction,
     zoomOutAction,
+    headerTitle,
   } = useAction();
 
   return (
     <div className="header">
       <div className="header-content">
-        <h1>HEADER</h1>
-        <button onClick={PreviewAction?.run}>
-          {isCompiling ? "Compiling..." : "Preview"}
-        </button>
-        <button onClick={CompileAndSaveAction?.run}>
-          {isCompiling ? "Compiling..." : "Compile and Save"}
-        </button>
-        <button className="zoom-in" onClick={zoomInAction?.run}>
-          +
-        </button>
-
-        <button className="zoom-out" onClick={zoomOutAction?.run}>
-          -
-        </button>
+        {/* <h1>HEADER</h1> */}
+        {/* <button onClick={PreviewAction?.run}> */}
+        {/*   {isCompiling ? "Compiling..." : "Preview"} */}
+        {/* </button> */}
+        {/* <button onClick={CompileAndSaveAction?.run}> */}
+        {/*   {isCompiling ? "Compiling..." : "Compile and Save"} */}
+        {/* </button> */}
+        {/* <button className="zoom-in" onClick={zoomInAction?.run}> */}
+        {/*   + */}
+        {/* </button> */}
+        {/**/}
+        {/* <button className="zoom-out" onClick={zoomOutAction?.run}> */}
+        {/*   - */}
+        {/* </button> */}
+        <div>
+          <h1>{headerTitle}</h1>
+        </div>
       </div>
     </div>
   );

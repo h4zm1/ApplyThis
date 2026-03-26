@@ -6,10 +6,20 @@ import {
   getResumes,
   updateResume,
 } from "../services/resumeService";
-import { Edit, Notebook, Trash, Trash2 } from "lucide-react";
+import {
+  Copy,
+  Download,
+  Edit,
+  Notebook,
+  Play,
+  Trash,
+  Trash2,
+} from "lucide-react";
 import Popup from "../components/popUp";
 import ResumeForm from "../components/ResumeForm";
 import { Link } from "react-router-dom";
+import { useAction } from "../context/AppContext";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 
 const Resumes = () => {
   // data state
@@ -22,9 +32,13 @@ const Resumes = () => {
   const [editingResume, setEditingResume] = useState<Resume | null>(null); // null = create, object = edit
   const [isSubmitting, setIsSubmitting] = useState(false); // for disabling buttons on API calls
 
+  const { setHeaderTitle } = useAction();
+  const { user } = useAuth();
+
   // load resumes on mount (like ngOnInit)
   useEffect(() => {
     loadResumes();
+    setHeaderTitle(user?.email + "> Resume");
   }, []);
 
   async function loadResumes() {
@@ -72,8 +86,10 @@ const Resumes = () => {
         setResumes(resumes.map((r) => (r.id === updated.id ? updated : r)));
       } else {
         // create new one
+        data.source =
+          "\\documentclass{article}\\begin{document}My Resume\\end{document}";
         const created = await createResume(data);
-        // add to the list
+        // add to the list to update ui
         setResumes([created, ...resumes]);
       }
       handleClosePopup(); // success, close the popup
@@ -101,40 +117,63 @@ const Resumes = () => {
   }
 
   return (
-    <div className="resume">
-      <div>
+    <div className="resumes">
+      <div className="title">
         <h1>Resumes</h1>
-        <p>Manage resume</p>
+        {/* <p>Manage resume</p> */}
       </div>
       <div>
-        {resumes.length} resume{resumes.length !== 1 ? "s" : ""}
-        <button onClick={handleCreate}>New Resume</button>
+        {/* {resumes.length} resume{resumes.length !== 1 ? "s" : ""} */}
+        <button className="new-resume-btn" onClick={handleCreate}>
+          <div>+</div> New Resume
+        </button>
       </div>
-      <div>
-        {resumes.length === 0 ? (
-          <p>No resume yet. Create your first one!</p>
-        ) : (
-          <div>
-            {resumes.map((resume) => (
-              <div className="resume" key={resume.id}>
-                <Link to={`/editor/${resume.id}`}>
-                  <div className="resume-body">
-                    <div>
-                      <p>
-                        {resume.pdfUrl ? "PDF compiled" : "Not compiled yet"}
-                      </p>
-                      {/* show pdf linked if compiled */}
-                      {resume.pdfUrl && (
-                        <a
-                          href={resume.pdfUrl}
-                          target="_blank" // open in new tab
-                          rel="noopener noreferer"
-                        >
-                          View PDF
-                        </a>
-                      )}
-                    </div>
+      {resumes.length === 0 ? (
+        <p>No resume yet. Create your first one!</p>
+      ) : (
+        <div className="resumes-holder">
+          {resumes.map((resume) => (
+            <div className="resume" key={resume.id}>
+              <Link to={`/editor/${resume.id}`}>
+                <div className="resume-body">
+                  <div>
+                    {/* <p>{resume.pdfUrl ? "PDF compiled" : "Not compiled yet"}</p> */}
+                    {/* show pdf linked if compiled */}
+                    {/*   {resume.pdfUrl && ( */}
+                    {/*     <a */}
+                    {/*       href={resume.pdfUrl} */}
+                    {/*       target="_blank" // open in new tab */}
+                    {/*       rel="noopener noreferer" */}
+                    {/*     > */}
+                    {/*       View PDF */}
+                    {/*     </a> */}
+                    {/*   )} */}
+                  </div>
+                  <div className="context-bar">
                     <button
+                      title="Delete"
+                      onClick={(e) => {
+                        handleDelete(resume);
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Trash2 />
+                    </button>
+                    <button
+                      disabled={resume.pdfUrl ? true : false}
+                      title="Download PDF"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleEdit(resume);
+                      }}
+                    >
+                      <Download />
+                    </button>
+
+                    <button
+                      title="Rename"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -142,27 +181,40 @@ const Resumes = () => {
                       }}
                     >
                       <Edit />
-                      Edit
                     </button>
+
                     <button
+                      title="Duplicated"
                       onClick={(e) => {
                         handleDelete(resume);
                         e.preventDefault();
                         e.stopPropagation();
                       }}
                     >
-                      <Trash />
+                      <Copy />
+                    </button>
+
+                    <button
+                      title="Open"
+                      onClick={(e) => {
+                        handleDelete(resume);
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Play />
                     </button>
                   </div>
-                </Link>
-                <div className="resume-title">
-                  <h1 className="title">{resume.name}</h1>
+                  <div className="status"></div>
                 </div>
+              </Link>
+              <div className="resume-title">
+                <h1 className="title">{resume.name}</h1>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
       <Popup
         isOpen={isPopupOpen}
         onClose={handleClosePopup}

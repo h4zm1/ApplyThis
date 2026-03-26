@@ -11,6 +11,8 @@ interface ActionContextType {
   setZoomOutAction: (action: { run: () => void } | null) => void;
   isCompiling: boolean;
   setIsCompiling: (val: boolean) => void;
+  headerTitle: string | null;
+  setHeaderTitle: (data: string | null) => void;
 }
 
 const ActionContext = createContext<ActionContextType | undefined>(undefined);
@@ -31,6 +33,7 @@ export function ActionProvider({ children }: { children: ReactNode }) {
 
   const [isCompiling, setIsCompiling] = useState(false);
 
+  const [headerTitle, setHeaderTitle] = useState<string | null>(null);
   return (
     <ActionContext.Provider
       value={{
@@ -44,6 +47,8 @@ export function ActionProvider({ children }: { children: ReactNode }) {
         setZoomInAction,
         zoomOutAction,
         setZoomOutAction,
+        headerTitle,
+        setHeaderTitle,
       }}
     >
       {children}

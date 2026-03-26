@@ -13,6 +13,7 @@ import { useAction } from "../context/AppContext";
 import logger from "../services/logger";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { GripVertical } from "lucide-react";
+import { useUIContext } from "../context/UIContext";
 const Editor = () => {
   const { resumeId } = useParams<{ resumeId: string }>(); // get resume id from url params
 
@@ -23,30 +24,22 @@ const Editor = () => {
   const [isCompiling, setIsCompiling] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const { setPreviewAction, setCompileAndSaveAction } = useAction();
-
-  useEffect(() => {
-    const mainC = document.getElementsByClassName("main-content");
-    if (mainC.length > 0) {
-      (mainC[0] as HTMLElement).style.boxShadow = "unset !important";
-      (mainC[0] as HTMLElement).style.backgroundColor = "unset";
-    }
-    return () => {
-      (mainC[0] as HTMLElement).style.boxShadow =
-        "0px 4px 12px rgba(89, 85, 101, 0.2);";
-      (mainC[0] as HTMLElement).style.backgroundColor = "white";
-    };
-  }, []);
-
+  const { setPreviewAction, setCompileAndSaveAction, setHeaderTitle } =
+    useAction();
+  // const { setInResume, inResume } = useUIContext();
   // load resume on mount
   useEffect(() => {
-    if (resumeId) loadResume(resumeId);
+    if (resumeId) {
+      loadResume(resumeId);
+    }
   }, [resumeId]);
 
   async function loadResume(resumeId: string) {
     try {
       const data = await getResume(resumeId!);
       setResume(data);
+      logger.log("NAME ", data.name);
+      setHeaderTitle(data?.name!);
 
       // set source from feteched data
       // fallback to template if feteched source is empty
@@ -99,6 +92,25 @@ const Editor = () => {
       setIsSaving(false);
     }
   }
+
+  // change background style from resume to editor
+  useEffect(() => {
+    const mainC = document.querySelector(".main-content") as HTMLElement;
+
+    if (mainC) {
+      mainC.style.boxShadow = "unset";
+      mainC.style.backgroundColor = "transparent";
+    }
+
+    return () => {
+      logger.log("LEAVING EDITOR");
+      // reset to default when leaving the editor
+      if (mainC) {
+        mainC.style.boxShadow = "";
+        mainC.style.backgroundColor = "";
+      }
+    };
+  }, []);
 
   // compile and save to s3
   async function handleCompileAndSave() {

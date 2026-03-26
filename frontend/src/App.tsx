@@ -9,6 +9,7 @@ import Layout from "./components/Layout";
 import Resumes from "./pages/Resumes";
 import Editor from "./pages/Editor";
 import { ActionProvider } from "./context/AppContext";
+import { UIProvider } from "./context/UIContext";
 import { useEffect } from "react";
 
 function App() {
@@ -35,9 +36,11 @@ function App() {
       <Route
         element={
           <ProtectedRoute>
-            <ActionProvider>
-              <Layout />
-            </ActionProvider>
+            <UIProvider>
+              <ActionProvider>
+                <Layout />
+              </ActionProvider>
+            </UIProvider>
           </ProtectedRoute>
         }
       >

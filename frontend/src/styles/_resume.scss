@@ -1,17 +1,100 @@
-.resume {
+.resumes {
   // background-color: red;
-  width: fit-content;
+  // width: fit-content;
+  // width: 10rem;
 }
 
+.title {
+  padding-bottom: 8rem;
+  h1 {
+    font-size: xx-large;
+  }
+}
+
+.new-resume-btn {
+  display: flex;
+  background-color: transparent;
+  border: solid thin #828282;
+  border-radius: 5px;
+  padding: 0.2rem;
+  padding-inline: 0.5rem;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 13px;
+  div {
+    font-size: 20px;
+  }
+  &:hover {
+    background-color: #f4f4f4;
+  }
+}
+
+.resumes-holder {
+  display: flex;
+  gap: 2rem;
+  padding-top: 2rem;
+}
+.resume {
+  width: 10rem;
+  button {
+    scale: 0.6;
+    background-color: transparent;
+    border: none;
+    color: #000000;
+    padding-inline: 0.1rem;
+    cursor: pointer;
+  }
+  button:disabled {
+    color: gray;
+  }
+}
 .resume-body {
   height: 14rem;
   border: solid;
   border-width: thin;
-  border-color: #959595;
+  border-color: #a7a7a7;
   border-radius: 8px;
+  cursor: default;
+  contain: content;
+}
+.context-bar {
+  opacity: 0;
+  justify-self: center;
+  max-height: 0;
+  margin-top: 3rem;
+  padding-block: 0.2rem;
+  transition:
+    opacity 0.3s ease-in-out,
+    max-height 0.3s ease-in-out;
+}
+
+.resume-body:hover .context-bar {
+  opacity: 1;
+  margin-top: 3rem;
+  max-height: 200px;
+  display: flex;
+  justify-content: center;
+  background-color: rgba(247, 247, 247, 0.431372549);
+  padding-block: 0.2rem;
+  border-radius: 6px;
+  border: solid thin #cdcdcd;
+}
+.status {
+  background-color: #afafaf;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.8rem;
+  border-bottom-left-radius: 6px;
 }
 .resume-title {
   .title {
     font-size: small;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    padding-inline: 0.6rem;
+    font-weight: normal;
   }
 }
