@@ -33,6 +33,10 @@
   display: flex;
   gap: 2rem;
   padding-top: 2rem;
+  flex-wrap: wrap;
+  overflow: auto;
+  height: calc(100vh - 21rem);
+  scrollbar-width: thin;
 }
 .resume {
   width: 10rem;
@@ -77,7 +81,7 @@
   background-color: rgba(247, 247, 247, 0.431372549);
   padding-block: 0.2rem;
   border-radius: 6px;
-  border: solid thin #cdcdcd;
+  border: solid thin #afafaf;
 }
 .status {
   background-color: #afafaf;
@@ -95,6 +99,14 @@
     text-overflow: ellipsis;
     text-align: center;
     padding-inline: 0.6rem;
-    font-weight: normal;
+  }
+  input {
+    font-size: small;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+    width: -webkit-fill-available;
+    margin-inline: 0.6rem;
+    margin-top: 0.67em;
   }
 }

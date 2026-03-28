@@ -7,15 +7,32 @@
 
 * {
 }
+@font-face {
+  font-family: "Inter";
+  src: url("/public/fonts/Inter_18pt-ExtraLight.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("/public/fonts/Caveat-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 body {
   height: -webkit-fill-available;
-  background-color: #f6fafe;
+  // background-color: #f6fafe;
+  background-color: #f8f6fe75;
   margin: 0rem;
   overflow: hidden;
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 html {
   font-size: 16px;
   height: -webkit-fill-available;
+  background-color: white;
 }
 #root {
   height: -webkit-fill-available;

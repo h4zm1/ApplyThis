@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type KeyboardEventHandler } from "react";
 import type { CreateResumeRequest, Resume } from "../types/resume";
 import {
   createResume,
@@ -20,6 +20,7 @@ import ResumeForm from "../components/ResumeForm";
 import { Link } from "react-router-dom";
 import { useAction } from "../context/AppContext";
 import { AuthProvider, useAuth } from "../context/AuthContext";
+import logger from "../services/logger";
 
 const Resumes = () => {
   // data state
@@ -56,8 +57,37 @@ const Resumes = () => {
    * open popup for creating new resume
    **/
   function handleCreate() {
-    setEditingResume(null); // null means create mode
+    // setEditingResume(null); // null means create mode
     setIsPopupOpen(true);
+    const dummy: Resume = {
+      id: "-1",
+      name: "",
+      source: "",
+      pdfUrl: "",
+      createdAt: "",
+      updatedAt: "",
+    };
+
+    setEditingResume(dummy);
+    // add to the list to update ui
+    setResumes([dummy, ...resumes]);
+  }
+
+  // events when the new resume input is focused
+  const handleTitleInput: React.KeyboardEventHandler<HTMLInputElement> = (
+    event,
+  ) => {
+    if (event.key === "Enter") {
+      handleSubmit(editingResume!);
+    }
+    if (event.key === "Escape") {
+      setResumes((prev) => prev.filter((r) => r.id !== "-1"));
+    }
+  };
+
+  function handleLostFocus() {
+    setResumes((prev) => prev.filter((r) => r.id !== "-1"));
+    setEditingResume(null);
   }
 
   /**
@@ -79,7 +109,7 @@ const Resumes = () => {
   async function handleSubmit(data: CreateResumeRequest) {
     setIsSubmitting(true);
     try {
-      if (editingResume) {
+      if (editingResume && editingResume.id !== "-1") {
         // update existing
         const updated = await updateResume(editingResume.id, data);
         // replace in list
@@ -89,8 +119,11 @@ const Resumes = () => {
         data.source =
           "\\documentclass{article}\\begin{document}My Resume\\end{document}";
         const created = await createResume(data);
+        setResumes((prev) => [
+          created,
+          ...prev.filter((r) => r.id !== "-1"), // filter out dummy resume
+        ]);
         // add to the list to update ui
-        setResumes([created, ...resumes]);
       }
       handleClosePopup(); // success, close the popup
     } catch (error: any) {
@@ -209,24 +242,39 @@ const Resumes = () => {
                 </div>
               </Link>
               <div className="resume-title">
-                <h1 className="title">{resume.name}</h1>
+                {resume.id == "-1" ? (
+                  <input
+                    autoFocus={true}
+                    onBlur={handleLostFocus}
+                    onKeyDown={handleTitleInput}
+                    placeholder="e.g., Resume One"
+                    onChange={(e) => {
+                      // this need to be done like this so we don't lose other props
+                      setEditingResume((prev) =>
+                        prev ? { ...prev, name: e.target.value } : prev,
+                      );
+                    }}
+                  />
+                ) : (
+                  <h1 className="title">{resume.id + resume.name}</h1>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
-      <Popup
-        isOpen={isPopupOpen}
-        onClose={handleClosePopup}
-        title={editingResume ? "Edit Resume" : "New Resume"}
-      >
-        <ResumeForm
-          resume={editingResume}
-          onSubmit={handleSubmit}
-          onCancel={handleClosePopup}
-          isSubmitting={isSubmitting}
-        />
-      </Popup>
+      {/* <Popup */}
+      {/*   isOpen={isPopupOpen} */}
+      {/*   onClose={handleClosePopup} */}
+      {/*   title={editingResume ? "Edit Resume" : "New Resume"} */}
+      {/* > */}
+      {/*   <ResumeForm */}
+      {/*     resume={editingResume} */}
+      {/*     onSubmit={handleSubmit} */}
+      {/*     onCancel={handleClosePopup} */}
+      {/*     isSubmitting={isSubmitting} */}
+      {/*   /> */}
+      {/* </Popup> */}
     </div>
   );
 };

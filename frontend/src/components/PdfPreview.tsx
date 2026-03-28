@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import logger from "../services/logger";
+import { Minus, Plus } from "lucide-react";
 // import "pdfjs-dist/web/pdf_viewer.css";
 // worker runs pdf parsing in a separate thread so UI doesn't freeze
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -248,7 +249,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
           }
           style={{ borderRadius: "6px 0px 0px 6px" }}
         >
-          −
+          <Minus style={{ verticalAlign: "text-bottom" }}></Minus>
         </button>
 
         <span
@@ -265,7 +266,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
           }
           style={{ borderRadius: "0px 6px 6px 0px" }}
         >
-          +
+          <Plus style={{ verticalAlign: "text-bottom" }}></Plus>
         </button>
       </div>
       <div

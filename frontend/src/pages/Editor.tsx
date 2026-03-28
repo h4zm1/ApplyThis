@@ -97,9 +97,11 @@ const Editor = () => {
   useEffect(() => {
     const mainC = document.querySelector(".main-content") as HTMLElement;
 
+    // this when inside editor
     if (mainC) {
       mainC.style.boxShadow = "unset";
       mainC.style.backgroundColor = "transparent";
+      mainC.style.padding = "0";
     }
 
     return () => {
@@ -108,6 +110,7 @@ const Editor = () => {
       if (mainC) {
         mainC.style.boxShadow = "";
         mainC.style.backgroundColor = "";
+        mainC.style.padding = "2rem";
       }
     };
   }, []);

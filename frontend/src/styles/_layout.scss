@@ -10,6 +10,9 @@
   padding-top: 2rem;
   margin-inline: 0.5rem;
   // background-color: lightcoral;
+  a {
+    color: #232225;
+  }
 }
 .sidebar-nav {
   display: flex;
@@ -18,19 +21,26 @@
   align-self: anchor-center;
 }
 .logo-nav {
-  background-color: red;
+  // background-color: red;
   margin-top: auto;
   align-self: center;
-  // margin-bottom: 2rem;
   rotate: 270deg;
-  width: 0rem;
+  width: 1rem;
+  font-size: 2rem;
+  text-decoration: auto;
+  font-family: "Caveat", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  -webkit-text-stroke-width: thin;
+  margin-left: -0.5rem;
 }
 .main-content {
   height: -webkit-fill-available;
   border-top-left-radius: 7px;
   background-color: white;
   box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
-  padding: 2rem;
+  padding: 2rem; // this needed incase a refresh happend in /resumes
 }
 .main-holder {
   width: -webkit-fill-available;

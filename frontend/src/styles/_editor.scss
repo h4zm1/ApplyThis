@@ -84,21 +84,23 @@ iframe {
 }
 .zoom-btn {
   padding: 2px 8px;
-  border: solid #9c9c9c 1px;
+  border: solid #a1a1a1 1px;
   color: #4b4b4b;
-  font-size: 20px;
+  // font-size: 20px;
   background-color: white;
 }
 .zoom-label {
-  border: solid #9c9c9c 1px;
+  border: solid #a1a1a1 1px;
+  color: #2b2b2b;
   border-left-width: 0;
   border-right-width: 0;
-  font-size: 16px;
+  font-size: 15px;
   width: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: white;
+  font-weight: bold;
 }
 .pdf-container {
   contain: size;
@@ -141,6 +143,7 @@ iframe {
   --min-font-size: 1;
   --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
   --min-font-size-inv: calc(1 / var(--min-font-size));
+  font-family: none;
 }
 
 /* === text spans === */
