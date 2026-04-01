@@ -11,13 +11,14 @@ import {
   Download,
   Edit,
   Notebook,
+  PenLine,
   Play,
   Trash,
   Trash2,
 } from "lucide-react";
 import Popup from "../components/popUp";
 import ResumeForm from "../components/ResumeForm";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAction } from "../context/AppContext";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import logger from "../services/logger";
@@ -82,6 +83,7 @@ const Resumes = () => {
     }
     if (event.key === "Escape") {
       setResumes((prev) => prev.filter((r) => r.id !== "-1"));
+      setEditingResume(null);
     }
   };
 
@@ -89,13 +91,18 @@ const Resumes = () => {
     setResumes((prev) => prev.filter((r) => r.id !== "-1"));
     setEditingResume(null);
   }
-
+  function handleOpen(resume: Resume) {
+    const navigate = useNavigate();
+    navigate("/editor/" + resume.id);
+  }
   /**
    * open popup for editing esixting resume
    **/
   function handleEdit(resume: Resume) {
     setEditingResume(resume);
     setIsPopupOpen(true);
+    // const toEditResume: Resume = { ...resume, id: "-1" };
+    // setResumes([toEditResume, ...resumes]);
   }
   /**
    * close popup and reset state
@@ -213,7 +220,7 @@ const Resumes = () => {
                         handleEdit(resume);
                       }}
                     >
-                      <Edit />
+                      <PenLine />
                     </button>
 
                     <button
@@ -230,7 +237,7 @@ const Resumes = () => {
                     <button
                       title="Open"
                       onClick={(e) => {
-                        handleDelete(resume);
+                        handleOpen(resume);
                         e.preventDefault();
                         e.stopPropagation();
                       }}
@@ -242,12 +249,13 @@ const Resumes = () => {
                 </div>
               </Link>
               <div className="resume-title">
-                {resume.id == "-1" ? (
+                {resume.id == editingResume?.id ? (
                   <input
                     autoFocus={true}
                     onBlur={handleLostFocus}
                     onKeyDown={handleTitleInput}
                     placeholder="e.g., Resume One"
+                    value={editingResume.name}
                     onChange={(e) => {
                       // this need to be done like this so we don't lose other props
                       setEditingResume((prev) =>
@@ -256,7 +264,7 @@ const Resumes = () => {
                     }}
                   />
                 ) : (
-                  <h1 className="title">{resume.id + resume.name}</h1>
+                  <h1>{resume.name}</h1>
                 )}
               </div>
             </div>
