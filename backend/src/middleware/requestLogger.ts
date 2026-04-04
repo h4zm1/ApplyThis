@@ -11,7 +11,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
     logger.info(
       {
         method: req.method,
-        path: req.path,
+        path: req.originalUrl,
         status: res.statusCode,
         duration: duration + "ms",
       },

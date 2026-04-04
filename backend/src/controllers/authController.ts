@@ -61,6 +61,7 @@ export async function login(req: Request, res: Response) {
   }
 }
 
+// POST /api/auth/refresh
 export async function refresh(req: Request, res: Response) {
   try {
     const { refreshToken } = req.body;
@@ -69,7 +70,7 @@ export async function refresh(req: Request, res: Response) {
       return res.status(400).json({ error: "refresh token required" });
     }
 
-    const refreshedToken = refreshTokens(refreshToken);
+    const refreshedToken = await refreshTokens(refreshToken);
     return res.json(refreshedToken);
   } catch (error) {
     // token invalid or expired

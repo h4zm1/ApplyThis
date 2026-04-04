@@ -5,6 +5,7 @@ export interface Resume {
   pdfUrl: string | null;
   createdAt: string;
   updatedAt: string;
+  orderIndex: number;
 }
 
 // sperate request types for what the client will send (easier, cleaner and safer to handle)

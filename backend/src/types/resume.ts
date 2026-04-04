@@ -1,7 +1,10 @@
+import { Prisma } from "@prisma/client";
+
 // what user needs when creating/updating resume
 export interface CreateResumeDto {
   name: string;
   source: string;
+  orderIndex: Prisma.Decimal;
 }
 
 export interface UpateResumeDto {
@@ -17,4 +20,5 @@ export interface ResumeResponse {
   source: string;
   createdAt: Date;
   updatedAt: Date;
+  orderIndex: Prisma.Decimal;
 }

@@ -6,6 +6,7 @@ import {
   listResumes,
   remove,
   update,
+  updateOrder,
 } from "../controllers/resumeController";
 
 const router = Router();
@@ -27,5 +28,8 @@ router.put("/:id", update);
 
 // DELETE /api/resume/:id   delete resume
 router.delete("/:id", remove);
+
+// POST /api/resumes/:id/order
+router.post("/order/:id", updateOrder);
 
 export default router;

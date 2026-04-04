@@ -17,10 +17,11 @@ CREATE TABLE "Resume" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "source" TEXT NOT NULL,
-    "pdfUrl" TEXT NOT NULL,
+    "pdfUrl" TEXT,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "orderIndex" DECIMAL(32,16) NOT NULL DEFAULT 0,
 
     CONSTRAINT "Resume_pkey" PRIMARY KEY ("id")
 );

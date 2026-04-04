@@ -5,9 +5,11 @@ import {
   getResumeById,
   getUserResume,
   updateResume,
+  updateResumeOrderInDB,
 } from "../services/resumeService";
 import { AuthRequest } from "../types/auth";
 import logger from "../config/logger";
+import { console } from "node:inspector";
 
 // GET /api/resumes
 export async function listResumes(req: AuthRequest, res: Response) {
@@ -34,16 +36,20 @@ export async function getResume(req: AuthRequest, res: Response) {
 // POST /api/resumes
 export async function create(req: AuthRequest, res: Response) {
   try {
-    const { name, source } = req.body;
+    const { name, source, orderIndex } = req.body;
 
     if (!name || !source) {
       return res.status(400).json({ error: "name and source required" });
     }
 
-    const resume = await createResume(req.user!.userId, { name, source });
+    const resume = await createResume(req.user!.userId, {
+      name,
+      source,
+      orderIndex,
+    });
     return res.status(201).json(resume);
   } catch (error) {
-    logger.error({ error: "failed to create resume" });
+    logger.error(error, "FAILED RESUME CREATION");
     res.status(500).json({ error: "failed to create resume" });
   }
 }
@@ -81,5 +87,22 @@ export async function remove(req: AuthRequest, res: Response) {
     }
     logger.error({ error }, "failed to delete resume");
     return res.status(500).json({ error: "failed to delete resume" });
+  }
+}
+
+// update order index /api/resume/:id/order
+export async function updateOrder(req: AuthRequest, res: Response) {
+  try {
+    const { orderIndex } = req.body;
+    logger.info("ORDER INDEX", orderIndex);
+    const resume = await updateResumeOrderInDB(
+      req.params.id,
+      req.user!.userId,
+      orderIndex,
+    );
+    return res.json(resume);
+  } catch (error) {
+    logger.error(error, "Failed to update order");
+    return res.status(500).json({ error: "Failed to update order" });
   }
 }

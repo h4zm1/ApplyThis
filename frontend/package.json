@@ -17,6 +17,8 @@
     "@codemirror/search": "^6.6.0",
     "@codemirror/state": "^6.5.4",
     "@codemirror/view": "^6.39.15",
+    "@dnd-kit/helpers": "^0.3.2",
+    "@dnd-kit/react": "^0.3.2",
     "axios": "^1.13.5",
     "codemirror-lang-latex": "^0.2.0",
     "lucide-react": "^0.563.0",

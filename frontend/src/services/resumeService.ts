@@ -62,3 +62,11 @@ export async function previewCompile(source: string): Promise<Blob> {
   );
   return response.data;
 }
+
+export async function updateResumeOrder(
+  id: string,
+  newOrderIndex: number,
+): Promise<void> {
+  console.log("Sending:", { id, orderIndex: newOrderIndex });
+  await api.post<Resume>("/resumes/order/" + id, { orderIndex: newOrderIndex });
+}

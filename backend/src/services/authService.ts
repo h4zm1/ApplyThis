@@ -98,10 +98,18 @@ export async function loginUser(email: string, password: string) {
 }
 
 // refresh token
-export function refreshTokens(refreshToken: string) {
+export async function refreshTokens(refreshToken: string) {
   // verify refresh token
   const payload = verifyRefreshToken(refreshToken);
 
+  // check DB if the use exist
+  const user = await prisma.user.findUnique({
+    where: { id: payload.userId },
+  });
+  if (!user) {
+    throw new Error("User no longer exists");
+  }
+
   // generate new token
-  return generateTokens(payload.userId, payload.email);
+  return generateTokens(user.id, user.email);
 }

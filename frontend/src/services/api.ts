@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // axios use import.meta.env for env variables (not process.env) and the var need to start with VITE_ to be visible by import.meta.env
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/apiao";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 // create axios instance
 const api = axios.create({

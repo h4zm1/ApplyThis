@@ -34,6 +34,7 @@ model Resume {
   jobs      Job[]           // jobs this resume was sent to
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
+  orderIndex Decimal        @db.Decimal(32,16) @default(0)
 }
 
 

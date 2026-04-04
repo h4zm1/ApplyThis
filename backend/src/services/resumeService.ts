@@ -3,22 +3,29 @@ import prisma from "../config/database";
 import logger from "../config/logger";
 import { CreateResumeDto, UpateResumeDto } from "../types/resume";
 import { deletePdf } from "./storageService";
+import { Prisma } from "@prisma/client";
 
 // get all resumes for a user
 export async function getUserResume(userId: string) {
-  return prisma.resume.findMany({
-    // this's like findAllByUserId(userid) in spring
-    where: { userId },
-    orderBy: { updatedAt: "desc" },
-    select: {
-      id: true,
-      name: true,
-      pdfUrl: true,
-      source: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
+  return (
+    await prisma.resume.findMany({
+      // this's like findAllByUserId(userid) in spring
+      where: { userId },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        pdfUrl: true,
+        source: true,
+        createdAt: true,
+        updatedAt: true,
+        orderIndex: true,
+      },
+    })
+  ).map((r) => ({
+    ...r,
+    orderIndex: r.orderIndex.toNumber(),
+  }));
 }
 
 // get a single resume by id
@@ -38,11 +45,22 @@ export async function getResumeById(id: string, userId: string) {
 
 // create new resume
 export async function createResume(userId: string, data: CreateResumeDto) {
-  logger.info(userId + " inside create resume");
+  // find the lowest orderIndex to put the new resume on top of it
+  const lastResume = await prisma.resume.findFirst({
+    where: { userId },
+    orderBy: { orderIndex: "asc" },
+  });
+
+  // calculate new index: current lowest - 1000 (or 0 if it's first)
+  const newOrder = lastResume
+    ? new Prisma.Decimal(lastResume.orderIndex).minus(1000)
+    : new Prisma.Decimal(0);
+
   const resume = await prisma.resume.create({
     data: {
       name: data.name,
       source: data.source,
+      orderIndex: newOrder,
       userId,
     },
   });
@@ -137,4 +155,20 @@ export async function updateResumePdfUrl(
     data: { pdfUrl },
   });
   logger.info({ resumeId, pdfUrl }, "resume pdf url updated");
+}
+
+export async function updateResumeOrderInDB(
+  resumeId: string,
+  userId: string,
+  orderIndex: number,
+) {
+  const resume = await prisma.resume.findFirst({
+    where: { id: resumeId, userId },
+  });
+  if (!resume) throw new Error("resume not found");
+
+  await prisma.resume.update({
+    where: { id: resumeId },
+    data: { orderIndex },
+  });
 }
