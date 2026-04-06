@@ -1,15 +1,16 @@
 import { PointerSensor } from "@dnd-kit/react";
 import { PointerActivationConstraints } from "@dnd-kit/dom";
 import { useSortable } from "@dnd-kit/react/sortable";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 interface Props {
   id: string;
   index: number;
   children: ReactNode;
+  onDragChange: (isDragging: boolean) => void;
 }
 
-function SortableResumeItem({ id, index, children }: Props) {
+function SortableResumeItem({ id, index, children, onDragChange }: Props) {
   const { ref, handleRef, isDragging } = useSortable({
     id,
     index,
@@ -21,19 +22,13 @@ function SortableResumeItem({ id, index, children }: Props) {
       }),
     ],
   });
-
+  useEffect(() => {
+    onDragChange(isDragging);
+  }, [isDragging]);
   return (
-    <div
-      ref={ref}
-      className="resume"
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-      }}
-    >
+    <div ref={ref} className={`resume${isDragging ? " dragging" : ""}`}>
       {/* handleRef make the entire div dragable */}
-      <div ref={handleRef} style={{ cursor: "grab" }}>
-        {children}
-      </div>
+      <div ref={handleRef}>{children}</div>
     </div>
   );
 }

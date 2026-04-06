@@ -27,9 +27,9 @@ const Resumes = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [editingResume, setEditingResume] = useState<Resume | null>(null); // null = create, object = edit
   const [isSubmitting, setIsSubmitting] = useState(false); // for disabling buttons on API calls
-
   const { setHeaderTitle } = useAction();
   const { user } = useAuth();
+  const [isDragging, setIsDragging] = useState(false);
 
   // load resumes on mount (like ngOnInit)
   useEffect(() => {
@@ -243,14 +243,15 @@ const Resumes = () => {
       {resumes.length === 0 ? (
         <p>No resume yet. Create your first one!</p>
       ) : (
-        <div className="resumes-holder">
+        <div className={`resumes-holder${isDragging ? " dragging" : ""}`}>
           <DragDropProvider onDragEnd={handleDragEnd}>
-            {/* <SortableContext */}
-            {/*   items={resumes} */}
-            {/*   strategy={verticalListSortingStrategy} */}
-            {/* > */}
             {resumes.map((resume, index) => (
-              <SortableResumeItem key={resume.id} id={resume.id} index={index}>
+              <SortableResumeItem
+                key={resume.id}
+                id={resume.id}
+                index={index}
+                onDragChange={setIsDragging}
+              >
                 <Link to={`/editor/${resume.id}`} draggable={false}>
                   <div className="resume-body">
                     <div>
@@ -278,7 +279,7 @@ const Resumes = () => {
                         <Trash2 />
                       </button>
                       <button
-                        disabled={resume.pdfUrl ? true : false}
+                        disabled={resume.pdfUrl ? false : true}
                         title="Download PDF"
                         onClick={(e) => {
                           e.preventDefault();
@@ -346,7 +347,6 @@ const Resumes = () => {
                 </div>
               </SortableResumeItem>
             ))}
-            {/* </SortableContext> */}
           </DragDropProvider>
         </div>
       )}
