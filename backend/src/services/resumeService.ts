@@ -2,7 +2,7 @@ import { versions } from "node:process";
 import prisma from "../config/database";
 import logger from "../config/logger";
 import { CreateResumeDto, UpateResumeDto } from "../types/resume";
-import { deletePdf } from "./storageService";
+import { deletePdf, deleteThumbnail } from "./storageService";
 import { Prisma } from "@prisma/client";
 
 // get all resumes for a user
@@ -16,6 +16,7 @@ export async function getUserResume(userId: string) {
         id: true,
         name: true,
         pdfUrl: true,
+        thumbnailUrl: true,
         source: true,
         createdAt: true,
         updatedAt: true,
@@ -129,10 +130,11 @@ export async function deleteResume(id: string, userId: string) {
 }
 
 // update the pdfurl of already existing resume
-export async function updateResumePdfUrl(
+export async function updateResumePdfAndThumbnailUrl(
   resumeId: string,
   userId: string,
   pdfUrl: string,
+  thumbnailUrl: string,
 ) {
   const resume = await prisma.resume.findFirst({
     where: { id: resumeId, userId },
@@ -149,12 +151,29 @@ export async function updateResumePdfUrl(
       logger.warn("failed to delete old pdf from s3");
     }
   }
-
-  await prisma.resume.update({
-    where: { id: resumeId },
-    data: { pdfUrl },
-  });
-  logger.info({ resumeId, pdfUrl }, "resume pdf url updated");
+  // do the same for the thumbnail
+  if (resume.thumbnailUrl) {
+    try {
+      const oldThumbnailName = resume.thumbnailUrl
+        .split("/")
+        .pop()!
+        .replace(".png", "");
+      await deleteThumbnail(oldThumbnailName);
+    } catch (error) {
+      logger.warn("failed to delete old thumbnail from s3");
+    }
+  }
+  await Promise.all([
+    prisma.resume.update({
+      where: { id: resumeId },
+      data: { pdfUrl, thumbnailUrl },
+    }),
+  ]);
+  // await prisma.resume.update({
+  //   where: { id: resumeId },
+  //   data: { pdfUrl },
+  // });
+  logger.info({ resumeId, pdfUrl }, "resume pdf and thumbnail url updated");
 }
 
 export async function updateResumeOrderInDB(

@@ -76,6 +76,10 @@
   button:disabled {
     color: gray;
   }
+  img {
+    width: -webkit-fill-available;
+    position: absolute;
+  }
 }
 
 .resume-body {
@@ -115,7 +119,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  padding: 0.8rem;
+  padding: 0.7rem;
   border-bottom-left-radius: 6px;
 }
 .resume-title {

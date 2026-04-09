@@ -25,16 +25,17 @@ model User {
 
 // resume document
 model Resume {
-  id        String          @id @default(uuid())
-  name      String
-  source    String          @db.Text    // latex source code
-  pdfUrl    String?          // compiled pdf is stored here (s3 url)
-  userId    String
-  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobs      Job[]           // jobs this resume was sent to
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  orderIndex Decimal        @db.Decimal(32,16) @default(0)
+  id           String          @id @default(uuid())
+  name         String
+  source       String          @db.Text    // latex source code
+  pdfUrl       String?          // compiled pdf is stored here (s3 url)
+  thumbnailUrl String?
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs         Job[]           // jobs this resume was sent to
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  orderIndex   Decimal        @db.Decimal(32,16) @default(0)
 }
 
 

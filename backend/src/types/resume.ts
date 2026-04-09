@@ -17,6 +17,7 @@ export interface ResumeResponse {
   id: string;
   name: string;
   pdfUrl: string | null;
+  thumbnailUrl: string | null;
   source: string;
   createdAt: Date;
   updatedAt: Date;

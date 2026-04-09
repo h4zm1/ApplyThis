@@ -1,3 +1,4 @@
+import { pdfToPng } from "pdf-to-png-converter";
 import { CompileResule } from "../types/latex";
 
 const LATEX_API = process.env.LATEX_API!;

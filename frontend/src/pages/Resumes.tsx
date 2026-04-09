@@ -34,7 +34,7 @@ const Resumes = () => {
   // load resumes on mount (like ngOnInit)
   useEffect(() => {
     loadResumes();
-    setHeaderTitle(user?.email + "> Resume");
+    setHeaderTitle(user?.email + " > Resume");
   }, []);
 
   async function loadResumes() {
@@ -63,6 +63,7 @@ const Resumes = () => {
       name: "",
       source: "",
       pdfUrl: "",
+      thumbnailUrl: "",
       createdAt: "",
       updatedAt: "",
       orderIndex: 0,
@@ -255,6 +256,8 @@ const Resumes = () => {
                 <Link to={`/editor/${resume.id}`} draggable={false}>
                   <div className="resume-body">
                     <div>
+                      <img src={resume.thumbnailUrl!}></img>
+
                       {/* <p>{resume.pdfUrl ? "PDF compiled" : "Not compiled yet"}</p> */}
                       {/* show pdf linked if compiled */}
                       {/*   {resume.pdfUrl && ( */}

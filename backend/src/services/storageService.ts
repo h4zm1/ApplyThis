@@ -31,8 +31,38 @@ export async function uploadPdf(
   return url;
 }
 
+export async function uploadThumbnail(
+  imageBuffer: Buffer,
+  fileName: string,
+): Promise<string> {
+  const key = `thumbnail/${fileName}.png`;
+
+  const command = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+    Body: imageBuffer,
+    ContentType: "image/png",
+  });
+
+  await s3Client.send(command);
+
+  const url = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/${key}`;
+
+  return url;
+}
+
 export async function deletePdf(fileName: string): Promise<void> {
   const key = `resume/${fileName}.pdf`;
+
+  const command = new DeleteObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+  });
+
+  await s3Client.send(command);
+}
+export async function deleteThumbnail(fileName: string): Promise<void> {
+  const key = `resume/${fileName}.png`;
 
   const command = new DeleteObjectCommand({
     Bucket: BUCKET_NAME,

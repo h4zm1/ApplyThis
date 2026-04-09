@@ -3,6 +3,7 @@ export interface Resume {
   name: string;
   source: string;
   pdfUrl: string | null;
+  thumbnailUrl: string | null;
   createdAt: string;
   updatedAt: string;
   orderIndex: number;
