@@ -237,7 +237,7 @@ const Resumes = () => {
       </div>
       <div>
         {/* {resumes.length} resume{resumes.length !== 1 ? "s" : ""} */}
-        <button className="new-resume-btn" onClick={handleCreate}>
+        <button className="new-btn" onClick={handleCreate}>
           <div>+</div> New Resume
         </button>
       </div>

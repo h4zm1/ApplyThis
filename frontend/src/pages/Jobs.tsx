@@ -28,6 +28,7 @@ const Jobs = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [isSubmitting, setIsSumitting] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   // load data on mount and when filter change
   useEffect(() => {
@@ -88,32 +89,28 @@ const Jobs = () => {
     }
   }
   return (
-    <div>
-      <div>
+    <div className="jobs">
+      <div className="title">
         <h1>Jobs</h1>
-        <p>Track job applications</p>
+        {/* <p>Track job applications</p> */}
       </div>
-      <div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          {STATUS_FILTERS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      <button onClick={handleCreate}>
-        <Plus />
-        Add Job
+      <select
+        value={statusFilter}
+        onChange={(e) => setStatusFilter(e.target.value)}
+      >
+        {STATUS_FILTERS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      <button className="new-btn" onClick={handleCreate}>
+        <div>+</div> Add Job
       </button>
-      {/* job list */}
       <div>
         {jobs.length === 0 ? (
           <div>
-            <Briefcase />
+            {/* <Briefcase /> */}
             <p>
               {statusFilter
                 ? "No " + statusFilter.toLowerCase() + " jobs found"
@@ -121,7 +118,7 @@ const Jobs = () => {
             </p>
           </div>
         ) : (
-          <div>
+          <div className={`jobs-holder${isDragging ? "dragging" : ""}`}>
             {jobs.map((job) => (
               <div key={job.id}>
                 <h3>{job.position}</h3>
