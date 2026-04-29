@@ -1,0 +1,25 @@
+.toggle-group {
+  display: inline-flex;
+  background-color: red;
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.toggle-item {
+  background-color: transparent;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  // active state logic (radix handling this)
+  &[data-state="on"] {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: blue;
+    font-weight: 500;
+  }
+}

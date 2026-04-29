@@ -12,6 +12,7 @@ import logger from "../services/logger";
 import JobForm, { STATUS_OPTIONS } from "../components/JobForm";
 import { Briefcase, Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import Popup from "../components/popUp";
+import R_ToggleGroup from "../components/ui/ToggleGroup";
 
 // filter options
 const STATUS_FILTERS = STATUS_OPTIONS;
@@ -94,16 +95,23 @@ const Jobs = () => {
         <h1>Jobs</h1>
         {/* <p>Track job applications</p> */}
       </div>
-      <select
+
+      <R_ToggleGroup
         value={statusFilter}
-        onChange={(e) => setStatusFilter(e.target.value)}
-      >
-        {STATUS_FILTERS.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+        onChange={setStatusFilter}
+        items={STATUS_FILTERS}
+      />
+
+      {/* <select */}
+      {/*   value={statusFilter} */}
+      {/*   onChange={(e) => setStatusFilter(e.target.value)} */}
+      {/* > */}
+      {/*   {STATUS_FILTERS.map((opt) => ( */}
+      {/*     <option key={opt.value} value={opt.value}> */}
+      {/*       {opt.label} */}
+      {/*     </option> */}
+      {/*   ))} */}
+      {/* </select> */}
       <button className="new-btn" onClick={handleCreate}>
         <div>+</div> Add Job
       </button>
