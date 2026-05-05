@@ -14,7 +14,7 @@ interface ToggleGroupProps {
 
 const R_ToggleGroup = ({ value, onChange, items }: ToggleGroupProps) => (
   <ToggleGroup.Root
-    className="toggle-grounp"
+    className="toggle-group"
     value={value}
     type="single"
     onValueChange={(val) => {

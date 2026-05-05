@@ -13,6 +13,7 @@ import JobForm, { STATUS_OPTIONS } from "../components/JobForm";
 import { Briefcase, Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import Popup from "../components/popUp";
 import R_ToggleGroup from "../components/ui/ToggleGroup";
+import R_Select from "../components/ui/Select";
 
 // filter options
 const STATUS_FILTERS = STATUS_OPTIONS;
@@ -95,7 +96,19 @@ const Jobs = () => {
         <h1>Jobs</h1>
         {/* <p>Track job applications</p> */}
       </div>
+      {/* <R_Select */}
+      {/*   value={statusFilter} */}
+      {/*   onChange={setStatusFilter} */}
+      {/*   options={STATUS_FILTERS} */}
+      {/*   placeholder="Filter by status..." */}
+      {/*   className="my-custom-margin" */}
+      {/* /> */}
+<div  className="container-header">
+      <button className="new-btn" onClick={handleCreate}>
+        <div>+</div> Add Job
+      </button>
 
+      
       <R_ToggleGroup
         value={statusFilter}
         onChange={setStatusFilter}
@@ -112,9 +125,7 @@ const Jobs = () => {
       {/*     </option> */}
       {/*   ))} */}
       {/* </select> */}
-      <button className="new-btn" onClick={handleCreate}>
-        <div>+</div> Add Job
-      </button>
+      </div>
       <div>
         {jobs.length === 0 ? (
           <div>
