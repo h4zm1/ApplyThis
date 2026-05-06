@@ -16,7 +16,7 @@
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s ease;
-  color: #b6b6b6;
+   color: #b6b6b6;
 
   // active state logic (radix handling this)
   &[data-state="on"] {
@@ -24,6 +24,8 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     color: black;
     font-weight: 500;
+    border: solid thin #828282;
+    border-radius: 5px;
   }
 }
 

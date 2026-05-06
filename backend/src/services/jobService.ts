@@ -3,11 +3,12 @@ import logger from "../config/logger";
 import { createJobDto, JobStatus, updateJobDto } from "../types/job";
 
 // get all jobs for a user
-export async function getUserJobs(userId: string, status?: JobStatus) {
+export async function getUserJobs(userId: string, status?: string) {
+  const filter = (status?.toLocaleLowerCase() !== "all") ? { status: status as JobStatus } : {}
   return prisma.job.findMany({
     where: {
       userId,
-      ...(status && { status }),
+      ...filter,
     },
     orderBy: { updatedAt: "desc" },
     include: {

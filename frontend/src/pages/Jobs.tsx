@@ -114,17 +114,6 @@ const Jobs = () => {
         onChange={setStatusFilter}
         items={STATUS_FILTERS}
       />
-
-      {/* <select */}
-      {/*   value={statusFilter} */}
-      {/*   onChange={(e) => setStatusFilter(e.target.value)} */}
-      {/* > */}
-      {/*   {STATUS_FILTERS.map((opt) => ( */}
-      {/*     <option key={opt.value} value={opt.value}> */}
-      {/*       {opt.label} */}
-      {/*     </option> */}
-      {/*   ))} */}
-      {/* </select> */}
       </div>
       <div>
         {jobs.length === 0 ? (
