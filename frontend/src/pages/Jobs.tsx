@@ -25,7 +25,10 @@ const Jobs = () => {
   const [isLoading, setIsloading] = useState(true);
   const [error, setError] = useState("");
   // filter state
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(() => {
+    const saved = localStorage.getItem("JOB-FILTER")
+    return saved !== null ? saved : "ALL"
+  });
   // popup state
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
@@ -35,6 +38,7 @@ const Jobs = () => {
   // load data on mount and when filter change
   useEffect(() => {
     loadData();
+    localStorage.setItem("JOB-FILTER", statusFilter)
   }, [statusFilter]);
 
   async function loadData() {
@@ -103,17 +107,17 @@ const Jobs = () => {
       {/*   placeholder="Filter by status..." */}
       {/*   className="my-custom-margin" */}
       {/* /> */}
-<div  className="container-header">
-      <button className="new-btn" onClick={handleCreate}>
-        <div>+</div> Add Job
-      </button>
+      <div className="container-header">
+        <button className="new-btn" onClick={handleCreate}>
+          <div>+</div> Add Job
+        </button>
 
-      
-      <R_ToggleGroup
-        value={statusFilter}
-        onChange={setStatusFilter}
-        items={STATUS_FILTERS}
-      />
+
+        <R_ToggleGroup
+          value={statusFilter}
+          onChange={setStatusFilter}
+          items={STATUS_FILTERS}
+        />
       </div>
       <div>
         {jobs.length === 0 ? (

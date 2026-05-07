@@ -4,11 +4,13 @@ import { createJobDto, JobStatus, updateJobDto } from "../types/job";
 
 // get all jobs for a user
 export async function getUserJobs(userId: string, status?: string) {
-  const filter = (status?.toLocaleLowerCase() !== "all") ? { status: status as JobStatus } : {}
+  const filter = (status && status.toLowerCase() !== 'all')
+    ? status
+    : undefined;
   return prisma.job.findMany({
     where: {
       userId,
-      ...filter,
+      ...(filter && { status: filter as JobStatus })
     },
     orderBy: { updatedAt: "desc" },
     include: {

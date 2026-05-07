@@ -1,5 +1,5 @@
 // job status enum (matches prisma schema)
-export type JobStatus = "ALL" | "SAVED" | "APPLIED" | "GHOSTED" | "REJECTED";
+export type JobStatus = "SAVED" | "APPLIED" | "GHOSTED" | "REJECTED";
 
 // what user send when creating a job
 export interface createJobDto {

@@ -12,11 +12,11 @@ interface JobFormProps {
 }
 // status options for dropdown
 export const STATUS_OPTIONS: { value: JobStatus; label: string }[] = [
+  { value: "ALL", label: "All" },
   { value: "APPLIED", label: "Applied" },
   { value: "GHOSTED", label: "Ghosted" },
   { value: "REJECTED", label: "Rejected" },
   { value: "SAVED", label: "Saved" },
-  { value: "ALL", label: "all" }
 ];
 
 const JobForm = ({

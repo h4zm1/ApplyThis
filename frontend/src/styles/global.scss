@@ -52,12 +52,14 @@ html {
   background-color: transparent;
   border: solid thin #828282;
   border-radius: 5px;
-  padding: 0.2rem;
+  // padding: 0.16rem;
   padding-inline: 0.5rem;
   align-items: center;
   gap: 0.4rem;
   font-size: 13px;
   margin-left: 1.1rem;
+  height: 29px; // trying to be on par with radix
+  align-self: center;
   div {
     font-size: 20px;
   }
