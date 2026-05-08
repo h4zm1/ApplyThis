@@ -244,7 +244,7 @@ const Resumes = () => {
       {resumes.length === 0 ? (
         <p>No resume yet. Create your first one!</p>
       ) : (
-        <div className={`resumes-holder${isDragging ? " dragging" : ""}`}>
+        <div className={`item-holder${isDragging ? " dragging" : ""}`}>
           <DragDropProvider onDragEnd={handleDragEnd}>
             {resumes.map((resume, index) => (
               <SortableResumeItem

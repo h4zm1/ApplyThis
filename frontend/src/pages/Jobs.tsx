@@ -6,6 +6,7 @@ import {
   deleteJob,
   getJobs,
   updateJob,
+  updateJobOrder,
 } from "../services/jobService";
 import { getResumes } from "../services/resumeService";
 import logger from "../services/logger";
@@ -14,6 +15,9 @@ import { Briefcase, Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import Popup from "../components/popUp";
 import R_ToggleGroup from "../components/ui/ToggleGroup";
 import R_Select from "../components/ui/Select";
+import { DragDropProvider } from "@dnd-kit/react";
+import { move } from "@dnd-kit/helpers";
+import SortableJobItem from "../components/SortableJobItem";
 
 // filter options
 const STATUS_FILTERS = STATUS_OPTIONS;
@@ -48,7 +52,11 @@ const Jobs = () => {
         getJobs(statusFilter || undefined),
         getResumes(),
       ]);
-      setJobs(jobsData);
+      const normalized = jobsData.map((j) => ({
+        ...j,
+        orderIndex: Number(j.orderIndex || 0)
+      }))
+      setJobs(normalized);
       setResumes(resumeData);
     } catch (error) {
       setError("failed to load job data");
@@ -94,64 +102,158 @@ const Jobs = () => {
       setError(error.response.data.error || "failed to delete job");
     }
   }
+  // drag and drop handler
+  const handleDragEnd = async (event: any) => {
+    console.log("inside handle drag")
+    // take the current array, and drag event and return new array
+    // based on where the item got dropped
+    const newArray = move(jobs, event);
+
+    // resume got dropped in same spot or outside
+    if (!newArray || newArray === jobs) {
+      return;
+    }
+
+    // get draggad resume id
+    const draggedId = event.operation?.source?.id;
+    if (!draggedId) return;
+
+    // find where the new resume is now  vs where it was before
+    const newIndex = newArray.findIndex((r) => r.id === draggedId);
+    const oldIndex = resumes.findIndex((r) => r.id === draggedId);
+
+    if (newIndex === oldIndex || newIndex === -1) return;
+
+    // using fractional index strategy instead of reindexing all resumes
+    // this mean we only update one resume in DB, not all of them
+
+    // get items surroudning the new position
+    const prevItem = newArray[newIndex - 1];
+    const nextItem = newArray[newIndex + 1];
+    const currentItem = newArray[newIndex];
+
+    // convert to numbers (using Prisma.Decimal in the backend)
+    const prevOrder = prevItem ? Number(prevItem.orderIndex) : null;
+    const nextOrder = nextItem ? Number(nextItem.orderIndex) : null;
+
+    let newOrderIndex: number;
+
+    if (prevOrder === null && nextOrder !== null) {
+      // dropped at the TOP of the list
+      // not item is above, so pick smaller than first item
+      newOrderIndex = nextOrder - 1000;
+    } else if (nextOrder === null && prevOrder !== null) {
+      // dropped at the BOTTOM of the list
+      // no item below, so pick a number larger than the last item
+      // ex: prev is -3000 => new is -4000 (-3000+(-1000))
+      newOrderIndex = prevOrder + 1000;
+      // dropped BETWEEn two items
+      // pick the middle point between the two neighbours
+    } else if (prevOrder !== null && nextOrder !== null) {
+      newOrderIndex = (prevOrder + nextOrder) / 2;
+    } else {
+      // fallback
+      newOrderIndex = 0;
+    }
+
+    // abort if the math above gave NaN, don't wait for srrver
+    if (isNaN(newOrderIndex)) {
+      logger.error("newOrderIndex is NaN", { prevOrder, nextOrder });
+      return;
+    }
+
+    const updatedJob = { ...currentItem, orderIndex: newOrderIndex };
+    const finalArray = newArray.map((r) =>
+      r.id === draggedId ? updatedJob : r,
+    );
+
+    setJobs(finalArray);
+
+    try {
+      await updateJobOrder(draggedId, newOrderIndex);
+    } catch (error) {
+      logger.error(error, "Failed to save order");
+      setJobs(jobs); // rollback
+    }
+  };
+
+
   return (
     <div className="jobs">
       <div className="title">
         <h1>Jobs</h1>
         {/* <p>Track job applications</p> */}
       </div>
-      {/* <R_Select */}
-      {/*   value={statusFilter} */}
-      {/*   onChange={setStatusFilter} */}
-      {/*   options={STATUS_FILTERS} */}
-      {/*   placeholder="Filter by status..." */}
-      {/*   className="my-custom-margin" */}
-      {/* /> */}
       <div className="container-header">
         <button className="new-btn" onClick={handleCreate}>
           <div>+</div> Add Job
         </button>
-
-
         <R_ToggleGroup
           value={statusFilter}
           onChange={setStatusFilter}
           items={STATUS_FILTERS}
         />
       </div>
-      <div>
-        {jobs.length === 0 ? (
-          <div>
-            {/* <Briefcase /> */}
-            <p>
-              {statusFilter
-                ? "No " + statusFilter.toLowerCase() + " jobs found"
-                : "No job application yet. Start tracking!"}
-            </p>
-          </div>
-        ) : (
-          <div className={`jobs-holder${isDragging ? "dragging" : ""}`}>
-            {jobs.map((job) => (
-              <div key={job.id}>
-                <h3>{job.position}</h3>
-                <p>{job.company}</p>
-                {job.status}
-                {job.url && (
-                  <a href={job.url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink />
-                  </a>
-                )}
-                <button onClick={() => handleEdit(job)}>
-                  <Edit />
-                </button>
-                <button onClick={() => handleDelete(job)}>
-                  <Trash2 />
-                </button>
-              </div>
+      {jobs.length === 0 ? (
+        <div>
+          {/* <Briefcase /> */}
+          <p>
+            {statusFilter
+              ? "No " + statusFilter.toLowerCase() + " jobs found"
+              : "No job application yet. Start tracking!"}
+          </p>
+        </div>
+      ) : (
+        <div className={`item-holder${isDragging ? " dragging" : ""}`}>
+          <DragDropProvider onDragEnd={handleDragEnd}>
+            {jobs.map((job, index) => (
+              <SortableJobItem
+                key={job.id}
+                id={job.id}
+                index={index}
+                onDragChange={setIsDragging}
+              >
+
+                <div className="job-body" onClick={() => handleEdit(job)}>
+                  <h3>{job.position}</h3>
+                  <h3>orderindex:{job.orderIndex}</h3>
+
+                  <p>{job.company}</p>
+                  {job.status}
+                  {job.url && (
+                    <a href={job.url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink />
+                    </a>
+                  )}
+                  <div className="context-bar">
+                    <button
+                      title="Edit Job"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleEdit(job)
+                      }
+                      }>
+                      <Edit />
+                    </button>
+                    <button
+                      title="Delete"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDelete(job)
+                      }}>
+                      <Trash2 />
+                    </button>
+                  </div>
+
+                </div>
+              </SortableJobItem>
             ))}
-          </div>
-        )}
-      </div>
+
+          </DragDropProvider>
+        </div>
+      )}
       {/* create/edit popup */}
       <Popup
         isOpen={isPopupOpen}

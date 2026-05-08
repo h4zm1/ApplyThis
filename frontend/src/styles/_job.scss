@@ -1,0 +1,54 @@
+.job {
+  width: 20rem;
+  // background-color: white;
+  height: fit-content;
+  button {
+    scale: 0.6;
+    background-color: transparent;
+    border: none;
+    color: #000000;
+    padding-inline: 0.1rem;
+    cursor: pointer;
+  }
+  button:disabled {
+    color: gray;
+  }
+  img {
+    width: -webkit-fill-available;
+    position: absolute;
+  }
+}
+
+.job-body {
+  height: 8rem;
+  border: solid;
+  border-width: thin;
+  border-color: #a7a7a7;
+  border-radius: 8px;
+  cursor: default;
+  contain: content;
+  background-color: white;
+  padding: 0.5rem;
+}
+.job-body:hover .context-bar {
+  opacity: 1;
+  margin-top: -4rem;
+  max-height: 200px;
+  display: flex;
+  justify-content: center;
+  background-color: rgba(247, 247, 247, 0.431372549);
+  padding-block: 0.2rem;
+  border-radius: 6px;
+  border: solid thin #afafaf;
+}
+
+.context-bar {
+  opacity: 0;
+  justify-self: center;
+  max-height: 0;
+  margin-top: 3rem;
+  padding-block: 0.2rem;
+  transition:
+    opacity 0.3s ease-in-out,
+    max-height 0.3s ease-in-out;
+}

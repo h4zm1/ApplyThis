@@ -67,3 +67,35 @@ html {
     background-color: #f4f4f4;
   }
 }
+
+// this will hold both jobs and resumes (drag container)
+.item-holder {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  overflow: auto;
+  height: calc(100vh - 23rem);
+  scrollbar-width: thin;
+  border: solid 2px;
+  border-color: transparent;
+
+  &.dragging {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    overflow: auto;
+    height: calc(100vh - 23rem);
+    scrollbar-width: thin;
+    border-width: thick;
+    border-radius: 7px;
+    border: solid 2px;
+    border-color: #58a7ff;
+    box-shadow: 2 2 red;
+    box-shadow: inset 0px 0px 12px 1px #b1d6ffd1;
+    padding: 1rem;
+    margin-top: 1rem;
+    cursor: red;
+  }
+}

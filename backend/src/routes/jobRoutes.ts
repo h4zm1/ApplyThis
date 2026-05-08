@@ -7,6 +7,7 @@ import {
   remove,
   stats,
   update,
+  updateOrder
 } from "../controllers/jobController";
 
 const router = Router();
@@ -21,5 +22,5 @@ router.get("/:id", getJob);
 router.post("/", create);
 router.put("/:id", update);
 router.delete("/:id", remove);
-
+router.post("/order/:id", updateOrder)
 export default router;

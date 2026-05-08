@@ -44,3 +44,11 @@ export async function updateJob(
 export async function deleteJob(id: string): Promise<void> {
   await api.delete<Job>("/jobs/" + id);
 }
+
+export async function updateJobOrder(
+  id: string,
+  newOrderIndex: number,
+): Promise<void> {
+  console.log("Sending:", { id, orderIndex: newOrderIndex });
+  await api.post<Job>("/jobs/order/" + id, { orderIndex: newOrderIndex });
+}

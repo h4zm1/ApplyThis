@@ -183,3 +183,19 @@ export async function getJobStats(userId: string) {
   }
   return result;
 }
+
+export async function updateJobOrderInDB(
+  jobId: string,
+  userId: string,
+  orderIndex: number,
+) {
+  const job = await prisma.job.findFirst({
+    where: { id: jobId, userId },
+  });
+  if (!job) throw new Error("job not found");
+
+  await prisma.job.update({
+    where: { id: jobId },
+    data: { orderIndex },
+  });
+}

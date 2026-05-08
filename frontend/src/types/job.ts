@@ -17,6 +17,7 @@ export interface Job {
   } | null;
   createdAt: string;
   updatedAt: string;
+  orderIndex: number;
 }
 
 export interface CreateJobRequest {

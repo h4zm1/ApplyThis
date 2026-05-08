@@ -55,6 +55,7 @@ model Job {
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  orderIndex      Decimal        @db.Decimal(32,16) @default(0)
 }
 
 enum JobStatus {

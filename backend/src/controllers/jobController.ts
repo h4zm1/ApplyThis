@@ -8,6 +8,7 @@ import {
   getJobStats,
   getUserJobs,
   updateJob,
+  updateJobOrderInDB,
 } from "../services/jobService";
 import logger from "../config/logger";
 
@@ -51,7 +52,7 @@ export async function getJob(req: AuthRequest, res: Response) {
 // POST /api/jobs
 export async function create(req: AuthRequest, res: Response) {
   try {
-    const { company, position, url, status, notes, followUpAt, resumeId } =
+    const { company, position, url, status, notes, followUpAt, resumeId, orderIndex } =
       req.body;
 
     if (!company || !position) {
@@ -66,6 +67,7 @@ export async function create(req: AuthRequest, res: Response) {
       notes,
       followUpAt,
       resumeId,
+      orderIndex
     });
 
     return res.status(201).json(job);
@@ -123,5 +125,23 @@ export async function remove(req: AuthRequest, res: Response) {
 
     logger.error({ error }, "failed to delete job");
     return res.status(500).json({ error: "failed to delete job" });
+  }
+}
+
+
+// update order index /api/resume/:id/order
+export async function updateOrder(req: AuthRequest, res: Response) {
+  try {
+    const { orderIndex } = req.body;
+    logger.info("ORDER INDEX", orderIndex);
+    const job = await updateJobOrderInDB(
+      req.params.id,
+      req.user!.userId,
+      orderIndex,
+    );
+    return res.json(job);
+  } catch (error) {
+    logger.error(error, "Failed to update order");
+    return res.status(500).json({ error: "Failed to update order" });
   }
 }

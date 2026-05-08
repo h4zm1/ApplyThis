@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Job" ADD COLUMN     "orderIndex" DECIMAL(32,16) NOT NULL DEFAULT 0;
