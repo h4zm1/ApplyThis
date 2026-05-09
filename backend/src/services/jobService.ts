@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../config/database";
 import logger from "../config/logger";
 import { createJobDto, JobStatus, updateJobDto } from "../types/job";
@@ -7,7 +8,7 @@ export async function getUserJobs(userId: string, status?: string) {
   const filter = (status && status.toLowerCase() !== 'all')
     ? status
     : undefined;
-  return prisma.job.findMany({
+  return (await prisma.job.findMany({
     where: {
       userId,
       ...(filter && { status: filter as JobStatus })
@@ -22,7 +23,8 @@ export async function getUserJobs(userId: string, status?: string) {
         },
       },
     },
-  });
+  })).map((j) => ({ ...j, orderIndex: j.orderIndex.toNumber }));
+
 }
 
 // get a single job by id
@@ -67,6 +69,17 @@ export async function createJob(userId: string, data: createJobDto) {
     if (!resume) throw new Error("resume not found");
   }
 
+  // find the lowest orderIndex to put the new job on top of it
+  const lastJob = await prisma.job.findFirst({
+    where: { userId },
+    orderBy: { orderIndex: "asc" },
+  });
+
+  // calculate new index: current lowest - 1000 (or 0 if it's first)
+  const newOrder = lastJob
+    ? new Prisma.Decimal(lastJob.orderIndex).minus(1000)
+    : new Prisma.Decimal(0);
+
   const job = await prisma.job.create({
     data: {
       company: data.company,
@@ -77,6 +90,7 @@ export async function createJob(userId: string, data: createJobDto) {
       followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
       resumeId: data.resumeId,
       userId,
+      orderIndex: newOrder
     },
     include: {
       resume: {

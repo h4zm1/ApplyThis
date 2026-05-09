@@ -216,7 +216,6 @@ const Jobs = () => {
 
                 <div className="job-body" onClick={() => handleEdit(job)}>
                   <h3>{job.position}</h3>
-                  <h3>orderindex:{job.orderIndex}</h3>
 
                   <p>{job.company}</p>
                   {job.status}
