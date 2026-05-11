@@ -29,6 +29,9 @@
   contain: content;
   background-color: white;
   padding: 0.5rem;
+  // display: flex;
+  // flex-direction: column;
+  // gap: 0.6rem;
 }
 .job-body:hover .context-bar {
   opacity: 1;
@@ -51,4 +54,25 @@
   transition:
     opacity 0.3s ease-in-out,
     max-height 0.3s ease-in-out;
+}
+
+.topline {
+  .job-status {
+    background-color: #afafaf;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-inline: 0.7rem;
+    padding-block: 0.4rem;
+    border-bottom-left-radius: 6px;
+  }
+}
+.midline {
+  justify-items: center;
+  padding-top: 1rem;
+}
+.bottomline {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1rem;
 }

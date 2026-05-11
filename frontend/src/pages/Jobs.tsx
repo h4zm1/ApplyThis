@@ -18,6 +18,8 @@ import R_Select from "../components/ui/Select";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import SortableJobItem from "../components/SortableJobItem";
+import { useAction } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext";
 
 // filter options
 const STATUS_FILTERS = STATUS_OPTIONS;
@@ -28,6 +30,7 @@ const Jobs = () => {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsloading] = useState(true);
   const [error, setError] = useState("");
+  const [statusColor, setStatusColor] = useState("")
   // filter state
   const [statusFilter, setStatusFilter] = useState(() => {
     const saved = localStorage.getItem("JOB-FILTER")
@@ -39,10 +42,16 @@ const Jobs = () => {
   const [isSubmitting, setIsSumitting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
+  const { setHeaderTitle } = useAction();
+  const { user } = useAuth()
+
+
   // load data on mount and when filter change
   useEffect(() => {
     loadData();
     localStorage.setItem("JOB-FILTER", statusFilter)
+    setHeaderTitle(user?.email + " > Jobs");
+
   }, [statusFilter]);
 
   async function loadData() {
@@ -178,6 +187,13 @@ const Jobs = () => {
   };
 
 
+  const STATUS_MAP: Record<string, { label: string, color: string }> = {
+    GHOSTED: { label: "Ghosted", color: "Gray" },
+    APPLIED: { label: "Ghosted", color: "Green" },
+    REJECTED: { label: "Ghosted", color: "Red" },
+    SAVED: { label: "Saved", color: "Transparent" },
+  }
+
   return (
     <div className="jobs">
       <div className="title">
@@ -206,49 +222,70 @@ const Jobs = () => {
       ) : (
         <div className={`item-holder${isDragging ? " dragging" : ""}`}>
           <DragDropProvider onDragEnd={handleDragEnd}>
-            {jobs.map((job, index) => (
-              <SortableJobItem
-                key={job.id}
-                id={job.id}
-                index={index}
-                onDragChange={setIsDragging}
-              >
+            {jobs.map((job, index) => {
+              const statusInfo = STATUS_MAP[job.status?.toString()] || STATUS_MAP.SAVED;
+              return (
+                <SortableJobItem
+                  key={job.id}
+                  id={job.id}
+                  index={index}
+                  onDragChange={setIsDragging}
+                >
 
-                <div className="job-body" onClick={() => handleEdit(job)}>
-                  <h3>{job.position}</h3>
-
-                  <p>{job.company}</p>
-                  {job.status}
-                  {job.url && (
-                    <a href={job.url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink />
-                    </a>
-                  )}
-                  <div className="context-bar">
-                    <button
-                      title="Edit Job"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleEdit(job)
+                  <div className="job-body" onClick={() => handleEdit(job)}>
+                    <div className="topline">
+                      <div className="job-status" title={
+                        statusInfo.label
                       }
-                      }>
-                      <Edit />
-                    </button>
-                    <button
-                      title="Delete"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleDelete(job)
-                      }}>
-                      <Trash2 />
-                    </button>
-                  </div>
+                        style={{
+                          backgroundColor: statusInfo.color
+                        }}
+                      >
+                        {job.status.substring(0, 1)}
+                      </div>
 
-                </div>
-              </SortableJobItem>
-            ))}
+
+                    </div>
+                    <div className="midline">
+                      <h3>{job.position}</h3>
+
+                    </div>
+                    <div className="bottomline">
+                      <p >{job.appliedAt.substring(0, 10)}</p>
+                      <p>{job.company}</p>
+                    </div>
+
+                    {job.url && (
+                      <a href={job.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink />
+                      </a>
+                    )}
+                    <div className="context-bar">
+                      <button
+                        title="Edit Job"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleEdit(job)
+                        }
+                        }>
+                        <Edit />
+                      </button>
+                      <button
+                        title="Delete"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDelete(job)
+                        }}>
+                        <Trash2 />
+                      </button>
+                    </div>
+
+                  </div>
+                </SortableJobItem>
+              );
+            })}
 
           </DragDropProvider>
         </div>
