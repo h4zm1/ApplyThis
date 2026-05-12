@@ -63,7 +63,7 @@ const JobForm = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
+      <div className="popup-line">
         <label htmlFor="company"> Company</label>
         <input
           type="text"
@@ -74,7 +74,7 @@ const JobForm = ({
           required
         />
       </div>
-      <div>
+      <div className="popup-line">
         <label htmlFor="position"> Position</label>
         <input
           type="text"
@@ -85,7 +85,7 @@ const JobForm = ({
           required
         />
       </div>
-      <div>
+      <div className="popup-line">
         <label htmlFor="Url">Job URL</label>
         <input
           type="url"
@@ -95,7 +95,7 @@ const JobForm = ({
           placeholder="https://..."
         />
       </div>
-      <div>
+      <div className="popup-line">
         <label htmlFor="status">Status</label>
         <select
           id="status"
@@ -109,7 +109,7 @@ const JobForm = ({
           ))}
         </select>
       </div>
-      <div>
+      <div className="popup-line">
         <label htmlFor="resumeId">Linked Resume</label>
         <select
           id="resumeId"
@@ -124,7 +124,7 @@ const JobForm = ({
           ))}
         </select>
       </div>
-      <div>
+      <div className="popup-line">
         <label htmlFor="followUpAt">Follow Up Date</label>
         <input
           type="date"
@@ -133,8 +133,8 @@ const JobForm = ({
           onChange={(e) => setFollowUpAt(e.target.value)}
         />
       </div>
-      <div>
-        <label htmlFor="notes"> Notes</label>
+      <div className="popup-line">
+        {/* <label htmlFor="notes"> Notes</label> */}
         <textarea
           id="notes"
           value={notes}
@@ -144,9 +144,9 @@ const JobForm = ({
         />
       </div>
 
-      <button type="button" onClick={onCancel} disabled={isSubmitting}>
-        Cancel
-      </button>
+      {/* <button type="button" onClick={onCancel} disabled={isSubmitting}> */}
+      {/*   Cancel */}
+      {/* </button> */}
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Saving..." : job ? "Update" : "Create"}
       </button>

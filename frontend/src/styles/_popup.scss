@@ -9,4 +9,51 @@
   width: 100vw;
   height: 100vh;
   align-items: center;
+  backdrop-filter: blur(1px);
+}
+
+.popup-content {
+  border: solid thin #828282;
+  border-radius: 10px;
+  padding: 1rem;
+  contain: content;
+  background-color: white;
+  h2 {
+    //title
+    place-self: anchor-center;
+    margin-top: 0;
+  }
+  form {
+    text-align: center;
+    button {
+      background-color: transparent;
+      border-color: transparent;
+      font-size: 1rem;
+      &:hover {
+        color: #00d300;
+      }
+    }
+  }
+}
+.close-btn {
+  position: absolute;
+  right: 0.3rem;
+  top: 0.5rem;
+  border-color: transparent;
+  background-color: transparent;
+  cursor: pointer;
+  &:hover {
+    color: red;
+  }
+}
+
+//job form styles
+.popup-line {
+  display: flex;
+  gap: 4rem;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  textarea {
+    width: stretch;
+  }
 }

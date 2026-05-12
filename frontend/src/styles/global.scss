@@ -38,7 +38,11 @@ html {
 #root {
   height: -webkit-fill-available;
 }
-
+// for some reason the font code in "body" isn't getting applied to the buttons
+button {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+}
 // these are the stuff shared between resume and job page
 .title {
   padding-bottom: 8rem;

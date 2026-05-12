@@ -17,7 +17,7 @@ const popup = ({ isOpen, onClose, title, children }: popUpProps) => {
     <div className="popup-overlay" onClick={onClose}>
       <div className="popup-content" onClick={(e) => e.stopPropagation()}>
         <h2>{title}</h2>
-        <button onClick={onClose}>
+        <button className="close-btn" onClick={onClose}>
           <X size={20} />
         </button>
         <div>{children}</div>
