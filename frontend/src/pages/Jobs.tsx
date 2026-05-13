@@ -11,7 +11,7 @@ import {
 import { getResumes } from "../services/resumeService";
 import logger from "../services/logger";
 import JobForm, { STATUS_OPTIONS } from "../components/JobForm";
-import { Briefcase, Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { Briefcase, Edit, ExternalLink, File, FileUser, Plus, Trash2 } from "lucide-react";
 import Popup from "../components/popUp";
 import R_ToggleGroup from "../components/ui/ToggleGroup";
 import R_Select from "../components/ui/Select";
@@ -20,6 +20,7 @@ import { move } from "@dnd-kit/helpers";
 import SortableJobItem from "../components/SortableJobItem";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // filter options
 const STATUS_FILTERS = STATUS_OPTIONS;
@@ -44,6 +45,7 @@ const Jobs = () => {
 
   const { setHeaderTitle } = useAction();
   const { user } = useAuth()
+  const navigate = useNavigate();
 
 
   // load data on mount and when filter change
@@ -85,6 +87,11 @@ const Jobs = () => {
   function handleClosePopup() {
     setIsPopupOpen(false);
     setEditingJob(null);
+  }
+  function openAttachedResume(job: Job) {
+
+    navigate("/editor/" + job.resumeId);
+
   }
   async function handleSubmit(data: CreateJobRequest) {
     setIsSumitting(true);
@@ -188,9 +195,9 @@ const Jobs = () => {
 
 
   const STATUS_MAP: Record<string, { label: string, color: string }> = {
-    GHOSTED: { label: "Ghosted", color: "Gray" },
-    APPLIED: { label: "Ghosted", color: "Green" },
-    REJECTED: { label: "Ghosted", color: "Red" },
+    GHOSTED: { label: "Ghosted", color: "#d2d2d2" },
+    APPLIED: { label: "Applied", color: "#b0ffb0" },
+    REJECTED: { label: "Rejected", color: "#ffb1b1" },
     SAVED: { label: "Saved", color: "Transparent" },
   }
 
@@ -280,6 +287,17 @@ const Jobs = () => {
                         }}>
                         <Trash2 />
                       </button>
+                      <button
+                        disabled={job.resumeId ? false : true}
+                        title="Resume"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openAttachedResume(job)
+                        }}>
+                        <File />
+                      </button>
+
                     </div>
 
                   </div>

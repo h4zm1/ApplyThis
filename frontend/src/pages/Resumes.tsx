@@ -30,6 +30,7 @@ const Resumes = () => {
   const { setHeaderTitle } = useAction();
   const { user } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
+  const navigate = useNavigate();
 
   // load resumes on mount (like ngOnInit)
   useEffect(() => {
@@ -92,7 +93,6 @@ const Resumes = () => {
     setEditingResume(null);
   }
   function handleOpen(resume: Resume) {
-    const navigate = useNavigate();
     navigate("/editor/" + resume.id);
   }
   /**
