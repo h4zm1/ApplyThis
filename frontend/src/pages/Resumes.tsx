@@ -7,7 +7,7 @@ import {
   updateResume,
   updateResumeOrder,
 } from "../services/resumeService";
-import { Copy, Download, PenLine, Play, Trash2 } from "lucide-react";
+import { Copy, Download, LayoutGrid, List, PenLine, Play, Trash2, } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
@@ -16,6 +16,8 @@ import logger from "../services/logger";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import SortableResumeItem from "../components/SortableResumeItem";
+import R_Select from "../components/ui/Select";
+import R_ToggleGroup, { R_ToggleItem } from "../components/ui/ToggleGroup";
 
 const Resumes = () => {
   // data state
@@ -31,6 +33,9 @@ const Resumes = () => {
   const { user } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const navigate = useNavigate();
+
+  // ui stuff
+  const [layout, setLayout] = useState("grid")
 
   // load resumes on mount (like ngOnInit)
   useEffect(() => {
@@ -156,6 +161,11 @@ const Resumes = () => {
     }
   }
 
+  useEffect(() => {
+    console.log("layout changed", layout)
+
+  }, [layout])
+
   // drag and drop handler
   const handleDragEnd = async (event: any) => {
     // take the current array, and drag event and return new array
@@ -235,16 +245,24 @@ const Resumes = () => {
       <div className="title">
         <h1>Resumes</h1>
       </div>
-      <div>
+      <div className="container-header">
         {/* {resumes.length} resume{resumes.length !== 1 ? "s" : ""} */}
         <button className="new-btn" onClick={handleCreate}>
           <div>+</div> New Resume
         </button>
+        <R_ToggleGroup
+          value={layout}
+          onChange={setLayout}
+        >
+          <R_ToggleItem className="toggle-item" value="list" ><List className="toggle-icon" /></R_ToggleItem>
+          <R_ToggleItem className="toggle-item" value="grid" ><LayoutGrid className="toggle-icon" /></R_ToggleItem>
+        </R_ToggleGroup>
+
       </div>
       {resumes.length === 0 ? (
         <p>No resume yet. Create your first one!</p>
       ) : (
-        <div className={`item-holder${isDragging ? " dragging" : ""}`}>
+        <div className={`item-holder${" " + layout}${isDragging ? " dragging" : ""}`}>
           <DragDropProvider onDragEnd={handleDragEnd}>
             {resumes.map((resume, index) => (
               <SortableResumeItem
@@ -254,7 +272,7 @@ const Resumes = () => {
                 onDragChange={setIsDragging}
               >
                 <Link to={`/editor/${resume.id}`} draggable={false}>
-                  <div className="resume-body">
+                  <div className={`resume-body ${" " + layout}`} >
                     <div>
                       <img src={resume.thumbnailUrl!}></img>
 

@@ -11,7 +11,7 @@
 .toggle-item {
   background-color: transparent;
   border: none;
-  padding: 6px 12px;
+  padding: 6px 15px;
   font-size: 13px;
   cursor: pointer;
   border-radius: 4px;
@@ -26,6 +26,16 @@
     // font-weight: 500;
     border: solid thin #828282;
     border-radius: 5px;
+  }
+
+  .toggle-icon {
+    width: 1.4rem;
+    height: 2.5rem;
+    scale: 0.8;
+    padding: -6rem;
+    margin-inline: -1rem;
+    margin-block: -1rem;
+    color: black;
   }
 }
 

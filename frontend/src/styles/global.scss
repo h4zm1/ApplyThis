@@ -102,4 +102,7 @@ button {
     margin-top: 1rem;
     cursor: red;
   }
+  &.list {
+    flex-direction: column;
+  }
 }

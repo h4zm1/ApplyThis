@@ -24,7 +24,7 @@
 }
 
 .resume {
-  width: 10rem;
+  // width: 10rem;
   // background-color: white;
   height: fit-content;
   button {
@@ -45,8 +45,36 @@
   }
 }
 
+// wrapping dndkit div so it can only be triggered when line holder in list mode
+.item-holder {
+  &.list {
+    // targeting dndkit generated div under resume cause doing this in .resume didn't work
+    div[aria-roledescription="draggable"] {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+    }
+  }
+}
+
 .resume-body {
   height: 14rem;
+  width: 10rem; // moving the width here cause the body is more accessible than .resume for the layout switch
+  border: solid;
+  border-width: thin;
+  border-color: #a7a7a7;
+  border-radius: 8px;
+  cursor: default;
+  contain: content;
+  background-color: white;
+  &.list {
+    height: unset;
+    width: unset;
+  }
+}
+.resume-body-list {
+  height: 14rem;
+  width: 10rem; // moving the width here cause the body is more accessible than .resume for the layout switch
   border: solid;
   border-width: thin;
   border-color: #a7a7a7;
@@ -55,6 +83,7 @@
   contain: content;
   background-color: white;
 }
+
 .context-bar {
   opacity: 0;
   justify-self: center;

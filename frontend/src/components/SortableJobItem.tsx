@@ -17,7 +17,7 @@ function SortableJobItem({ id, index, children, onDragChange }: Props) {
     sensors: [
       PointerSensor.configure({
         activationConstraints: [
-          new PointerActivationConstraints.Distance({ value: 10 }),
+          new PointerActivationConstraints.Distance({ value: 10 }), // this for setting how far the mouse has to move while holding the item for the drag to get triggered, and in this case 10 pixles
         ],
       }),
     ],
