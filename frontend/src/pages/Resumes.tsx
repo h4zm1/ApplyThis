@@ -259,6 +259,19 @@ const Resumes = () => {
         </R_ToggleGroup>
 
       </div>
+      {layout === "list" ? (
+        <div className="list-header">
+          <span className="first-half">Resume</span>
+          <span className="second-half">
+            <span style={{ paddingRight: "2rem" }}>Created</span>
+            <span>Last modified</span>
+            <span>Actions</span>
+
+          </span>
+
+        </div>
+
+      ) : (<div></div>)}
       {resumes.length === 0 ? (
         <p>No resume yet. Create your first one!</p>
       ) : (
@@ -271,23 +284,12 @@ const Resumes = () => {
                 index={index}
                 onDragChange={setIsDragging}
               >
-                <Link to={`/editor/${resume.id}`} draggable={false}>
+                <Link to={`/editor/${resume.id}`} draggable={false} style={{ textDecorationLine: "none" }}>
                   <div className={`resume-body ${" " + layout}`} >
                     <div>
                       <img src={resume.thumbnailUrl!}></img>
-
-                      {/* <p>{resume.pdfUrl ? "PDF compiled" : "Not compiled yet"}</p> */}
-                      {/* show pdf linked if compiled */}
-                      {/*   {resume.pdfUrl && ( */}
-                      {/*     <a */}
-                      {/*       href={resume.pdfUrl} */}
-                      {/*       target="_blank" // open in new tab */}
-                      {/*       rel="noopener noreferer" */}
-                      {/*     > */}
-                      {/*       View PDF */}
-                      {/*     </a> */}
-                      {/*   )} */}
                     </div>
+                    <div className="resume-dates" ><span>{resume.createdAt.substring(0, 10)}</span><span>{resume.updatedAt.substring(0, 10)}</span></div>
                     <div className="context-bar">
                       <button
                         title="Delete"

@@ -26,7 +26,7 @@ function SortableResumeItem({ id, index, children, onDragChange }: Props) {
     onDragChange(isDragging);
   }, [isDragging]);
   return (
-    <div ref={ref} className={`resume${isDragging ? " dragging" : ""}`}>
+    <div ref={ref} className={`resume${isDragging ? " dragging" : ""}` + `${index % 2 == 0 ? " light" : " dark"}`}>
       {/* handleRef make the entire div dragable */}
       <div ref={handleRef}>{children}</div>
     </div>

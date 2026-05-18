@@ -44,10 +44,21 @@
     z-index: -1; // this needed to prevent overlapping with context bar
   }
 }
+// .resume.light {
+//   background-color: red;
+// }
 
 // wrapping dndkit div so it can only be triggered when line holder in list mode
 .item-holder {
   &.list {
+    gap: 1rem;
+    .resume.light {
+      background-color: #f3f3f3;
+    }
+    .resume.dark {
+      background-color: white;
+    }
+
     // targeting dndkit generated div under resume cause doing this in .resume didn't work
     div[aria-roledescription="draggable"] {
       display: flex;
@@ -56,7 +67,26 @@
     }
   }
 }
-
+.list-header {
+  display: flex;
+  /* gap: 8rem; */
+  // background-color: red;
+  justify-content: space-between;
+  border-bottom: solid thin #c2c2c2;
+  padding-bottom: 1rem;
+  font-weight: bold;
+  color: #2c2c2c;
+  .first-half {
+    display: flex;
+    // padding-left: 1.6rem;
+  }
+  .second-half {
+    display: flex;
+    gap: 3rem;
+    padding-left: auto;
+    padding-right: 5rem;
+  }
+}
 .resume-body {
   height: 14rem;
   width: 10rem; // moving the width here cause the body is more accessible than .resume for the layout switch
@@ -70,19 +100,48 @@
   &.list {
     height: unset;
     width: unset;
+    display: flex;
+    border: unset;
+    background-color: unset;
+    .status {
+      opacity: 0;
+    }
+    &:hover .context-bar {
+      margin-top: 0 !important;
+      max-height: unset;
+      padding-block: unset;
+      border-radius: unset;
+      border: unset;
+    }
+    .resume-dates {
+      opacity: 1;
+      display: flex;
+      gap: 3rem;
+    }
+    .context-bar {
+      // background-color: red !important;
+      opacity: 1;
+      max-height: unset;
+      margin-top: 0;
+      padding-block: 0;
+      margin-left: 3rem;
+    }
   }
 }
-.resume-body-list {
-  height: 14rem;
-  width: 10rem; // moving the width here cause the body is more accessible than .resume for the layout switch
-  border: solid;
-  border-width: thin;
-  border-color: #a7a7a7;
-  border-radius: 8px;
-  cursor: default;
-  contain: content;
-  background-color: white;
+.resume-dates {
+  opacity: 0;
 }
+// .resume-body-list {
+//   height: 14rem;
+//   width: 10rem; // moving the width here cause the body is more accessible than .resume for the layout switch
+//   border: solid;
+//   border-width: thin;
+//   border-color: #a7a7a7;
+//   border-radius: 8px;
+//   cursor: default;
+//   contain: content;
+//   background-color: white;
+// }
 
 .context-bar {
   opacity: 0;

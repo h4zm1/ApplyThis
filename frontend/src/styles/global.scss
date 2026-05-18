@@ -104,5 +104,6 @@ button {
   }
   &.list {
     flex-direction: column;
+    padding: unset;
   }
 }
