@@ -52,11 +52,16 @@
 .item-holder {
   &.list {
     gap: 1rem;
+    &.dragging {
+      gap: 1rem;
+    }
     .resume.light {
-      background-color: #f3f3f3;
+      background-color: #ffffff69;
+      backdrop-filter: blur(1px);
     }
     .resume.dark {
-      background-color: white;
+      backdrop-filter: blur(1px);
+      background-color: #dddddd80;
     }
 
     // targeting dndkit generated div under resume cause doing this in .resume didn't work
@@ -64,6 +69,7 @@
       display: flex;
       flex-direction: row-reverse;
       justify-content: space-between;
+      align-items: center;
     }
   }
 }
@@ -74,6 +80,7 @@
   justify-content: space-between;
   border-bottom: solid thin #c2c2c2;
   padding-bottom: 1rem;
+  padding-top: 2rem;
   font-weight: bold;
   color: #2c2c2c;
   .first-half {
@@ -82,7 +89,7 @@
   }
   .second-half {
     display: flex;
-    gap: 3rem;
+    gap: 4rem;
     padding-left: auto;
     padding-right: 5rem;
   }
@@ -103,6 +110,7 @@
     display: flex;
     border: unset;
     background-color: unset;
+    align-items: center;
     .status {
       opacity: 0;
     }
@@ -125,23 +133,19 @@
       margin-top: 0;
       padding-block: 0;
       margin-left: 3rem;
+      padding-right: 0.3rem;
     }
   }
 }
 .resume-dates {
   opacity: 0;
+  span {
+    font-variant: tabular-nums;
+    /* font-weight: 700; */
+    /* font-size: xxx-large; */
+    color: black;
+  }
 }
-// .resume-body-list {
-//   height: 14rem;
-//   width: 10rem; // moving the width here cause the body is more accessible than .resume for the layout switch
-//   border: solid;
-//   border-width: thin;
-//   border-color: #a7a7a7;
-//   border-radius: 8px;
-//   cursor: default;
-//   contain: content;
-//   background-color: white;
-// }
 
 .context-bar {
   opacity: 0;
@@ -187,7 +191,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     text-align: center;
-    width: -webkit-fill-available;
+    width: 8rem;
     margin-inline: 0.6rem;
     margin-top: 0.67em;
   }
