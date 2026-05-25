@@ -1,0 +1,229 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+:root,
+html,
+body {
+  /* don't think this's working */
+  background: #e8e8e8 !important;
+}
+body {
+  width: 320px;
+  font-family:
+    Buenard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+
+  background: #e8e8e8;
+  color: #e5e5e5;
+  font-size: 14px;
+}
+
+/* ---- layout ---- */
+.container {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #262626;
+  justify-content: center;
+}
+
+.header-icon {
+  width: 32px;
+  height: 32px;
+  background: #2563eb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.header {
+  h1 {
+    font-size: 43px;
+    font-weight: 600;
+    color: #202020;
+  }
+}
+
+/* ---- login form ---- */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group {
+  label {
+    display: block;
+    font-size: 12px;
+    color: #646464;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+}
+
+.form-group {
+  input {
+    width: 100%;
+    padding: 10px 12px;
+    background: #e8e8e8;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+}
+
+.form-group {
+  input:focus {
+    border-color: #2563eb;
+  }
+}
+
+/* ---- buttons ---- */
+.btn {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #202020;
+  color: white;
+}
+
+.btn-secondary {
+  background: #171717;
+  border: 1px solid #262626;
+  color: #e5e5e5;
+  margin-top: 8px;
+}
+
+.btn-danger {
+  background: #171717;
+  border: 1px solid #601414;
+  color: #ff6161;
+  margin-top: 8px;
+}
+
+/* ---- logged in view ---- */
+.status-card {
+  background: #e8e8e8;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.status-card {
+  .label {
+    font-size: 11px;
+    color: #202020;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+}
+
+.status-card {
+  .value {
+    font-size: 14px;
+    color: #171717;
+    word-break: break-all;
+  }
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #009f3a;
+}
+
+.status-badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #009f3a;
+  border-radius: 50%;
+}
+
+.instructions {
+  background: #e8e8e8;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.instructions {
+  h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2b2b2b;
+    margin-bottom: 8px;
+  }
+}
+
+.instructions {
+  p {
+    font-size: 12px;
+    color: #282828;
+    line-height: 1.5;
+  }
+}
+
+.instructions {
+  code {
+    background: #bbb;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #282828;
+  }
+}
+
+/* ---- error message ---- */
+.error {
+  background: #202020;
+  color: #ff2929;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 14px;
+  display: none;
+}
+
+.error.visible {
+  display: block;
+}
+
+/* ---- view toggle ---- */
+.hidden {
+  display: none;
+}

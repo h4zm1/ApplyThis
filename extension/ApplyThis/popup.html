@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- login form title -->
+      <div class="header">
+        <!-- <img src="../icons/bitmap.svg" alt="ApplyThis" width="24" height="24" /> -->
+        <h1>ApplyThis</h1>
+      </div>
+
+      <!-- login view -->
+      <div id="login-view">
+        <div id="error-message" class="error"></div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="your@email.com" />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" />
+        </div>
+
+        <button id="login-btn" class="btn btn-primary">Log In</button>
+      </div>
+
+      <!-- logged in view -->
+      <div id="loggedin-view" class="hidden">
+        <div class="status-card">
+          <div class="label">Status</div>
+          <div class="status-badge">Connected</div>
+        </div>
+
+        <div class="status-card">
+          <div class="label">Logged in as</div>
+          <div class="value" id="user-email">—</div>
+        </div>
+
+        <div class="instructions">
+          <h3>How to use</h3>
+          <p>
+            Go to a LinkedIn job posting, right-click anywhere on the page, and
+            select <code>Track This Job</code> from the context menu. The job
+            will be automatically added to your tracker.
+          </p>
+        </div>
+
+        <button id="open-site-btn" class="btn btn-secondary">
+          Open ApplyThis Dashboard
+        </button>
+
+        <button id="logout-btn" class="btn btn-danger">Log Out</button>
+      </div>
+    </div>
+
+    <script src="../shared/api.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
