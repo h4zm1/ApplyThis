@@ -84,7 +84,7 @@ button {
   scrollbar-width: thin;
   border: solid 2px;
   border-color: transparent;
-
+  align-content: flex-start;
   &.dragging {
     display: flex;
     gap: 2rem;

@@ -11,7 +11,15 @@ import {
 import { getResumes } from "../services/resumeService";
 import logger from "../services/logger";
 import JobForm, { STATUS_OPTIONS } from "../components/JobForm";
-import { Briefcase, Edit, ExternalLink, File, FileUser, Plus, Trash2 } from "lucide-react";
+import {
+  Briefcase,
+  Edit,
+  ExternalLink,
+  File,
+  FileUser,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import Popup from "../components/popUp";
 import R_ToggleGroup from "../components/ui/ToggleGroup";
 import R_Select from "../components/ui/Select";
@@ -31,11 +39,11 @@ const Jobs = () => {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsloading] = useState(true);
   const [error, setError] = useState("");
-  const [statusColor, setStatusColor] = useState("")
+  const [statusColor, setStatusColor] = useState("");
   // filter state
   const [statusFilter, setStatusFilter] = useState(() => {
-    const saved = localStorage.getItem("JOB-FILTER")
-    return saved !== null ? saved : "ALL"
+    const saved = localStorage.getItem("JOB-FILTER");
+    return saved !== null ? saved : "ALL";
   });
   // popup state
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -44,16 +52,14 @@ const Jobs = () => {
   const [isDragging, setIsDragging] = useState(false);
 
   const { setHeaderTitle } = useAction();
-  const { user } = useAuth()
+  const { user } = useAuth();
   const navigate = useNavigate();
-
 
   // load data on mount and when filter change
   useEffect(() => {
     loadData();
-    localStorage.setItem("JOB-FILTER", statusFilter)
+    localStorage.setItem("JOB-FILTER", statusFilter);
     setHeaderTitle(user?.email + " > Jobs");
-
   }, [statusFilter]);
 
   async function loadData() {
@@ -65,8 +71,8 @@ const Jobs = () => {
       ]);
       const normalized = jobsData.map((j) => ({
         ...j,
-        orderIndex: Number(j.orderIndex || 0)
-      }))
+        orderIndex: Number(j.orderIndex || 0),
+      }));
       setJobs(normalized);
       setResumes(resumeData);
     } catch (error) {
@@ -89,9 +95,7 @@ const Jobs = () => {
     setEditingJob(null);
   }
   function openAttachedResume(job: Job) {
-
     navigate("/editor/" + job.resumeId);
-
   }
   async function handleSubmit(data: CreateJobRequest) {
     setIsSumitting(true);
@@ -120,7 +124,7 @@ const Jobs = () => {
   }
   // drag and drop handler
   const handleDragEnd = async (event: any) => {
-    console.log("inside handle drag")
+    console.log("inside handle drag");
     // take the current array, and drag event and return new array
     // based on where the item got dropped
     const newArray = move(jobs, event);
@@ -193,13 +197,12 @@ const Jobs = () => {
     }
   };
 
-
-  const STATUS_MAP: Record<string, { label: string, color: string }> = {
+  const STATUS_MAP: Record<string, { label: string; color: string }> = {
     GHOSTED: { label: "Ghosted", color: "#d2d2d2" },
     APPLIED: { label: "Applied", color: "#b0ffb0" },
     REJECTED: { label: "Rejected", color: "#ffb1b1" },
     SAVED: { label: "Saved", color: "Transparent" },
-  }
+  };
 
   return (
     <div className="jobs">
@@ -230,7 +233,8 @@ const Jobs = () => {
         <div className={`item-holder${isDragging ? " dragging" : ""}`}>
           <DragDropProvider onDragEnd={handleDragEnd}>
             {jobs.map((job, index) => {
-              const statusInfo = STATUS_MAP[job.status?.toString()] || STATUS_MAP.SAVED;
+              const statusInfo =
+                STATUS_MAP[job.status?.toString()] || STATUS_MAP.SAVED;
               return (
                 <SortableJobItem
                   key={job.id}
@@ -238,44 +242,40 @@ const Jobs = () => {
                   index={index}
                   onDragChange={setIsDragging}
                 >
-
                   <div className="job-body" onClick={() => handleEdit(job)}>
                     <div className="topline">
-                      <div className="job-status" title={
-                        statusInfo.label
-                      }
+                      <div
+                        className="job-status"
+                        title={statusInfo.label}
                         style={{
-                          backgroundColor: statusInfo.color
+                          backgroundColor: statusInfo.color,
                         }}
                       >
                         {job.status.substring(0, 1)}
                       </div>
-
-
                     </div>
                     <div className="midline">
                       <h3>{job.position}</h3>
-
                     </div>
                     <div className="bottomline">
-                      <p >{job.appliedAt.substring(0, 10)}</p>
+                      <p>{job.appliedAt.substring(0, 10)}</p>
                       <p>{job.company}</p>
                     </div>
 
-                    {job.url && (
-                      <a href={job.url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink />
-                      </a>
-                    )}
+                    {/* {job.url && ( */}
+                    {/*   <a href={job.url} target="_blank" rel="noopener noreferrer"> */}
+                    {/*     <ExternalLink /> */}
+                    {/*   </a> */}
+                    {/* )} */}
                     <div className="context-bar">
                       <button
                         title="Edit Job"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          handleEdit(job)
-                        }
-                        }>
+                          handleEdit(job);
+                        }}
+                      >
                         <Edit />
                       </button>
                       <button
@@ -283,8 +283,9 @@ const Jobs = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          handleDelete(job)
-                        }}>
+                          handleDelete(job);
+                        }}
+                      >
                         <Trash2 />
                       </button>
                       <button
@@ -293,18 +294,16 @@ const Jobs = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          openAttachedResume(job)
-                        }}>
+                          openAttachedResume(job);
+                        }}
+                      >
                         <File />
                       </button>
-
                     </div>
-
                   </div>
                 </SortableJobItem>
               );
             })}
-
           </DragDropProvider>
         </div>
       )}

@@ -1,3 +1,9 @@
+.container-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
 .job {
   width: 20rem;
   // background-color: white;
@@ -70,6 +76,13 @@
 .midline {
   justify-items: center;
   padding-top: 1rem;
+  h3 {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align-last: center;
+  }
 }
 .bottomline {
   display: flex;

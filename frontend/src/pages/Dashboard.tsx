@@ -4,6 +4,8 @@ import { getJobStats, getJobs } from "../services/jobService";
 import { getResumes } from "../services/resumeService";
 import type { JobStats, Job } from "../types/job";
 import type { Resume } from "../types/resume";
+import { useAction } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext";
 
 // only showing job stats, resumes and recent applications for now
 const Dashboard = () => {
@@ -14,11 +16,14 @@ const Dashboard = () => {
   const [recentResumes, setRecentResumes] = useState<Resume[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const { user } = useAuth();
+  const { setHeaderTitle } = useAction();
 
   // useEffect will run code when component mounts (like ngOnInit in angular)
   // empty array [] means run once on mount
   useEffect(() => {
     loadDashboardData();
+    setHeaderTitle(user?.email + " > Dashboard");
   }, []);
 
   // load all dashboard data at same time
