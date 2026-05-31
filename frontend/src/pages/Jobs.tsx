@@ -29,6 +29,7 @@ import SortableJobItem from "../components/SortableJobItem";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Tooltip from "../components/ui/tooltip";
 
 // filter options
 const STATUS_FILTERS = STATUS_OPTIONS;
@@ -244,15 +245,17 @@ const Jobs = () => {
                 >
                   <div className="job-body" onClick={() => handleEdit(job)}>
                     <div className="topline">
-                      <div
-                        className="job-status"
-                        title={statusInfo.label}
-                        style={{
-                          backgroundColor: statusInfo.color,
-                        }}
-                      >
-                        {job.status.substring(0, 1)}
-                      </div>
+                      <Tooltip label={statusInfo.label}>
+                        <div
+                          className="job-status"
+                          // title={statusInfo.label}
+                          style={{
+                            backgroundColor: statusInfo.color,
+                          }}
+                        >
+                          {job.status.substring(0, 1)}
+                        </div>
+                      </Tooltip>
                     </div>
                     <div className="midline">
                       <h3>{job.position}</h3>
@@ -268,37 +271,42 @@ const Jobs = () => {
                     {/*   </a> */}
                     {/* )} */}
                     <div className="context-bar">
-                      <button
-                        title="Edit Job"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleEdit(job);
-                        }}
-                      >
-                        <Edit />
-                      </button>
-                      <button
-                        title="Delete"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleDelete(job);
-                        }}
-                      >
-                        <Trash2 />
-                      </button>
-                      <button
-                        disabled={job.resumeId ? false : true}
-                        title="Resume"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          openAttachedResume(job);
-                        }}
-                      >
-                        <File />
-                      </button>
+                      <Tooltip label="Edit Job">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleEdit(job);
+                          }}
+                        >
+                          <Edit />
+                        </button>
+                      </Tooltip>
+
+                      <Tooltip label="Delete">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDelete(job);
+                          }}
+                        >
+                          <Trash2 />
+                        </button>
+                      </Tooltip>
+
+                      <Tooltip label="Resume">
+                        <button
+                          disabled={job.resumeId ? false : true}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openAttachedResume(job);
+                          }}
+                        >
+                          <File />
+                        </button>
+                      </Tooltip>
                     </div>
                   </div>
                 </SortableJobItem>

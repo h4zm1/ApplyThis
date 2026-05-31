@@ -1,0 +1,28 @@
+.tooltip-wrapper {
+  // position: absolute;
+}
+
+.tooltip-bubble {
+  background: #fcfaff;
+  color: #202020;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(50, 47, 62, 0.1803921569);
+  white-space: nowrap;
+  z-index: 9999;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.15s ease;
+  position: fixed;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

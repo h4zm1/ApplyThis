@@ -32,12 +32,16 @@
   border-color: #a7a7a7;
   border-radius: 8px;
   cursor: default;
-  contain: content;
+  // contain: content;
   background-color: white;
-  padding: 0.5rem;
+  // padding: 0.5rem;
   // display: flex;
   // flex-direction: column;
   // gap: 0.6rem;
+
+  .context-bar {
+    margin-top: -4rem;
+  }
 }
 .job-body:hover .context-bar {
   opacity: 1;
@@ -49,28 +53,41 @@
   padding-block: 0.2rem;
   border-radius: 6px;
   border: solid thin #afafaf;
+  width: min-content;
+  // align-self: center;
 }
 
 .context-bar {
   opacity: 0;
   justify-self: center;
+  // margin-top: -4rem;
   max-height: 0;
-  margin-top: 3rem;
+  // margin-top: 3rem;
   padding-block: 0.2rem;
   transition:
     opacity 0.3s ease-in-out,
     max-height 0.3s ease-in-out;
+
+  // width: min-content;
+  // align-self: center;
 }
 
 .topline {
+  display: flex;
+  align-self: end;
+  justify-content: flex-end;
+  margin-bottom: -2rem;
+  justify-self: end;
+  // position: absolute;
   .job-status {
     background-color: #afafaf;
-    position: absolute;
-    top: 0;
-    right: 0;
+    // position: absolute;
+    // top: 0;
+    // right: 0;
     padding-inline: 0.7rem;
     padding-block: 0.4rem;
     border-bottom-left-radius: 6px;
+    border-top-right-radius: 7px;
   }
 }
 .midline {
@@ -87,5 +104,6 @@
 .bottomline {
   display: flex;
   justify-content: space-between;
-  padding-top: 1rem;
+  padding-top: 0.8rem;
+  padding-inline: 0.4rem;
 }

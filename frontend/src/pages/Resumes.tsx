@@ -7,7 +7,15 @@ import {
   updateResume,
   updateResumeOrder,
 } from "../services/resumeService";
-import { Copy, Download, LayoutGrid, List, PenLine, Play, Trash2, } from "lucide-react";
+import {
+  Copy,
+  Download,
+  LayoutGrid,
+  List,
+  PenLine,
+  Play,
+  Trash2,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
@@ -18,6 +26,7 @@ import { move } from "@dnd-kit/helpers";
 import SortableResumeItem from "../components/SortableResumeItem";
 import R_Select from "../components/ui/Select";
 import R_ToggleGroup, { R_ToggleItem } from "../components/ui/ToggleGroup";
+import Tooltip from "../components/ui/tooltip";
 
 const Resumes = () => {
   // data state
@@ -35,7 +44,7 @@ const Resumes = () => {
   const navigate = useNavigate();
 
   // ui stuff
-  const [layout, setLayout] = useState("grid")
+  const [layout, setLayout] = useState("grid");
 
   // load resumes on mount (like ngOnInit)
   useEffect(() => {
@@ -162,9 +171,8 @@ const Resumes = () => {
   }
 
   useEffect(() => {
-    console.log("layout changed", layout)
-
-  }, [layout])
+    console.log("layout changed", layout);
+  }, [layout]);
 
   // drag and drop handler
   const handleDragEnd = async (event: any) => {
@@ -250,14 +258,14 @@ const Resumes = () => {
         <button className="new-btn" onClick={handleCreate}>
           <div>+</div> New Resume
         </button>
-        <R_ToggleGroup
-          value={layout}
-          onChange={setLayout}
-        >
-          <R_ToggleItem className="toggle-item" value="list" ><List className="toggle-icon" /></R_ToggleItem>
-          <R_ToggleItem className="toggle-item" value="grid" ><LayoutGrid className="toggle-icon" /></R_ToggleItem>
+        <R_ToggleGroup value={layout} onChange={setLayout}>
+          <R_ToggleItem className="toggle-item" value="list">
+            <List className="toggle-icon" />
+          </R_ToggleItem>
+          <R_ToggleItem className="toggle-item" value="grid">
+            <LayoutGrid className="toggle-icon" />
+          </R_ToggleItem>
         </R_ToggleGroup>
-
       </div>
       {layout === "list" ? (
         <div className="list-header">
@@ -266,16 +274,17 @@ const Resumes = () => {
             <span style={{ paddingRight: "2rem" }}>Created</span>
             <span>Last modified</span>
             <span>Actions</span>
-
           </span>
-
         </div>
-
-      ) : (<div></div>)}
+      ) : (
+        <div></div>
+      )}
       {resumes.length === 0 ? (
         <p>No resume yet. Create your first one!</p>
       ) : (
-        <div className={`item-holder${" " + layout}${isDragging ? " dragging" : ""}`}>
+        <div
+          className={`item-holder${" " + layout}${isDragging ? " dragging" : ""}`}
+        >
           <DragDropProvider onDragEnd={handleDragEnd}>
             {resumes.map((resume, index) => (
               <SortableResumeItem
@@ -284,67 +293,80 @@ const Resumes = () => {
                 index={index}
                 onDragChange={setIsDragging}
               >
-                <Link to={`/editor/${resume.id}`} draggable={false} style={{ textDecorationLine: "none" }}>
-                  <div className={`resume-body ${" " + layout}`} >
+                <Link
+                  to={`/editor/${resume.id}`}
+                  draggable={false}
+                  style={{ textDecorationLine: "none" }}
+                >
+                  <div className={`resume-body ${" " + layout}`}>
                     <div>
                       <img src={resume.thumbnailUrl!}></img>
                     </div>
-                    <div className="resume-dates" ><span>{resume.createdAt.substring(0, 10)}</span><span>{resume.updatedAt.substring(0, 10)}</span></div>
+                    <div className="resume-dates">
+                      <span>{resume.createdAt.substring(0, 10)}</span>
+                      <span>{resume.updatedAt.substring(0, 10)}</span>
+                    </div>
                     <div className="context-bar">
-                      <button
-                        title="Delete"
-                        onClick={(e) => {
-                          handleDelete(resume);
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      >
-                        <Trash2 />
-                      </button>
-                      <button
-                        disabled={resume.pdfUrl ? false : true}
-                        title="Download PDF"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleEdit(resume);
-                        }}
-                      >
-                        <Download />
-                      </button>
+                      <Tooltip label="Delete">
+                        <button
+                          onClick={(e) => {
+                            handleDelete(resume);
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                        >
+                          <Trash2 />
+                        </button>
+                      </Tooltip>
 
-                      <button
-                        title="Rename"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleEdit(resume);
-                        }}
-                      >
-                        <PenLine />
-                      </button>
+                      <Tooltip label="Download PDF">
+                        <button
+                          disabled={resume.pdfUrl ? false : true}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleEdit(resume);
+                          }}
+                        >
+                          <Download />
+                        </button>
+                      </Tooltip>
 
-                      <button
-                        title="Duplicated"
-                        onClick={(e) => {
-                          handleDelete(resume);
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      >
-                        <Copy />
-                      </button>
+                      <Tooltip label="Rename">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleEdit(resume);
+                          }}
+                        >
+                          <PenLine />
+                        </button>
+                      </Tooltip>
 
-                      <button
-                        title="Open"
-                        onClick={(e) => {
-                          handleOpen(resume);
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      >
-                        <Play />
-                      </button>
+                      <Tooltip label="Duplicate">
+                        <button
+                          onClick={(e) => {
+                            handleDelete(resume);
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                        >
+                          <Copy />
+                        </button>
+                      </Tooltip>
+
+                      <Tooltip label="Open">
+                        <button
+                          onClick={(e) => {
+                            handleOpen(resume);
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                        >
+                          <Play />
+                        </button>
+                      </Tooltip>
                     </div>
                     <div className="status"></div>
                   </div>

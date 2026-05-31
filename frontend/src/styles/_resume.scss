@@ -102,7 +102,7 @@
   border-color: #a7a7a7;
   border-radius: 8px;
   cursor: default;
-  contain: content;
+  // contain: content;
   background-color: white;
   &.list {
     height: unset;
@@ -156,6 +156,7 @@
   transition:
     opacity 0.3s ease-in-out,
     max-height 0.3s ease-in-out;
+  position: absolute;
 }
 
 .resume-body:hover .context-bar {
@@ -172,10 +173,12 @@
 .status {
   background-color: #afafaf;
   position: absolute;
-  top: 0;
-  right: 0;
+  /* top: 0; */
+  /* right: 0; */
   padding: 0.7rem;
   border-bottom-left-radius: 6px;
+  justify-self: end;
+  margin-top: -2.5rem;
 }
 .resume-title {
   h1 {

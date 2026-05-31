@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { LayoutDashboard, FileText, Briefcase, LogOut } from "lucide-react";
 import Header from "./Header";
 import { useAction } from "../context/AppContext";
+import Tooltip from "./ui/tooltip";
 
 // main layout wrapper
 const Layout = () => {
@@ -13,33 +14,42 @@ const Layout = () => {
       <div className="side-bar">
         <nav className="sidebar-nav">
           {/* navlink will auto update styles when 'to' prop match current url*/}
-          <NavLink
-            className={({ isActive }) => `side-btn${isActive ? " active" : ""}`}
-            title="dashboard"
-            to="/dashboard"
-            end // 'end' means exact match only
-          >
-            <LayoutDashboard size={21} />
-            {/* Dashboard */}
-          </NavLink>
+          <Tooltip label="dashboard">
+            <NavLink
+              className={({ isActive }) =>
+                `side-btn${isActive ? " active" : ""}`
+              }
+              to="/dashboard"
+              end // 'end' means exact match only
+            >
+              <LayoutDashboard size={21} />
+              {/* Dashboard */}
+            </NavLink>
+          </Tooltip>
 
-          <NavLink
-            className={({ isActive }) => `side-btn${isActive ? " active" : ""}`}
-            to="/resumes"
-            title="resumes"
-          >
-            <FileText size={21} />
-            {/* Resumes */}
-          </NavLink>
+          <Tooltip label="resumes">
+            <NavLink
+              className={({ isActive }) =>
+                `side-btn${isActive ? " active" : ""}`
+              }
+              to="/resumes"
+            >
+              <FileText size={21} />
+              {/* Resumes */}
+            </NavLink>
+          </Tooltip>
 
-          <NavLink
-            className={({ isActive }) => `side-btn${isActive ? " active" : ""}`}
-            to="/jobs"
-            title="jobs"
-          >
-            <Briefcase size={21} />
-            {/* Jobs */}
-          </NavLink>
+          <Tooltip label="jobs">
+            <NavLink
+              className={({ isActive }) =>
+                `side-btn${isActive ? " active" : ""}`
+              }
+              to="/jobs"
+            >
+              <Briefcase size={21} />
+              {/* Jobs */}
+            </NavLink>
+          </Tooltip>
         </nav>
 
         <div>
