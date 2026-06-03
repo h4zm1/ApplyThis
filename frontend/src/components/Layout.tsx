@@ -52,12 +52,14 @@ const Layout = () => {
           </Tooltip>
         </nav>
 
-        <div>
+        <div className="logout-holder">
           {/* <div> */}
           {/* <span>{user?.email}</span> */}
-          <button onClick={logout}>
-            <LogOut size={17} />
-          </button>
+          <Tooltip label="logout">
+            <button onClick={logout}>
+              <LogOut size={21} />
+            </button>
+          </Tooltip>
           {/* </div> */}
         </div>
         <NavLink className="logo-nav" to="/dashboard">

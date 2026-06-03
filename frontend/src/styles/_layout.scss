@@ -37,7 +37,7 @@
   align-self: anchor-center;
 }
 .logo-nav {
-  margin-top: auto;
+  // margin-top: auto;
   rotate: 270deg;
   width: 1rem;
   font-size: 2rem;
@@ -57,4 +57,15 @@
   width: -webkit-fill-available;
   display: flex;
   flex-direction: column;
+}
+
+.logout-holder {
+  margin-top: auto;
+  margin-bottom: 7rem;
+  .tooltip-wrapper {
+    button {
+      border: transparent;
+      background-color: transparent;
+    }
+  }
 }

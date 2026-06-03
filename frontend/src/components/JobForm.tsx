@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { CreateJobRequest, Job, JobStatus } from "../types/job";
 import type { Resume } from "../types/resume";
+import R_Select from "./ui/Select";
 
 // form for creating/editing job application
 interface JobFormProps {
@@ -97,32 +98,35 @@ const JobForm = ({
       </div>
       <div className="popup-line">
         <label htmlFor="status">Status</label>
-        <select
-          id="status"
+        <R_Select
           value={status}
-          onChange={(e) => setStatus(e.target.value as JobStatus)}
-        >
-          {STATUS_OPTIONS.map((opts) => (
-            <option key={opts.value} value={opts.value}>
-              {opts.label}
-            </option>
-          ))}
-        </select>
+          onChange={(e) => setStatus(e as JobStatus)}
+          options={STATUS_OPTIONS.slice(1)} // we don't want "All" to appear in the list
+          className="r-select"
+        />
       </div>
       <div className="popup-line">
         <label htmlFor="resumeId">Linked Resume</label>
-        <select
-          id="resumeId"
+        <R_Select
           value={resumeId}
-          onChange={(e) => setResumeId(e.target.value)}
-        >
-          <option value="">No resume linked</option>
-          {resumes.map((resume) => (
-            <option key={resume.id} value={resume.id}>
-              {resume.name}
-            </option>
-          ))}
-        </select>
+          onChange={(e) => setResumeId(e)}
+          options={resumes}
+          placeholder="No resume linked"
+          className="r-select"
+        />
+
+        {/* <select */}
+        {/*   id="resumeId" */}
+        {/*   value={resumeId} */}
+        {/*   onChange={(e) => setResumeId(e.target.value)} */}
+        {/* > */}
+        {/*   <option value="">No resume linked</option> */}
+        {/*   {resumes.map((resume) => ( */}
+        {/*     <option key={resume.id} value={resume.id}> */}
+        {/*       {resume.name} */}
+        {/*     </option> */}
+        {/*   ))} */}
+        {/* </select> */}
       </div>
       <div className="popup-line">
         <label htmlFor="followUpAt">Follow Up Date</label>

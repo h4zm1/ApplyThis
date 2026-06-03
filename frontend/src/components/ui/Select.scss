@@ -1,3 +1,11 @@
+.r-select {
+  font-weight: 300 !important;
+  &:hover {
+    // background-color:  !important;
+    color: unset !important;
+  }
+}
+
 .select-trigger {
   display: inline-flex;
   align-items: center;
@@ -15,7 +23,6 @@
     background-color: #f4f4f4;
   }
 }
-
 .select-content {
   overflow: hidden;
   background-color: white;
@@ -36,10 +43,15 @@
   position: relative;
   user-select: none;
   outline: none;
+  font-weight: 300;
 
   &[data-highlighted] {
-    background-color: #58a7ff;
-    color: white;
+    background-color: #cfcfff;
+    // color: white;
+  }
+  &[data-state="checked"] {
+    // color: red;
+    font-weight: 500;
   }
 }
 
