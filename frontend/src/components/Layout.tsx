@@ -14,7 +14,7 @@ const Layout = () => {
       <div className="side-bar">
         <nav className="sidebar-nav">
           {/* navlink will auto update styles when 'to' prop match current url*/}
-          <Tooltip label="dashboard">
+          <Tooltip label="dashboard" side="right">
             <NavLink
               className={({ isActive }) =>
                 `side-btn${isActive ? " active" : ""}`
@@ -27,7 +27,7 @@ const Layout = () => {
             </NavLink>
           </Tooltip>
 
-          <Tooltip label="resumes">
+          <Tooltip label="resumes" side="right">
             <NavLink
               className={({ isActive }) =>
                 `side-btn${isActive ? " active" : ""}`
@@ -39,7 +39,7 @@ const Layout = () => {
             </NavLink>
           </Tooltip>
 
-          <Tooltip label="jobs">
+          <Tooltip label="jobs" side="right">
             <NavLink
               className={({ isActive }) =>
                 `side-btn${isActive ? " active" : ""}`
@@ -55,7 +55,7 @@ const Layout = () => {
         <div className="logout-holder">
           {/* <div> */}
           {/* <span>{user?.email}</span> */}
-          <Tooltip label="logout">
+          <Tooltip label="logout" side="right">
             <button onClick={logout}>
               <LogOut size={21} />
             </button>

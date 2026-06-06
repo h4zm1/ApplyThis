@@ -58,10 +58,20 @@
     .resume.light {
       background-color: #ffffff69;
       backdrop-filter: blur(1px);
+      min-width: stretch;
+      &:hover {
+        background-color: #f4f4f4;
+        z-index: 1;
+      }
     }
     .resume.dark {
       backdrop-filter: blur(1px);
       background-color: #dddddd80;
+      min-width: stretch;
+      &:hover {
+        background-color: #dddddd;
+        z-index: 1;
+      }
     }
 
     // targeting dndkit generated div under resume cause doing this in .resume didn't work
@@ -111,6 +121,8 @@
     border: unset;
     background-color: unset;
     align-items: center;
+    gap: 13rem;
+    flex-direction: row-reverse;
     .status {
       opacity: 0;
     }
@@ -134,6 +146,14 @@
       padding-block: 0;
       margin-left: 3rem;
       padding-right: 0.3rem;
+      background-color: transparent !important;
+      .tooltip-bubble {
+        // left: unset !important;
+        // left: calc(100% + -10rem) !important;
+        // somehow the tooltip is way bellow where it should be, am not gonna bother figuring out why, this should fix anw
+        // top: calc(100% + 0rem) !important;
+        // top: unset !important;
+      }
     }
   }
 }

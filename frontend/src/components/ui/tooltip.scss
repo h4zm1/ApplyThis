@@ -1,8 +1,13 @@
 .tooltip-wrapper {
-  // position: absolute;
+  display: inline-flex;
+  position: relative;
 }
 
 .tooltip-bubble {
+  top: calc(100% + 6px);
+  left: 80%;
+  transform: translateX(-50%);
+
   background: #fcfaff;
   color: #202020;
   font-size: 13px;
@@ -15,7 +20,15 @@
   z-index: 9999;
   pointer-events: none;
   animation: tooltipFadeIn 0.15s ease;
-  position: fixed;
+  position: absolute;
+  &.bottom {
+    // default behavior
+  }
+  &.right {
+    left: calc(100% + 6px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 @keyframes tooltipFadeIn {
