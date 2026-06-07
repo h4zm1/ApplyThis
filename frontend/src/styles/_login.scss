@@ -1,0 +1,21 @@
+.outer-shell {
+  // background-color: yellow;
+  // padding-left: 2rem;
+  padding-top: 2rem;
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+  display: flex;
+  align-items: flex-end;
+  .side-bar {
+    width: 48px;
+  }
+}
+.inner-shell {
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+  border-top-left-radius: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
+}

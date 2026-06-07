@@ -38,35 +38,42 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h1>login</h1>
-      <form onSubmit={handleSubmit}>
+    <div className="outer-shell">
+      <div className="side-bar">
+        <div className="logo-nav">applythis</div>
+      </div>
+      <div className="inner-shell">
         <div>
-          <label>email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)} // two way binding
-            required
-          />
+          <h1>login</h1>
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label>email</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)} // two way binding
+                required
+              />
+            </div>
+            <div>
+              <label>password</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => {
+                  SetPassword(e.target.value);
+                }}
+                required
+              />
+            </div>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Login"}
+            </button>
+          </form>
         </div>
-        <div>
-          <label>password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => {
-              SetPassword(e.target.value);
-            }}
-            required
-          />
-        </div>
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Logging in..." : "Login"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
