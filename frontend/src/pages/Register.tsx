@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import PasswordStrength from "../components/PasswordStrength";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -50,45 +51,60 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h1>register</h1>
-      {error && <div>{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            required
-          />
+    <div className="outer-shell">
+      <div className="side-bar">
+        <div className="logo-nav">applythis</div>
+      </div>
+      <div className="inner-shell">
+        <div className="auth-page">
+          <h1>Sign Up</h1>
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {error && <div className="auth-error">{error}</div>}
+
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              required
+            />
+
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              required
+            />
+            <PasswordStrength password={password} />
+
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm Password"
+              required
+            />
+
+            <div className="auth-footer">
+              <button
+                className="auth-submit"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Siging up..." : "Sign up"}
+              </button>
+              <p>
+                Already have an account? <Link to="/login">Log in</Link>
+              </p>
+            </div>
+          </form>
         </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="form-submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating account.." : "register"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
