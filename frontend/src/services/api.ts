@@ -32,15 +32,21 @@ api.interceptors.response.use(
   // error, if respojse is error
   async (error) => {
     // save the original request so we can retry it later
-    const orginalRequest = error.config;
+    const originalRequest = error.config;
 
     /*
      * check for 2 things:
      * 1: error.response.status == 401: did server say 'unauthorized'?
      * 2: originalRequest._retry == false: have we already refresh this request? (to prvent infinit loop)
+     * 3: if endpoint is auth endpoint (login, register, refresh)
      */
-    if (error.response?.status == 401 && !orginalRequest._retry) {
-      orginalRequest._retry = true; // mark this request so we don't refresh it 2nd time
+    const isAuthEndpoint = originalRequest.url?.includes("/auth/");
+    if (
+      error.response?.status == 401 &&
+      !originalRequest._retry &&
+      !isAuthEndpoint
+    ) {
+      originalRequest._retry = true; // mark this request so we don't refresh it 2nd time
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");

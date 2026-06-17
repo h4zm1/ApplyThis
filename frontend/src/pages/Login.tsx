@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import logger from "../services/logger";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -26,6 +27,8 @@ const Login = () => {
 
     try {
       await login({ email, password });
+
+      logger.log("INSIDE LOGIN");
 
       // redirect to intended page (or dashboard)
       const from = location.state?.from?.pathname || "/dashboard";
@@ -66,7 +69,8 @@ const Login = () => {
             />
             <div className="auth-footer">
               <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Sigining in..." : "Sign in"}
+                Sign in
+                {/* {isSubmitting ? "Sigining in..." : "Sign in"} */}
               </button>
               <p>
                 <Link to="/forogt">Forgot your password?</Link>
