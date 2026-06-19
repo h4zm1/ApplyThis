@@ -2,10 +2,11 @@ import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logger from "../services/logger";
+import PasswordField from "../components/ui/PasswordField";
 
 const Login = () => {
   const [email, setEmail] = useState("");
-  const [password, SetPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,7 +37,7 @@ const Login = () => {
     } catch (error: any) {
       setError(error.response?.data?.error || "login failed");
     } finally {
-      setIsSubmitting(true);
+      setIsSubmitting(false);
     }
   };
 
@@ -57,16 +58,13 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)} // two way binding
               required
             />
-            <input
-              type="password"
-              id="password"
+            <PasswordField
               value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              onChange={(e) => {
-                SetPassword(e.target.value);
-              }}
               required
             />
+
             <div className="auth-footer">
               <button type="submit" disabled={isSubmitting}>
                 Sign in
@@ -77,6 +75,7 @@ const Login = () => {
                 <Link to="/register">Create new account instead</Link>
               </p>
             </div>
+            <div className="auth-error">{error}</div>
           </form>
         </div>
       </div>

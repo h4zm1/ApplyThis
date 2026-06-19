@@ -2,6 +2,10 @@ import { useState, type FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import PasswordStrength from "../components/PasswordStrength";
+import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
+import { EyeOpenIcon } from "@radix-ui/react-icons";
+import { EyeClosedIcon } from "lucide-react";
+import PasswordField from "../components/ui/PasswordField";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -60,7 +64,7 @@ const Register = () => {
           <h1>Sign Up</h1>
 
           <form className="auth-form" onSubmit={handleSubmit}>
-            {error && <div className="auth-error">{error}</div>}
+            {/* {error && <div className="auth-error">{error}</div>} */}
 
             <input
               type="email"
@@ -71,9 +75,7 @@ const Register = () => {
               required
             />
 
-            <input
-              type="password"
-              id="password"
+            <PasswordField
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
@@ -102,6 +104,7 @@ const Register = () => {
                 Already have an account? <Link to="/login">Log in</Link>
               </p>
             </div>
+            <div className="auth-error">{error}</div>
           </form>
         </div>
       </div>

@@ -53,14 +53,11 @@ const Layout = () => {
         </nav>
 
         <div className="logout-holder">
-          {/* <div> */}
-          {/* <span>{user?.email}</span> */}
           <Tooltip label="logout" side="right">
             <button onClick={logout}>
               <LogOut size={21} />
             </button>
           </Tooltip>
-          {/* </div> */}
         </div>
         <NavLink className="logo-nav" to="/dashboard">
           applythis
