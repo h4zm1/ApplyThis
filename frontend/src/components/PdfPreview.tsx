@@ -285,7 +285,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
         }}
       />
 
-      {!hasContent && <div>No preview available</div>}
+      {!hasContent && <div className="no-preview">No preview available</div>}
     </div>
   );
 }

@@ -299,6 +299,7 @@ const Resumes = () => {
                   style={{ textDecorationLine: "none" }}
                 >
                   <div className={`resume-body ${" " + layout}`}>
+                    <div className="status"></div>
                     <div>
                       <img src={resume.thumbnailUrl!}></img>
                     </div>
@@ -368,7 +369,6 @@ const Resumes = () => {
                         </button>
                       </Tooltip>
                     </div>
-                    <div className="status"></div>
                   </div>
                 </Link>
                 <div className="resume-title">

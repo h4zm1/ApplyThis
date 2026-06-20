@@ -87,6 +87,7 @@ button {
   border: solid 2px;
   border-color: transparent;
   align-content: flex-start;
+  height: auto;
   &.dragging {
     display: flex;
     gap: 2rem;

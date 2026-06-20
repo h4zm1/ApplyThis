@@ -39,7 +39,7 @@
 }
 .latex-editor {
   background-color: white;
-  height: calc(100vh - 5.1rem);
+  height: calc(100vh - 7.1rem);
   // box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
   // border-top-left-radius: 7px;
   // border-top-right-radius: 7px;
@@ -104,7 +104,7 @@ iframe {
 }
 .pdf-container {
   contain: size;
-  height: calc(100vh - 6.6rem);
+  height: calc(100vh - 7.6rem);
   scrollbar-width: thin;
   background-color: #e6eaed !important;
   border-top-left-radius: 7px;
@@ -167,4 +167,9 @@ iframe {
 /* text selecting hightlight color*/
 .textLayer ::selection {
   background: rgba(0, 100, 200, 0.3);
+}
+.no-preview {
+  position: absolute;
+  place-self: center;
+  top: 50%;
 }

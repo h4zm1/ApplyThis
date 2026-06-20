@@ -22,8 +22,11 @@ export async function compile(req: Request, res: Response) {
 
   if (result.success && result.pdf) {
     // return pdf (like ResponseEntity<Byte[]> with content type header in spring)
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'inline; filename="resume.pdf"');
+    // res.setHeader("Content-Type", "application/pdf");
+    // json instead of pdf to prevent IDM from picking this up
+    // res.setHeader("Content-Disposition", 'inline; filename="resume.pdf"');
+    res.setHeader("Content-Type", "application/json");
+
     return res.send(result.pdf);
   } else {
     // return errors as JSON

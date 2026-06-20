@@ -71,7 +71,7 @@ const Login = () => {
                 {/* {isSubmitting ? "Sigining in..." : "Sign in"} */}
               </button>
               <p>
-                <Link to="/forogt">Forgot your password?</Link>
+                <Link to="/forgot">Forgot your password?</Link>
                 <Link to="/register">Create new account instead</Link>
               </p>
             </div>

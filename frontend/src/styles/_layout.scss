@@ -12,6 +12,7 @@
   /* margin-inline: 0.8rem; */
   align-items: center;
   // background-color: lightcoral;
+  // padding-bottom: 1rem;
   a {
     color: #4b4950;
   }
@@ -28,6 +29,7 @@
   .side-btn.active {
     background-color: #e7e7e7;
     color: #1b1a1c;
+    z-index: -1;
   }
 }
 .sidebar-nav {
@@ -50,8 +52,11 @@
   height: -webkit-fill-available;
   border-top-left-radius: 7px;
   background-color: white;
-  box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
+  box-shadow: 0px 4px 12px #5955658f;
   padding: 2rem; // this needed incase a refresh happend in /resumes
+  overflow: auto;
+  // height: calc(100vh - 5.1rem);
+  padding-bottom: 0.6rem;
 }
 .main-holder {
   width: -webkit-fill-available;
