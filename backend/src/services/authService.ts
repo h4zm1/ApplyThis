@@ -85,10 +85,9 @@ export async function loginUser(email: string, password: string) {
   }
 
   // check password
-  const validPassword = comparePassword(password, user.password);
-
+  const validPassword = await comparePassword(password, user.password);
   if (!validPassword) {
-    throw new Error("invalid crednetials");
+    throw new Error("invalid credentials");
   }
 
   logger.info({ userId: user.id }, "user logged in");
