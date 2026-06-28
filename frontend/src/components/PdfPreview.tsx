@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import logger from "../services/logger";
 import { Minus, Plus } from "lucide-react";
+import R_Select from "./ui/Select";
 // import "pdfjs-dist/web/pdf_viewer.css";
 // worker runs pdf parsing in a separate thread so UI doesn't freeze
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -13,6 +14,16 @@ interface Props {
   pdfUrl?: string | null;
   pdfBlob?: Blob | null;
 }
+
+export const ZOOM_OPTIONS: { value: string; label: string }[] = [
+  { value: "-1", label: "Fit to Width" },
+  { value: "0", label: "Fit to page" },
+  { value: "0.5", label: "50%" },
+  { value: "1", label: "100%" },
+  { value: "2", label: "200%" },
+  { value: "3", label: "300%" },
+  { value: "5", label: "500%" },
+];
 
 export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
   // this will hold all the page canvases
@@ -34,7 +45,9 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
   const renderedScaleRef = useRef<number | null>(null);
   const [numPages, setNumPages] = useState(0);
   const [scale, setScale] = useState(1);
-
+  const pdfBaseDimensionsRef = useRef<{ width: number; height: number } | null>(
+    null,
+  );
   // === render all pages into their canvases with giving scale ===
   const renderPages = useCallback(async (targetScale: number) => {
     const pdf = pdfDocRef.current;
@@ -73,7 +86,7 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
           pageDiv.appendChild(canvas);
           container.appendChild(pageDiv);
 
-          // stone this canvas reference to reuse it next zoom
+          // store this canvas reference to reuse it next zoom
           pageCanvasesRef.current.set(i, canvas);
         } else {
           pageDiv = canvas.parentElement as HTMLDivElement;
@@ -193,6 +206,16 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
         const pdf = await loadingTask.promise;
         pdfDocRef.current = pdf;
         setNumPages(pdf.numPages); // will use it later
+
+        // store the original size of the pdf after it load before any scaling happening
+        const firstPage = await pdf.getPage(1);
+        const baseViewport = firstPage.getViewport({ scale: 1 });
+
+        pdfBaseDimensionsRef.current = {
+          width: baseViewport.width,
+          height: baseViewport.height,
+        };
+
         renderPages(scale);
       } catch (error: any) {
         console.error("error loading PDFF: ", error);
@@ -218,6 +241,53 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
     }
   }, [scale]);
 
+  const calculateFitToPageScale = () => {
+    if (!containerRef.current) return 1;
+
+    const rect = containerRef.current.getBoundingClientRect();
+
+    // standard page values
+    const pdfBaseWidth = pdfBaseDimensionsRef.current?.width ?? 612;
+    const pdfBaseHeight = pdfBaseDimensionsRef.current?.height ?? 792;
+
+    // adding some padding (16)
+    const hPadding = 32;
+    const vPadding = 32;
+
+    const widthScale = (rect.width - hPadding) / pdfBaseWidth;
+    const heightScale = (rect.height - vPadding) / pdfBaseHeight;
+
+    // picking the smallest to prevent hight overflow
+    return Math.min(widthScale, heightScale);
+  };
+
+  const calculateFitToWidthScale = () => {
+    if (!containerRef.current) return 1;
+    const containerWidth = containerRef.current.getBoundingClientRect().width;
+
+    const newScale = (containerWidth - 24) / 612;
+    return newScale;
+  };
+
+  const handleScaleChange = (selectedValue: string) => {
+    if (selectedValue === "0") {
+      logger.log("INSIDE ZOOM CHECK");
+      logger.log(
+        "container size" + containerRef.current?.getBoundingClientRect().width,
+      );
+      const firstCanvas = pageCanvasesRef.current.values().next().value;
+
+      logger.log("pdf size " + firstCanvas?.getBoundingClientRect().width);
+      const fitScale = calculateFitToPageScale();
+      setScale(fitScale);
+    } else if (selectedValue === "-1") {
+      const fitWidth = calculateFitToWidthScale();
+      setScale(fitWidth);
+    } else {
+      setScale(parseFloat(selectedValue));
+    }
+  };
+
   // === ctrl + mouse wheel zoom ===
   useEffect(() => {
     const container = containerRef.current;
@@ -242,32 +312,36 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
   return (
     <div className="preview-content">
       <div className="preview-header">
-        <button
-          className="zoom-btn"
-          onClick={() =>
-            setScale((s) => Math.max(0.25, Math.round((s - 0.25) * 100) / 100))
-          }
-          style={{ borderRadius: "6px 0px 0px 6px" }}
-        >
-          <Minus style={{ verticalAlign: "text-bottom" }}></Minus>
-        </button>
+        <div className="zoom-element">
+          <button
+            className="zoom-btn"
+            onClick={() =>
+              setScale((s) =>
+                Math.max(0.25, Math.round((s - 0.25) * 100) / 100),
+              )
+            }
+            style={{ borderRadius: "6px 0px 0px 6px" }}
+          >
+            <Minus style={{ verticalAlign: "text-bottom" }}></Minus>
+          </button>
 
-        <span
-          className="zoom-label"
-          style={{ minWidth: "50px", textAlign: "center" }}
-        >
-          {Math.round(scale * 100)}%
-        </span>
-
-        <button
-          className="zoom-btn"
-          onClick={() =>
-            setScale((s) => Math.min(5.0, Math.round((s + 0.25) * 100) / 100))
-          }
-          style={{ borderRadius: "0px 6px 6px 0px" }}
-        >
-          <Plus style={{ verticalAlign: "text-bottom" }}></Plus>
-        </button>
+          <R_Select
+            value={Math.round(scale * 100).toString() + "%"}
+            // onChange={(e) => setScale(Number(e))}
+            onChange={handleScaleChange}
+            options={ZOOM_OPTIONS}
+            className="zoom-select"
+          ></R_Select>
+          <button
+            className="zoom-btn"
+            onClick={() =>
+              setScale((s) => Math.min(5.0, Math.round((s + 0.25) * 100) / 100))
+            }
+            style={{ borderRadius: "0px 6px 6px 0px" }}
+          >
+            <Plus style={{ verticalAlign: "text-bottom" }}></Plus>
+          </button>
+        </div>
       </div>
       <div
         ref={containerRef}

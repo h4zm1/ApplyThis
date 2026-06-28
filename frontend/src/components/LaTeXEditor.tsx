@@ -16,6 +16,7 @@ import {
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { searchKeymap } from "@codemirror/search";
 import { useAction } from "../context/AppContext";
+import Tooltip from "./ui/tooltip";
 
 interface LaTeXEditorProps {
   value: string; // latex source code
@@ -90,12 +91,34 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
   return (
     <div className="editor-content">
       <div className="editor-header">
-        <button onClick={PreviewAction?.run}>
-          {isCompiling ? "Compiling..." : "Preview"}
-        </button>
-        <button onClick={CompileAndSaveAction?.run}>
-          {isCompiling ? "Compiling..." : "Compile and Save"}
-        </button>
+        <Tooltip label="Run" side="bottom">
+          <button onClick={PreviewAction?.run}>
+            {/* {isCompiling ? "Compiling..." : "Preview"} */}
+            <svg
+              viewBox="0 0 36 36"
+              className="custom-play-icon"
+              width="24"
+              height="24"
+              fill="currentColor"
+            >
+              <path d="M32.16,16.08,8.94,4.47A2.07,2.07,0,0,0,6,6.32V29.53a2.06,2.06,0,0,0,3,1.85L32.16,19.77a2.07,2.07,0,0,0,0-3.7Z"></path>
+            </svg>
+          </button>
+        </Tooltip>
+        {/* <Tooltip label="Built & View" side="bottom"> */}
+        {/*   <button onClick={CompileAndSaveAction?.run}> */}
+        {/* {isCompiling ? "Compiling..." : "Compile and Save"} */}
+        {/*     <svg */}
+        {/*       viewBox="0 0 36 36" */}
+        {/*       className="custom-play-icon" */}
+        {/*       width="18" */}
+        {/*       height="18" */}
+        {/*       fill="currentColor" */}
+        {/*     > */}
+        {/*       <path d="M17.71,32a2,2,0,0,1-.86-.2A1.77,1.77,0,0,1,16,30v-6.7L5.17,31.58a1.94,1.94,0,0,1-2.06.22A2,2,0,0,1,2,30V6A2,2,0,0,1,3.11,4.2a1.93,1.93,0,0,1,2.06.22L16,12.69V6a1.77,1.77,0,0,1,.85-1.79,1.93,1.93,0,0,1,2.06.22l15.32,12a2,2,0,0,1,0,3.15l-15.32,12A2,2,0,0,1,17.71,32Z"></path> */}
+        {/*     </svg> */}
+        {/*   </button> */}
+        {/* </Tooltip> */}
       </div>
       <div className="latex-editor-wrapper">
         <div ref={containerRef} className="latex-editor"></div>;

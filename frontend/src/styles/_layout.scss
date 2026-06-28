@@ -52,9 +52,10 @@
   height: -webkit-fill-available;
   border-top-left-radius: 7px;
   background-color: white;
-  box-shadow: 0px 4px 12px #5955658f;
+  // box-shadow: 0px 4px 12px #5955658f;
+  box-shadow: 0px 4px 12px rgb(89 85 101 / 34%);
   padding: 2rem; // this needed incase a refresh happend in /resumes
-  overflow: auto;
+  // overflow: auto;
   // height: calc(100vh - 5.1rem);
   padding-bottom: 0.6rem;
 }

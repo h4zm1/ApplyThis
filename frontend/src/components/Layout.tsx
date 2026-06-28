@@ -9,6 +9,12 @@ import Tooltip from "./ui/tooltip";
 const Layout = () => {
   const { user, logout } = useAuth();
   const { headerTitle } = useAction();
+  const insideEditor = location.pathname.includes("editor");
+  // no main content overflow in editor (make box shadow not working correctly)
+  const mainContentStyle = {
+    overflow: insideEditor ? "unset" : "auto",
+  };
+
   return (
     <div className="layout">
       <div className="side-bar">
@@ -66,7 +72,7 @@ const Layout = () => {
       {/* 'outlet' indicate where child routes will render */}
       <div className="main-holder">
         <Header />
-        <main className="main-content">
+        <main className="main-content" style={mainContentStyle}>
           <Outlet />
         </main>
       </div>

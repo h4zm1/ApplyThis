@@ -21,7 +21,16 @@
 // == editor styles ===
 .editor-header {
   background-color: transparent;
-  padding-bottom: 1.1rem;
+  padding-bottom: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+  button {
+    background-color: transparent;
+    padding-inline: 1rem;
+    border-radius: 0.4rem;
+    border: #212121 solid 0px;
+    color: green;
+  }
 }
 .editor-side {
   overflow: unset !important;
@@ -31,7 +40,8 @@
   // box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
 }
 .latex-editor-wrapper {
-  box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
+  // box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
+  box-shadow: 0px 4px 12px rgb(89 85 101 / 34%);
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
   padding-top: 0.2rem;
@@ -81,13 +91,30 @@ iframe {
   display: flex;
   padding-bottom: 0.7rem;
   // justify-content: center;
+  .zoom-select {
+    font-size: 15px;
+    background-color: white;
+    border: 1px solid #bebebe;
+    cursor: pointer;
+    border-inline: none;
+    color: #4b4b4b;
+    border-radius: 0;
+    height: unset;
+    padding: revert; // this will ignore the padding from select-trigger and use default html element padding (6px)
+    font-variant-numeric: tabular-nums;
+    .select-icon {
+      display: none;
+    }
+  }
+}
+.zoom-element {
+  display: flex;
 }
 .zoom-btn {
-  padding: 2px 8px;
-  border: solid #a1a1a1 1px;
   color: #4b4b4b;
-  // font-size: 20px;
   background-color: white;
+  border: 1px solid #bebebe;
+  padding-block: 2.4px;
 }
 .zoom-label {
   border: solid #a1a1a1 1px;
@@ -116,7 +143,7 @@ iframe {
   line-height: 0;
   text-align: center;
   width: fit-content;
-  margin: 1rem auto;
+  margin: 0.5rem auto;
 }
 
 .preview-canvas {
@@ -172,4 +199,9 @@ iframe {
   position: absolute;
   place-self: center;
   top: 50%;
+}
+
+// hiding the thin dotted line when codemirror is focused
+.cm-focused {
+  outline: none !important;
 }
