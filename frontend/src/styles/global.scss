@@ -99,14 +99,15 @@ button {
     border-radius: 7px;
     border: solid 2px;
     border-color: #58a7ff;
-    box-shadow: 2 2 red;
+    // box-shadow: 2 2 red;
     box-shadow: inset 0px 0px 12px 1px #b1d6ffd1;
     padding: 1rem;
     margin-top: 1rem;
-    cursor: red;
+    // cursor: red;
   }
   &.list {
     flex-direction: column;
     padding: unset;
+    height: calc(100vh - 26rem);
   }
 }

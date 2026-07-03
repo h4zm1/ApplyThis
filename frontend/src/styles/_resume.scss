@@ -59,6 +59,7 @@
       background-color: #ffffff69;
       backdrop-filter: blur(1px);
       min-width: stretch;
+      min-width: -moz-available;
       &:hover {
         background-color: #f4f4f4;
         z-index: 1;
@@ -68,6 +69,7 @@
       backdrop-filter: blur(1px);
       background-color: #dddddd80;
       min-width: stretch;
+      min-width: -moz-available;
       &:hover {
         background-color: #dddddd;
         z-index: 1;
@@ -114,6 +116,7 @@
   cursor: default;
   // contain: content;
   background-color: white;
+  display: grid;
   &.list {
     height: unset;
     width: unset;

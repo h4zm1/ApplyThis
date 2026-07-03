@@ -29,6 +29,11 @@
 
   "icons": {
     "48": "icons/bitmap.svg"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/bitmap.svg"],
+      "matches": ["*://*.linkedin.com/*"]
+    }
+  ]
 }
-

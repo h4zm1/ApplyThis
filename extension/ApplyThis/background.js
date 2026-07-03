@@ -187,3 +187,28 @@ function showNotification(title, message) {
 
 console.log("[ApplyThis] Background script loaded");
 
+// ---- Handle messages from content script AND popup ----
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "CHECK_AUTH") {
+    isAuthenticated().then((result) => sendResponse({ authenticated: result }));
+    return true;
+  }
+
+  if (message.action === "TRACK_JOB") {
+    createJob(message.data)
+      .then((created) => {
+        console.log("[ApplyThis] Job created via widget:", created);
+        showNotification(
+          "Job Tracked ✓",
+          `${created.position} at ${created.company}`,
+        );
+        sendResponse({ success: true, job: created });
+      })
+      .catch((error) => {
+        console.error("[ApplyThis] Widget track failed:", error);
+        sendResponse({ success: false, error: error.message });
+      });
+    return true; // async response
+  }
+});
