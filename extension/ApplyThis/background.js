@@ -187,9 +187,67 @@ function showNotification(title, message) {
 
 console.log("[ApplyThis] Background script loaded");
 
-// ---- Handle messages from content script AND popup ----
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   if (message.action === "checkJobStatus") {
+//     // Run the async logic in an isolated execution block
+//     checkJobStatus(message.company, message.position).then(sendResponse);
+//
+//     return true; // Keeps the communication channel open for the async response
+//   }
+// });
 
+async function checkJobStatus(company, position) {
+  // const tokens = await getTokens();
+  // if (!tokens.accessToken) return { authenticated: false, applied: false };
+  console.error("BEFORE TRY");
+  try {
+    const jobs = await apiFetch("/jobs");
+    // const response = await fetch(`${API_BASE}/jobs`, {
+    //   headers: {
+    //     Authorization: `Bearer ${tokens.accessToken}`,
+    //   },
+    // });
+    //
+    // if (!response.ok) return { authenticated: true, applied: false };
+
+    // const jobs = await response.json();
+
+    // check if any jobs matches this company + position
+    const match = jobs.find((job) => {
+      const companyMatch =
+        company && job.company.toLowerCase().includes(company.toLowerCase());
+      const positionMatch =
+        position && job.position.toLowerCase().includes(position.toLowerCase());
+      return companyMatch && positionMatch;
+    });
+    return {
+      authenticated: true,
+      applied: !!match,
+      job: match || null,
+    };
+  } catch (e) {
+    console.error("[ApplyThis] Error checking job status:", e);
+    return { authenticated: true, applied: false };
+  }
+}
+
+// ---- Handle messages from content script AND popup ----
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "CHECK_JOB_STATUS") {
+    checkJobStatus(message.data.company, message.data.position)
+      .then((result) => {
+        // send data back
+        sendResponse(result);
+      })
+      .catch((error) => {
+        console.error("[ApplyThis] Error checking status:", error);
+        sendResponse({ authenticated: false, applied: false });
+      });
+
+    // keep pipline open
+    return true;
+  }
+
   if (message.action === "CHECK_AUTH") {
     isAuthenticated().then((result) => sendResponse({ authenticated: result }));
     return true;
@@ -209,6 +267,6 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.error("[ApplyThis] Widget track failed:", error);
         sendResponse({ success: false, error: error.message });
       });
-    return true; // async response
+    return true;
   }
 });

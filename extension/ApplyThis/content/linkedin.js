@@ -83,53 +83,31 @@
   // api functions
   //===============
 
-  const API_BASE = "http://localhost:3000/api";
-
-  async function getTokens() {
-    const result = await browser.storage.local.get([
-      "accessToken",
-      "refreshToken",
-    ]);
-    return {
-      accessToken: result.accessToken || null,
-      refreshToken: result.refreshToken || null,
-    };
-  }
+  // const API_BASE = "http://localhost:3000/api";
+  //
+  // async function getTokens() {
+  //   const result = await browser.storage.local.get([
+  //     "accessToken",
+  //     "refreshToken",
+  //   ]);
+  //   return {
+  //     accessToken: result.accessToken || null,
+  //     refreshToken: result.refreshToken || null,
+  //   };
+  // }
 
   async function checkIfApplied(company, position) {
-    const tokens = await getTokens();
-    if (!tokens.accessToken) return { authenticated: false, applied: false };
-
     try {
-      const response = await fetch(`${API_BASE}/jobs`, {
-        headers: {
-          Authorization: `Bearer ${tokens.accessToken}`,
-        },
+      console.error("INSIDE CHECKIFAPPLIED");
+      const response = await browser.runtime.sendMessage({
+        action: "CHECK_JOB_STATUS",
+        data: { company, position },
       });
 
-      if (!response.ok) return { authenticated: true, applied: false };
-
-      const jobs = await response.json();
-
-      // check if any job matches this company + position
-      const match = jobs.find((job) => {
-        const companyMatch =
-          company && job.company.toLowerCase().includes(company.toLowerCase());
-        const positionMatch =
-          position &&
-          job.position &&
-          job.position.toLowerCase().includes(position.toLowerCase());
-        return companyMatch || (companyMatch && positionMatch);
-      });
-
-      return {
-        authenticated: true,
-        applied: !!match,
-        job: match || null,
-      };
+      return response;
     } catch (e) {
       console.error("[ApplyThis] Error checking job status:", e);
-      return { authenticated: true, applied: false };
+      return { authenticated: false, applied: false };
     }
   }
 

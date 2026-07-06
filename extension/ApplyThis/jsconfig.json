@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "moduleResolution": "Node",
+    "types": ["firefox-webext-browser"]
+  },
+  "include": ["**/*.js"]
+}
