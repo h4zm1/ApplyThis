@@ -79,6 +79,8 @@ jobs:
 
       - name: Build React frontend
         working-directory: frontend
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }} 
         run: npm run build
 
       # copy dist to nginx static files folder
