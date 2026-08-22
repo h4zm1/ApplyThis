@@ -7,23 +7,22 @@ import { Prisma } from "@prisma/client";
 
 // get all resumes for a user
 export async function getUserResume(userId: string) {
-  return (
-    await prisma.resume.findMany({
-      // this's like findAllByUserId(userid) in spring
-      where: { userId },
-      orderBy: { updatedAt: "desc" },
-      select: {
-        id: true,
-        name: true,
-        pdfUrl: true,
-        thumbnailUrl: true,
-        source: true,
-        createdAt: true,
-        updatedAt: true,
-        orderIndex: true,
-      },
-    })
-  ).map((r) => ({
+  const resumes = await prisma.resume.findMany({
+    // this's like findAllByUserId(userid) in spring
+    where: { userId },
+    orderBy: { updatedAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      pdfUrl: true,
+      thumbnailUrl: true,
+      source: true,
+      createdAt: true,
+      updatedAt: true,
+      orderIndex: true,
+    },
+  });
+  return resumes.map((r) => ({
     ...r,
     orderIndex: r.orderIndex.toNumber(),
   }));

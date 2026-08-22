@@ -1,30 +1,29 @@
-import { Prisma } from "@prisma/client";
+import { Job, Prisma } from "@prisma/client";
 import prisma from "../config/database";
 import logger from "../config/logger";
 import { createJobDto, JobStatus, updateJobDto } from "../types/job";
 
 // get all jobs for a user
 export async function getUserJobs(userId: string, status?: string) {
-  const filter = (status && status.toLowerCase() !== 'all')
-    ? status
-    : undefined;
-  return (await prisma.job.findMany({
-    where: {
-      userId,
-      ...(filter && { status: filter as JobStatus })
-    },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      resume: {
-        select: {
-          id: true,
-          name: true,
-          pdfUrl: true,
+  const filter = status && status.toLowerCase() !== "all" ? status : undefined;
+  return (
+    await prisma.job.findMany({
+      where: {
+        userId,
+        ...(filter && { status: filter as JobStatus }),
+      },
+      orderBy: { updatedAt: "desc" },
+      include: {
+        resume: {
+          select: {
+            id: true,
+            name: true,
+            pdfUrl: true,
+          },
         },
       },
-    },
-  })).map((j) => ({ ...j, orderIndex: j.orderIndex.toNumber }));
-
+    })
+  ).map((j: Job) => ({ ...j, orderIndex: j.orderIndex.toNumber }));
 }
 
 // get a single job by id
@@ -90,7 +89,7 @@ export async function createJob(userId: string, data: createJobDto) {
       followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
       resumeId: data.resumeId,
       userId,
-      orderIndex: newOrder
+      orderIndex: newOrder,
     },
     include: {
       resume: {

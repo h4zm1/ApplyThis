@@ -7,6 +7,7 @@ import { AuthRequest } from "../types/auth";
 import { updateResumePdfAndThumbnailUrl } from "../services/resumeService";
 import { pdfToPng } from "pdf-to-png-converter";
 
+// TODO: limit page compilation to 3 pages max
 // compile only endpoint, return pdf
 export async function compile(req: Request, res: Response) {
   const { source } = req.body;

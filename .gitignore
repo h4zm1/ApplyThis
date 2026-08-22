@@ -28,3 +28,5 @@ dist-ssr
 *.sw?
 
 frontend/package-lock.json
+
+frontend/.env.production

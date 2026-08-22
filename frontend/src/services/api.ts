@@ -67,11 +67,11 @@ api.interceptors.response.use(
         localStorage.setItem("refreshToken", newRefreshToken);
 
         // update the auth header of the failed request with the new token that we just got
-        orginalRequest.headers.Authorization = "Bearer " + accessToken;
+        originalRequest.headers.Authorization = "Bearer " + accessToken;
 
         // retry original requst by passing the updated config back to the api instance
         // this return the result of the retrieved call back to the original 'await' that triggered this
-        return api(orginalRequest);
+        return api(originalRequest);
       } catch (refreshError) {
         // refresh failed (expired or invalid), so now clear token and redirect to login
         localStorage.removeItem("accessToken");
