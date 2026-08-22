@@ -28,6 +28,10 @@ jobs:
         working-directory: backend
         run: npm run build
 
+      - name: Generate prisma client
+        working-directory: backend
+        run: npx prisma generate
+
       # copy dist and package files
       - name: Copy backend build to EC2
         uses: appleboy/scp-action@master
