@@ -199,6 +199,8 @@ iframe {
   position: absolute;
   place-self: center;
   top: 50%;
+  width: -webkit-fill-available;
+  text-align: center;
 }
 
 // hiding the thin dotted line when codemirror is focused

@@ -38,14 +38,15 @@
   // display: flex;
   // flex-direction: column;
   // gap: 0.6rem;
+  display: grid; // needed to make context bar work right in ff
 
   .context-bar {
-    margin-top: -4rem;
+    margin-top: 5rem;
   }
 }
 .job-body:hover .context-bar {
   opacity: 1;
-  margin-top: -4rem;
+  margin-top: 5rem;
   max-height: 200px;
   display: flex;
   justify-content: center;
@@ -93,6 +94,8 @@
 .midline {
   justify-items: center;
   padding-top: 1rem;
+  min-width: 0; // needed to avoid overflowing the title
+  padding-inline: 1rem;
   h3 {
     width: 100%;
     text-overflow: ellipsis;

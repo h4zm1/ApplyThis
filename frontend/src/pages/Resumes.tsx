@@ -24,7 +24,6 @@ import logger from "../services/logger";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import SortableResumeItem from "../components/SortableResumeItem";
-import R_Select from "../components/ui/Select";
 import R_ToggleGroup, { R_ToggleItem } from "../components/ui/ToggleGroup";
 import Tooltip from "../components/ui/tooltip";
 
@@ -152,6 +151,26 @@ const Resumes = () => {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  // handle resume duplication
+  async function handleDuplicate(resume: Resume) {
+    const dummy: Resume = {
+      id: "-1",
+      name: resume.name + "-copy",
+      source: resume.source,
+      pdfUrl: resume.pdfUrl,
+      thumbnailUrl: resume.thumbnailUrl,
+      createdAt: "",
+      updatedAt: "",
+      orderIndex: 0,
+    };
+
+    setEditingResume(dummy);
+    // add to the list to update ui
+    setResumes([dummy, ...resumes]);
+    const res: CreateResumeRequest = dummy;
+    handleSubmit(res);
   }
 
   // delete resume (after confirmation)
@@ -348,7 +367,7 @@ const Resumes = () => {
                       <Tooltip label="Duplicate">
                         <button
                           onClick={(e) => {
-                            handleDelete(resume);
+                            handleDuplicate(resume);
                             e.preventDefault();
                             e.stopPropagation();
                           }}

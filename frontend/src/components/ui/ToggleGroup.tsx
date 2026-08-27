@@ -1,6 +1,5 @@
 import { ToggleGroup } from "radix-ui";
 import "./ToggleGroup.scss";
-import { Children } from "react";
 
 interface Item {
   label: string;
@@ -14,7 +13,12 @@ interface ToggleGroupProps {
   children?: React.ReactNode;
 }
 
-const R_ToggleGroup = ({ value, onChange, items, children }: ToggleGroupProps) => (
+const R_ToggleGroup = ({
+  value,
+  onChange,
+  items,
+  children,
+}: ToggleGroupProps) => (
   <ToggleGroup.Root
     className="toggle-group"
     value={value}
@@ -24,17 +28,17 @@ const R_ToggleGroup = ({ value, onChange, items, children }: ToggleGroupProps) =
     }}
   >
     {/* render children if they exist, otherwise use the item array */}
-    {children ? children :
-
-      items?.map((item) => (
-        <ToggleGroup.Item
-          className="toggle-item"
-          key={item.value}
-          value={item.value}
-        >
-          {item.label}
-        </ToggleGroup.Item>
-      ))}
+    {children
+      ? children
+      : items?.map((item) => (
+          <ToggleGroup.Item
+            className="toggle-item"
+            key={item.value}
+            value={item.value}
+          >
+            {item.label}
+          </ToggleGroup.Item>
+        ))}
   </ToggleGroup.Root>
 );
 
