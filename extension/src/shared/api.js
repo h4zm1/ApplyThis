@@ -1,8 +1,10 @@
 // ============================================
 // ApplyThis API layer
 // ============================================
-
-const API_BASE = "http://localhost:3000/api";
+// %%API_BASE%% will get replaced by build script
+// dev build => http://localhost:3000/api
+// prod build => https://hazmimosbah.com/applythis/api
+const API_BASE = "%%API_BASE%%";
 
 // ---- token management ----
 

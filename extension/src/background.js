@@ -4,7 +4,7 @@
 
 // ---- API Layer ----
 
-const API_BASE = "http://localhost:3000/api";
+const API_BASE = "%%API_BASE%%";
 
 async function getTokens() {
   const result = await browser.storage.local.get([

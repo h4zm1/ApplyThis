@@ -156,7 +156,7 @@
     // create container
     const widget = document.createElement("div");
     widget.id = "applythis-widget";
-    widget.innerHTML = `
+    widget.textContent = `
       <style>
         #applythis-widget {
           /* display:inline-flex; */
@@ -533,7 +533,7 @@
       dot.style.background = "#22c55e";
       toggle.appendChild(dot);
 
-      body.innerHTML = `
+      body.textContent = `
         <div class="at-status">
           <div class="at-dot at-applied"></div>
           <span class="at-status-text">Already tracked</span>
@@ -551,14 +551,14 @@
       document
         .getElementById("applythis-open")
         .addEventListener("click", () => {
-          window.open("http://localhost:5173", "_blank");
+          window.open("%%APP_URL%%", "_blank");
         });
     } else {
       // not applied yet
       dot.style.background = "#a3a3a3";
       toggle.appendChild(dot);
 
-      body.innerHTML = `
+      body.textContent  = `
         <div class="at-status">
           <div class="at-dot at-not-applied"></div>
           <span class="at-status-text">Not tracked yet</span>
@@ -611,7 +611,7 @@
       document
         .getElementById("applythis-open")
         .addEventListener("click", () => {
-          window.open("http://localhost:5173", "_blank");
+          window.open("%%APP_URL%%", "_blank");
         });
     }
   }

@@ -20,7 +20,7 @@ redis.on("connect", () => {
   logger.info("redis connected");
 });
 
-redis.on("err	or", (err) => {
+redis.on("error", (err) => {
   logger.error({ message: err.message }, "redis error");
 });
 

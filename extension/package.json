@@ -1,0 +1,9 @@
+{
+  "name": "applythis-extension",
+  "version": "1.0.0",
+  "description": "build script for ff extension",
+  "scripts": {
+    "dev": "node build.js dev",
+    "prod": "node build.js prod"
+  }
+}
