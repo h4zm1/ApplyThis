@@ -59,3 +59,40 @@
     width: 100%;
   }
 }
+// settings form styles
+.accent {
+  display: flex;
+  flex-direction: row;
+  gap: 5rem;
+  h1 {
+    font-weight: 500;
+  }
+}
+.colors {
+  display: flex;
+  gap: 1rem;
+  button {
+    border: solid thin #00000038;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 6px;
+    &[data-state="on"] {
+      border: solid medium #94c7ff;
+    }
+  }
+  div {
+    gap: 6px;
+  }
+}
+.a0 {
+  background-color: #ccffcc;
+}
+.a1 {
+  background-color: #ffc2c2;
+}
+.a2 {
+  background-color: #d3d3ff;
+}
+.a3 {
+  background-color: #ffffb6;
+}
