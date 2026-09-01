@@ -27,7 +27,8 @@
     flex-wrap: wrap;
   }
   .side-btn.active {
-    background-color: #e7e7e7;
+    // background-color: #e7e7e7;
+    background-color: var(--active-bg);
     color: #1b1a1c;
     z-index: -1;
   }

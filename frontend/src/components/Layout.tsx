@@ -10,10 +10,11 @@ import {
 import Header from "./Header";
 import { useAction } from "../context/AppContext";
 import Tooltip from "./ui/tooltip";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logger from "../services/logger";
 import Popup from "../components/popUp";
 import SettingsForm from "./SettingsForm";
+import { useUIContext } from "../context/UIContext";
 
 // main layout wrapper
 const Layout = () => {
@@ -21,7 +22,7 @@ const Layout = () => {
   const { headerTitle } = useAction();
   const insideEditor = location.pathname.includes("editor");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
+  const { accentColor } = useUIContext();
   // no main content overflow in editor (make box shadow not working correctly)
   const mainContentStyle = {
     overflow: insideEditor ? "unset" : "auto",
@@ -34,6 +35,14 @@ const Layout = () => {
   function handleClosePopup() {
     setIsPopupOpen(false);
   }
+  useEffect(() => {
+    if (accentColor) {
+      const bgColor = `color-mix(in srgb, ${accentColor} 20%, transparent`;
+      document.body.style.setProperty("--body-bg", bgColor);
+    } else {
+      document.body.style.removeProperty("--body-bg");
+    }
+  }, [accentColor]);
 
   return (
     <div className="layout">
@@ -46,6 +55,7 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/dashboard"
+              style={{ "--active-bg": accentColor } as React.CSSProperties}
               end // 'end' means exact match only
             >
               <LayoutDashboard size={21} />
@@ -59,6 +69,7 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/resumes"
+              style={{ "--active-bg": accentColor } as React.CSSProperties}
             >
               <FileText size={21} />
               {/* Resumes */}
@@ -71,6 +82,7 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/jobs"
+              style={{ "--active-bg": accentColor } as React.CSSProperties}
             >
               <Briefcase size={21} />
               {/* Jobs */}
