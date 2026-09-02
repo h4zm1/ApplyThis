@@ -190,7 +190,7 @@ const Resumes = () => {
   }
 
   useEffect(() => {
-    console.log("layout changed", layout);
+    // console.log("layout changed", layout);
   }, [layout]);
 
   // drag and drop handler

@@ -22,7 +22,7 @@ const Layout = () => {
   const { headerTitle } = useAction();
   const insideEditor = location.pathname.includes("editor");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const { accentColor } = useUIContext();
+  const { accentColor, setAccentColor } = useUIContext();
   // no main content overflow in editor (make box shadow not working correctly)
   const mainContentStyle = {
     overflow: insideEditor ? "unset" : "auto",
@@ -30,15 +30,21 @@ const Layout = () => {
 
   function openSettings() {
     setIsPopupOpen(true);
-    logger.log("open setttings");
   }
   function handleClosePopup() {
     setIsPopupOpen(false);
   }
   useEffect(() => {
+    const saved = localStorage.getItem("ACCENT-COLOR");
+    if (saved) setAccentColor(saved);
+    else setAccentColor("#e7e7e7");
+  }, []);
+
+  useEffect(() => {
     if (accentColor) {
       const bgColor = `color-mix(in srgb, ${accentColor} 20%, transparent`;
       document.body.style.setProperty("--body-bg", bgColor);
+      localStorage.setItem("ACCENT-COLOR", accentColor);
     } else {
       document.body.style.removeProperty("--body-bg");
     }
