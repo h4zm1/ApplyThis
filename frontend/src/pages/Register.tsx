@@ -45,7 +45,8 @@ const Register = () => {
       // send data to register function inside our authProvider
       await register({ email, password });
       // if successful go to dashboard page
-      navigate("/dashboard", { replace: true });
+      // navigate("/dashboard", { replace: true });
+      navigate("/login", { replace: true });
     } catch (error: any) {
       setError(error.response?.data?.error || "registration failed");
     } finally {

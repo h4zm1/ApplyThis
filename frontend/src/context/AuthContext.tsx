@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("refreshToken", refreshToken);
 
     const payload = JSON.parse(atob(accessToken.split(".")[1]));
-    setUser({ userId: payload.userId, email: payload.email });
+    // setUser({ userId: payload.userId, email: payload.email });
   };
 
   // clear all local state and storage on lougout

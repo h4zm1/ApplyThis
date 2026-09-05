@@ -3,6 +3,7 @@ import {
   loginUser,
   refreshTokens,
   registerUser,
+  verifyEmail,
 } from "../services/authService";
 import logger from "../config/logger";
 
@@ -51,11 +52,15 @@ export async function login(req: Request, res: Response) {
     }
 
     const token = await loginUser(email, password);
-    return res.json(token);
+    return res.status(200).json(token);
   } catch (error) {
     if (error instanceof Error && error.message === "invalid credentials") {
       return res.status(401).json({ error: "invalid credentials" }); // 401 for anauthorizrd
     }
+
+    if (error instanceof Error && error.message === "email not verified")
+      return res.status(403).json({ error: "email not verified" });
+
     logger.error({ error }, "login failed");
     res.status(500).json({ error: "login failed" });
   }
@@ -75,5 +80,33 @@ export async function refresh(req: Request, res: Response) {
   } catch (error) {
     // token invalid or expired
     return res.status(401).json({ error: "invaild refresh token" });
+  }
+}
+
+export async function verifyMail(req: Request, res: Response) {
+  try {
+    const { token } = req.query;
+
+    if (!token || typeof token !== "string") {
+      return res.status(400).json({ error: "token required" });
+    }
+
+    await verifyEmail(token);
+
+    // redirect to login page on sucess
+    return res.redirect(`${process.env.APP_URL}/login?verified=true`);
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error({ message: error.message }, "email verification failed");
+
+      if (error.message === "token expired") {
+        // if token expired redirect to where they can reqeust new link
+        return res.redirect(`${process.env.APP_URL}/login?error=token_expired`);
+      }
+      if (error.message === "invalid token") {
+        return res.redirect(`${process.env.APP_URL}/login?error=invalid_token`);
+      }
+    }
+    res.status(500).json({ error: "verification failed" });
   }
 }

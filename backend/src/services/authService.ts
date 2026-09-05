@@ -1,9 +1,11 @@
+import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { TokenPayload } from "../types/auth";
 import jwt from "jsonwebtoken";
 import prisma from "../config/database";
 import logger from "../config/logger";
 import { log } from "node:console";
+import { sendVerificationEmail } from "./emailService";
 
 // hash password before storing
 // like passswordEncoder.encode() in spring
@@ -59,18 +61,33 @@ export async function registerUser(email: string, password: string) {
   // hash password
   const hashedPassword = await hashPassword(password);
 
+  // generate random verification token
+  const verifyToken = crypto.randomBytes(32).toString("hex");
+  // token expire in 24 hours
+  const verifyTokenExp = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
   // create user
   const user = await prisma.user.create({
     data: {
       email: email,
       password: hashedPassword,
+      isVerified: false,
+      verifyToken,
+      verifyTokenExp,
     },
   });
 
-  logger.info({ userId: user.id }, "user registered");
+  logger.info({ userId: user.id }, "user registered, awaiting verification");
 
-  // return token
-  return generateTokens(user.id, user.email);
+  sendVerificationEmail(email, verifyToken).catch((err) => {
+    logger.error(
+      { message: err.message, userId: user.id },
+      "failed to send verification mail",
+    );
+  });
+
+  // no login till verified
+  return { message: "reg success, check mail" };
 }
 
 // login user
@@ -83,7 +100,9 @@ export async function loginUser(email: string, password: string) {
   if (!user) {
     throw new Error("invalid credentials");
   }
-
+  if (!user.isVerified) {
+    throw new Error("email not verified");
+  }
   // check password
   const validPassword = await comparePassword(password, user.password);
   if (!validPassword) {
@@ -111,4 +130,32 @@ export async function refreshTokens(refreshToken: string) {
 
   // generate new token
   return generateTokens(user.id, user.email);
+}
+
+// verify from the token in link
+export async function verifyEmail(token: string) {
+  // find user with this token
+  const user = await prisma.user.findFirst({
+    where: {
+      verifyToken: token,
+      isVerified: false,
+    },
+  });
+
+  if (!user) throw new Error("invalid token");
+
+  // check token didn't expire
+  if (!user.verifyTokenExp || user.verifyTokenExp < new Date())
+    throw new Error("token expired");
+
+  // mark as verified and clear token (so it can't be reused)
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      verifyToken: null,
+      verifyTokenExp: null,
+      isVerified: true,
+    },
+  });
+  logger.info({ userId: user.id }, "email verified");
 }

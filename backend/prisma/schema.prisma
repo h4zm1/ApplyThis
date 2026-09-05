@@ -14,28 +14,32 @@ datasource db {
 
 // like @Entity User in Spring Boot
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  resumes   Resume[]
-  jobs      Job[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  resumes        Resume[]
+  jobs           Job[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  isVerified     Boolean        @default(false) // false till email confirmed
+  verifyToken    String?
+  verifyTokenExp DateTime?
+
 }
 
 // resume document
 model Resume {
-  id           String          @id @default(uuid())
-  name         String
-  source       String          @db.Text    // latex source code
-  pdfUrl       String?          // compiled pdf is stored here (s3 url)
-  thumbnailUrl String?
-  userId       String
-  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobs         Job[]           // jobs this resume was sent to
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  orderIndex   Decimal        @db.Decimal(32,16) @default(0)
+  id             String          @id @default(uuid())
+  name           String
+  source         String          @db.Text    // latex source code
+  pdfUrl         String?          // compiled pdf is stored here (s3 url)
+  thumbnailUrl   String?
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs           Job[]           // jobs this resume was sent to
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  orderIndex     Decimal        @db.Decimal(32,16) @default(0)
 }
 
 
