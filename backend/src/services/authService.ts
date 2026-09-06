@@ -78,8 +78,9 @@ export async function registerUser(email: string, password: string) {
   });
 
   logger.info({ userId: user.id }, "user registered, awaiting verification");
-
   sendVerificationEmail(email, verifyToken).catch((err) => {
+    // console.log("EMAIL ERROR", err.message);
+    // console.log("FULL ERROR", err);
     logger.error(
       { message: err.message, userId: user.id },
       "failed to send verification mail",

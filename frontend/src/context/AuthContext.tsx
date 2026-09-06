@@ -19,7 +19,7 @@ interface AuthContextType {
   isLoading: boolean; //
   isAuthenticated: boolean;
   login: (data: LoginRequest) => Promise<void>;
-  register: (data: RegisterRequest) => Promise<void>;
+  register: (data: RegisterRequest) => Promise<{ message: string }>;
   logout: () => void;
 }
 
@@ -72,14 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // create new user and automaticly log them in
   const register = async (data: RegisterRequest) => {
-    const response = await api.post<AuthTokens>("/auth/register", data);
-    const { accessToken, refreshToken } = response.data;
-
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-
-    const payload = JSON.parse(atob(accessToken.split(".")[1]));
-    // setUser({ userId: payload.userId, email: payload.email });
+    const response = await api.post<{ message: string }>(
+      "/auth/register",
+      data,
+    );
+    return response.data;
   };
 
   // clear all local state and storage on lougout

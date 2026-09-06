@@ -34,6 +34,16 @@ const Login = () => {
   }
 
   useEffect(() => {
+    // check if we came from register page with successfull registration
+    if (location.state?.successMessage) {
+      setMessage(location.state.successMessage);
+      setMessageType("success");
+
+      // this to clear the reg success message on login page refresh (otherwise it won't)
+      navigate(location.pathname, { replace: true, state: {} });
+      return;
+    }
+
     // this's the query params from the verify endpoint redirect
     if (searchParams.get("verified") === "true") {
       setMessage("Email verified, you can now log in.");
@@ -50,6 +60,7 @@ const Login = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    setMessage("");
     setIsSubmitting(true);
 
     try {

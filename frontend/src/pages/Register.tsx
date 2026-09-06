@@ -43,12 +43,18 @@ const Register = () => {
 
     try {
       // send data to register function inside our authProvider
-      await register({ email, password });
-      // if successful go to dashboard page
-      // navigate("/dashboard", { replace: true });
-      navigate("/login", { replace: true });
+      const response = await register({ email, password });
+
+      // if successful go to login page with success message
+      navigate("/login", {
+        replace: true,
+        state: {
+          successMessage: "Registration successful! Check your email.",
+        },
+      });
     } catch (error: any) {
       setError(error.response?.data?.error || "registration failed");
+      console.log("registration failed", error);
     } finally {
       // whether the registration fail or succeed, we just stop loading
       setIsSubmitting(false);

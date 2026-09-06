@@ -1,23 +1,5 @@
-import nodemailer from "nodemailer/lib/nodemailer";
-import logger from "../config/logger";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
-  secure: false, // false = port 587, true = port 465
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// verify connection
-transporter.verify((error) => {
-  if (error) {
-    logger.error({ message: error.message }, "email connection failed");
-  } else {
-    logger.info("email ready");
-  }
-});
-
-export default transporter;
+export default resend;
