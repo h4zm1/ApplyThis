@@ -11,6 +11,7 @@ import Editor from "./pages/Editor";
 import { ActionProvider } from "./context/AppContext";
 import { UIProvider } from "./context/UIContext";
 import { useEffect } from "react";
+import AuthCallback from "./pages/AuthCallback";
 
 function App() {
   useEffect(() => {
@@ -33,6 +34,7 @@ function App() {
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/auth-callback" element={<AuthCallback />} />
       <Route
         element={
           <ProtectedRoute>

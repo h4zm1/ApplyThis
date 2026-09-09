@@ -150,7 +150,7 @@ export async function verifyEmail(token: string) {
     throw new Error("token expired");
 
   // mark as verified and clear token (so it can't be reused)
-  await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
       verifyToken: null,
@@ -159,4 +159,49 @@ export async function verifyEmail(token: string) {
     },
   });
   logger.info({ userId: user.id }, "email verified");
+  return updatedUser;
+}
+
+// generate a code after mail verification (single use and expire in 2min)
+export async function generateAuthCode(userId: string): Promise<string> {
+  const authCode = crypto.randomBytes(32).toString("hex");
+  const authCodeExp = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { authCode, authCodeExp },
+  });
+
+  return authCode;
+}
+
+// this will get called from the temp page in the front to exchange the code for jwt tokens
+export async function exchangeAuthCode(code: string) {
+  // find user with this code
+  const user = await prisma.user.findFirst({
+    where: { authCode: code },
+  });
+
+  if (!user) {
+    throw new Error("invalid code");
+  }
+
+  // too late
+  if (!user.authCodeExp || user.authCodeExp < new Date()) {
+    throw new Error("code expired");
+  }
+
+  // clear the code
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      authCode: null,
+      authCodeExp: null,
+    },
+  });
+
+  logger.info({ userId: user.id }, "auth code exchanged for tokens");
+
+  // return jwt tokens (for auto login after mail verificatiin)
+  return generateTokens(user.id, user.email);
 }

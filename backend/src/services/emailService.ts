@@ -6,7 +6,7 @@ export async function sendVerificationEmail(
   email: string,
   token: string,
 ): Promise<void> {
-  const verifyUrl = `${process.env.APP_URL}/api/auth/verify-email?token=${token}`;
+  const verifyUrl = `${process.env.APP_URL}/api/auth/verify-mail?token=${token}`;
 
   const { error } = await resend.emails.send({
     from: `"ApplyThis" <${process.env.EMAIL_FROM}>`,

@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import {
+  checkVerified,
+  exchangeAuthCode,
+  generateAuthCode,
   loginUser,
   refreshTokens,
   registerUser,
@@ -83,6 +86,7 @@ export async function refresh(req: Request, res: Response) {
   }
 }
 
+// verify tokens, generate auth code, redirect to frend with code
 export async function verifyMail(req: Request, res: Response) {
   try {
     const { token } = req.query;
@@ -91,10 +95,14 @@ export async function verifyMail(req: Request, res: Response) {
       return res.status(400).json({ error: "token required" });
     }
 
-    await verifyEmail(token);
+    const user = await verifyEmail(token);
+    const authCode = await generateAuthCode(user.id);
 
-    // redirect to login page on sucess
-    return res.redirect(`${process.env.APP_URL}/login?verified=true`);
+    // redirect to auth callback page with the code
+    // code will be visible in url but the 2 min expiration will be the safty net (too lazy for httponly cookies)
+    return res.redirect(
+      `${process.env.APP_URL}/auth-callback?code=${authCode}`,
+    );
   } catch (error) {
     if (error instanceof Error) {
       logger.error({ message: error.message }, "email verification failed");
@@ -108,5 +116,33 @@ export async function verifyMail(req: Request, res: Response) {
       }
     }
     res.status(500).json({ error: "verification failed" });
+  }
+}
+
+// this will exchange the code the jwt tokens
+export async function exchangeCode(req: Request, res: Response) {
+  try {
+    const { code } = req.body;
+
+    if (!code || typeof code !== "string") {
+      return res.status(400).json({ error: "code required" });
+    }
+
+    const tokens = await exchangeAuthCode(code);
+    return res.status(200).json(tokens);
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error({ message: error.message }, "code exchange failed");
+
+      if (error.message === "invalid code") {
+        return res.status(400).json({ error: "invalid code" });
+      }
+      if (error.message === "code expired") {
+        return res
+          .status(400)
+          .json({ error: "code expired, please log in manually" });
+      }
+    }
+    res.status(500).json({ error: "exchange failed" });
   }
 }

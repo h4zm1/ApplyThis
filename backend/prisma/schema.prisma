@@ -24,7 +24,8 @@ model User {
   isVerified     Boolean        @default(false) // false till email confirmed
   verifyToken    String?
   verifyTokenExp DateTime?
-
+  authCode       String?   //one time code generated after mail verification
+  authCodeExp    DateTime? // 2 min expiration
 }
 
 // resume document

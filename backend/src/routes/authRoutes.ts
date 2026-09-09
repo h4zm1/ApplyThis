@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  exchangeCode,
   login,
   refresh,
   register,
@@ -17,7 +18,7 @@ router.post("/login", login);
 // POST /api/auth/refresh
 router.post("/refresh", refresh);
 
-// GET /api/auth/verifiy-mail
-router.get("/verify-mail", verifyMail);
+// POST
+router.post("/exchange-code", exchangeCode);
 
 export default router;

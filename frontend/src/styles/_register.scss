@@ -64,3 +64,21 @@
     }
   }
 }
+.reg-message {
+  h1 {
+    place-self: center;
+    font-size: 1rem;
+    font-weight: 700;
+    padding-bottom: 5rem;
+  }
+  .reg-content {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 1rem;
+    p {
+      font-weight: 401;
+      line-height: 1.5rem;
+    }
+  }
+}

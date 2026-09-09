@@ -13,6 +13,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(true);
 
   const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -42,16 +43,18 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      // send data to register function inside our authProvider
-      const response = await register({ email, password });
+      await register({ email, password });
+      setIsRegistered(true);
 
       // if successful go to login page with success message
-      navigate("/login", {
-        replace: true,
-        state: {
-          successMessage: "Registration successful! Check your email.",
-        },
-      });
+      // navigate("/login", {
+      //   replace: true,
+      //   state: {
+      //     successMessage: "Registration successful! Check your email.",
+      //     email,
+      //     password,
+      //   },
+      // });
     } catch (error: any) {
       setError(error.response?.data?.error || "registration failed");
       console.log("registration failed", error);
@@ -68,51 +71,73 @@ const Register = () => {
       </div>
       <div className="inner-shell">
         <div className="auth-page">
-          <h1>Sign Up</h1>
+          {!isRegistered ? (
+            <div>
+              <h1>Sign Up</h1>
 
-          <form className="auth-form" onSubmit={handleSubmit}>
-            {/* {error && <div className="auth-error">{error}</div>} */}
+              <form className="auth-form" onSubmit={handleSubmit}>
+                {/* {error && <div className="auth-error">{error}</div>} */}
 
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              required
-            />
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                />
 
-            <PasswordField
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
-            <PasswordStrength password={password} />
+                <PasswordField
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                />
+                <PasswordStrength password={password} />
 
-            <input
-              type="password"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm Password"
-              required
-            />
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm Password"
+                  required
+                />
 
-            <div className="auth-footer">
-              <button
-                className="auth-submit"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Siging up..." : "Sign up"}
-              </button>
-              <p>
-                Already have an account? <Link to="/login">Log in</Link>
-              </p>
+                <div className="auth-footer">
+                  <button
+                    className="auth-submit"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Siging up..." : "Sign up"}
+                  </button>
+                  <p>
+                    Already have an account? <Link to="/login">Log in</Link>
+                  </p>
+                </div>
+                <div className="auth-error">{error}</div>
+              </form>
             </div>
-            <div className="auth-error">{error}</div>
-          </form>
+          ) : (
+            <div className="reg-message">
+              <h1>REQUEST RECEIVED</h1>
+              <div className="reg-content">
+                <p> THANK YOU FOR SUBMITTING YOUR EMAIL ADDRESS. </p>
+                <p>
+                  IF YOUR EMAIL HAS BEEN RECOGNIZED, YOU WILL RECEIVE AN EMAIL
+                  <br />
+                  WITH THE INFORMATION NEEDED TO ACTIVATE YOUR ACCOUNT.
+                </p>
+
+                <p>
+                  THE EMAIL MIGHT TAKE A COUPLE OF MINUTES TO REACH YOUR <br />
+                  ACCOUNT. PLEASE CHECK YOUR JUNK MAIL TO ENSURE <br />
+                  YOU RECEIVE IT.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

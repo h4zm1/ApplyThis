@@ -17,10 +17,7 @@
 
   "permissions": ["contextMenus", "storage", "notifications", "activeTab"],
 
-  "host_permissions": [
-    "http://localhost:3000/*",
-    "https://hazmimosbah.com/*"
-  ],
+  "host_permissions": ["https://hazmimosbah.com/*"],
 
   "background": {
     "scripts": ["background.js"],

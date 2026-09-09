@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   Link,
   useLocation,
@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import logger from "../services/logger";
 import PasswordField from "../components/ui/PasswordField";
 import axios from "axios";
+import api from "../services/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -34,6 +35,9 @@ const Login = () => {
   }
 
   useEffect(() => {
+    const stateMail = location.state?.email as string;
+    const statePass = location.state?.password as string;
+
     // check if we came from register page with successfull registration
     if (location.state?.successMessage) {
       setMessage(location.state.successMessage);
@@ -77,7 +81,10 @@ const Login = () => {
           setError(
             "Please verify your email before logging in. Check your inbox.",
           );
-        else setError(error.response?.data?.error || "login failed");
+        else if (searchParams.get("error") === "code_expired") {
+          setMessage("Verification link expired. Please log in manually.");
+          setMessageType("error");
+        } else setError(error.response?.data?.error || "login failed");
       }
     } finally {
       setIsSubmitting(false);
@@ -92,7 +99,37 @@ const Login = () => {
       <div className="inner-shell">
         <div className="auth-page">
           <h1>Sign In</h1>
-          <div className="verify-message">{message && <p>{message}</p>}</div>
+          <div className="verify-message">
+            {message && <p>{message}</p>}
+
+            {isPolling && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  marginTop: "8px",
+                  fontSize: "12px",
+                  color: "#86efac",
+                  opacity: 0.8,
+                }}
+              >
+                {/* pulsing dot */}
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "50%",
+                    background: "#22c55e",
+                    animation: "pulse 1.5s infinite",
+                  }}
+                />
+                Waiting for verification, this page will redirect
+                automatically...
+              </div>
+            )}
+          </div>
           <form onSubmit={handleSubmit} className="auth-form">
             <input
               type="email"
