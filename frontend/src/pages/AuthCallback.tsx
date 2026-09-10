@@ -12,11 +12,11 @@ export default function AuthCallback() {
   useEffect(() => {
     const code = searchParams.get("code");
 
-    // if (!code) {
-    //   // no code in url, just redirect to login
-    //   navigate("/login?error=invalid_token", { replace: true });
-    //   return;
-    // }
+    if (!code) {
+      // no code in url, just redirect to login
+      navigate("/login?error=invalid_token", { replace: true });
+      return;
+    }
 
     async function exchangeCode() {
       try {
@@ -45,10 +45,8 @@ export default function AuthCallback() {
   }, []);
 
   return (
-    <div>
-      <div>
-        <p>Verifying your email...</p>
-      </div>
+    <div className="callback-msg">
+      {error ? <p>{error}</p> : <p>Verifying your email...</p>}
     </div>
   );
 }

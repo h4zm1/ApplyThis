@@ -18,7 +18,7 @@ router.post("/login", login);
 // POST /api/auth/refresh
 router.post("/refresh", refresh);
 
+router.get("/verify-mail", verifyMail);
 // POST
 router.post("/exchange-code", exchangeCode);
-
 export default router;

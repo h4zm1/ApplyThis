@@ -55,6 +55,9 @@ const Login = () => {
     } else if (searchParams.get("error") === "token_expired") {
       setMessage("Verification link expired. Please register again.");
       setMessageType("error");
+    } else if (searchParams.get("error") === "code_expired") {
+      setMessage("Verification link expired. Please log in manually.");
+      setMessageType("error");
     } else if (searchParams.get("error") === "invalid_token") {
       setMessage("Invalid verification link.");
       setMessageType("error");
@@ -99,37 +102,7 @@ const Login = () => {
       <div className="inner-shell">
         <div className="auth-page">
           <h1>Sign In</h1>
-          <div className="verify-message">
-            {message && <p>{message}</p>}
-
-            {isPolling && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  marginTop: "8px",
-                  fontSize: "12px",
-                  color: "#86efac",
-                  opacity: 0.8,
-                }}
-              >
-                {/* pulsing dot */}
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "6px",
-                    height: "6px",
-                    borderRadius: "50%",
-                    background: "#22c55e",
-                    animation: "pulse 1.5s infinite",
-                  }}
-                />
-                Waiting for verification, this page will redirect
-                automatically...
-              </div>
-            )}
-          </div>
+          <div className="verify-message">{message && <p>{message}</p>}</div>
           <form onSubmit={handleSubmit} className="auth-form">
             <input
               type="email"
