@@ -21,6 +21,7 @@ interface AuthContextType {
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<{ message: string }>;
   logout: () => void;
+  setTokens: (accessToken: string, refreshToken: string)=>void
 }
 
 // create context with undefined default to catch errors if used outside the provider
@@ -86,6 +87,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const setTokens = (accessToken: string, refreshToken: string) => {
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+
+    const payload = JSON.parse(atob(accessToken.split(".")[1]));
+    setUser({ userId: payload.userId, email: payload.email });
+  };
+
   // when we created the context at the top, react gave us a component called 'Provider'
   // it's job is to broadcast data to the components inside the covertage erea (it's children)
   // anything inside 'value' will be available to the rest of the app
@@ -99,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        setTokens,
       }}
     >
       {children}

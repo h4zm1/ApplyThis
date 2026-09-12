@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useEffect, useState } from "react";
+import { AuthProvider, useAuth } from "../context/AuthContext";
+import { useEffect, useRef, useState } from "react";
 import api from "../services/api";
 
 export default function AuthCallback() {
@@ -8,8 +8,15 @@ export default function AuthCallback() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const { setTokens } = useAuth();
+
+  // strictmode is double invoking
+  const hasExchanghed = useRef(false);
 
   useEffect(() => {
+    if (hasExchanghed.current) return;
+    hasExchanghed.current = true;
+
     const code = searchParams.get("code");
 
     if (!code) {
@@ -24,8 +31,7 @@ export default function AuthCallback() {
         const response = await api.post("/auth/exchange-code", { code });
         const { accessToken, refreshToken } = response.data;
 
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
+        setTokens(accessToken, refreshToken);
 
         // skip login (auto login)
         navigate("/dashboard", { replace: true });
