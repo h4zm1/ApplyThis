@@ -79,27 +79,40 @@ export async function createJob(userId: string, data: createJobDto) {
     ? new Prisma.Decimal(lastJob.orderIndex).minus(1000)
     : new Prisma.Decimal(0);
 
-  const job = await prisma.job.create({
-    data: {
-      company: data.company,
-      position: data.position,
-      url: data.url,
-      status: data.status || "APPLIED",
-      notes: data.notes,
-      followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
-      resumeId: data.resumeId,
-      userId,
-      orderIndex: newOrder,
-    },
-    include: {
-      resume: {
-        select: {
-          id: true,
-          name: true,
-          pdfUrl: true,
+  // using transaction here so job creation and status history log fail or successed together
+  const job = await prisma.$transaction(async (tx) => {
+    const newJob = await tx.job.create({
+      data: {
+        company: data.company,
+        position: data.position,
+        url: data.url,
+        status: "APPLIED",
+        notes: data.notes,
+        followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
+        resumeId: data.resumeId,
+        userId,
+        orderIndex: newOrder,
+      },
+      include: {
+        resume: {
+          select: {
+            id: true,
+            name: true,
+            pdfUrl: true,
+          },
         },
       },
-    },
+    });
+
+    // initial status will be "applied" and "tostatus" is null cause there no previous status
+    await tx.jobStatusHistory.create({
+      data: {
+        jobId: newJob.id,
+        fromStatus: null,
+        toStatus: "APPLIED",
+      },
+    });
+    return newJob;
   });
 
   logger.info({ jobId: job.id, company: job.company, userId }, "job created");
@@ -127,6 +140,51 @@ export async function updateJob(
     if (!resume) throw new Error("resume not found");
   }
 
+  // only log status history if status actually changed
+  const statusChanged = data.status && data.status !== existing.status;
+  if (statusChanged) {
+    const job = await prisma.$transaction(async (tx) => {
+      const updatedJob = await tx.job.update({
+        where: { id },
+        data: {
+          ...(data.company && { company: data.company }),
+          ...(data.position && { position: data.position }),
+          ...(data.url !== undefined && { url: data.url }), // if it's undefined, don't update
+          ...(data.status && { status: data.status }),
+          ...(data.notes !== undefined && { notes: data.notes }),
+          ...(data.followUpAt !== undefined && {
+            followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
+          }),
+          ...(data.resumeId !== undefined && { resumeId: data.resumeId }),
+        },
+        include: {
+          resume: {
+            select: {
+              id: true,
+              name: true,
+              pdfUrl: true,
+            },
+          },
+        },
+      });
+
+      await tx.jobStatusHistory.create({
+        data: {
+          jobId: id,
+          fromStatus: existing.status,
+          toStatus: data.status!,
+        },
+      });
+      return updatedJob;
+    });
+    logger.info(
+      { jobId: id, userId, from: existing.status, to: data.status },
+      "job status changed",
+    );
+    return job;
+  }
+
+  // no status changed, just updated job as normal
   const job = await prisma.job.update({
     where: { id },
     data: {
@@ -211,4 +269,95 @@ export async function updateJobOrderInDB(
     where: { id: jobId },
     data: { orderIndex },
   });
+}
+
+// gather all transition for this user
+// and prepare them for rechart sankey diagram
+export async function getSankeyData(userId: string) {
+  const history = await prisma.jobStatusHistory.findMany({
+    where: {
+      job: { userId },
+      // sanky need source and target so we skipping the initial "applied" entries (cause they have no "from")
+      fromStatus: { not: null },
+    },
+  });
+
+  //if no history return empty
+  if (history.length === 0) return { nodes: [], links: [] };
+
+  // we need to create a map where the key is "fromStatus"=>"toStatus" and vlaue thier occurances
+  const transitionCounts = new Map<string, number>();
+
+  history.forEach((entry) => {
+    const key = `${entry.fromStatus}->${entry.toStatus}`;
+    const value = (transitionCounts.get(key) || 0) + 1; // on first encounter: undefined||0 = 0+1 = 1, 2nd encounter 1||1 = 1+1 = 2
+    transitionCounts.set(key, value);
+  });
+
+  // only stores unique values
+  const statusSet = new Set<string>();
+  history.forEach((entry) => {
+    if (entry.fromStatus) statusSet.add(entry.fromStatus);
+    statusSet.add(entry.toStatus);
+  });
+
+  // convert to array of nodes for rechart
+  // [{ name: "APPLIED" }, { name: "REJECTED" }, ...]
+  const nodes = Array.from(statusSet).map((status) => ({
+    // takes INITIAL_INTERVIEW and make it Initial Interview
+    name: status
+      .split("_")
+      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+      .join(" "),
+  }));
+
+  // links for rechart
+  // [{ source: 0, target: 1, value: 4 }, ...]
+  // source and target are indexed into nodes
+  const links: { source: number; target: number; value: number }[] = [];
+
+  transitionCounts.forEach((count, key) => {
+    const [from, to] = key.split("->");
+
+    const fromFormatted = from
+      .split("_")
+      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+      .join(" ");
+
+    const toFormatted = to
+      .split("_")
+      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+      .join(" ");
+
+    const sourceIndex = nodes.findIndex((n) => n.name === fromFormatted);
+    const targetIndex = nodes.findIndex((n) => n.name === toFormatted);
+
+    if (sourceIndex !== -1 && targetIndex !== -1) {
+      links.push({
+        source: sourceIndex,
+        target: targetIndex,
+        value: count,
+      });
+    }
+  });
+  /* output will look like this
+ {
+  nodes: [
+    { name: "Applied" },
+    { name: "Initial Interview" },
+    { name: "Technical" },
+    { name: "Rejected" }
+  ],
+
+  links: [
+    { source: 0, target: 1, value: 2 },
+    { source: 1, target: 2, value: 1 },
+    { source: 2, target: 3, value: 1 },
+    { source: 0, target: 3, value: 1 }
+  ]
+}
+
+*/
+
+  return { nodes, links };
 }

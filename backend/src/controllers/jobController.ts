@@ -6,6 +6,7 @@ import {
   deleteJob,
   getJobById,
   getJobStats,
+  getSankeyData,
   getUserJobs,
   updateJob,
   updateJobOrderInDB,
@@ -52,8 +53,16 @@ export async function getJob(req: AuthRequest, res: Response) {
 // POST /api/jobs
 export async function create(req: AuthRequest, res: Response) {
   try {
-    const { company, position, url, status, notes, followUpAt, resumeId, orderIndex } =
-      req.body;
+    const {
+      company,
+      position,
+      url,
+      status,
+      notes,
+      followUpAt,
+      resumeId,
+      orderIndex,
+    } = req.body;
 
     if (!company || !position) {
       return res.status(400).json({ error: "company and position required" });
@@ -67,7 +76,7 @@ export async function create(req: AuthRequest, res: Response) {
       notes,
       followUpAt,
       resumeId,
-      orderIndex
+      orderIndex,
     });
 
     return res.status(201).json(job);
@@ -128,7 +137,6 @@ export async function remove(req: AuthRequest, res: Response) {
   }
 }
 
-
 // update order index /api/resume/:id/order
 export async function updateOrder(req: AuthRequest, res: Response) {
   try {
@@ -143,5 +151,17 @@ export async function updateOrder(req: AuthRequest, res: Response) {
   } catch (error) {
     logger.error(error, "Failed to update order");
     return res.status(500).json({ error: "Failed to update order" });
+  }
+}
+
+// GET /api/jobs/sankey
+export async function sankeyData(req: AuthRequest, res: Response) {
+  try {
+    const userId = req.user!.userId;
+    const data = await getSankeyData(userId);
+    return res.status(200).json(data);
+  } catch (error) {
+    logger.error({ error }, "failed to get sankey data");
+    res.status(500).json({ error: "failed to get sankey data" });
   }
 }

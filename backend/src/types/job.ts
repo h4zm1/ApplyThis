@@ -1,7 +1,18 @@
 import { Prisma } from "@prisma/client";
 
 // job status enum (matches prisma schema)
-export type JobStatus = "SAVED" | "APPLIED" | "GHOSTED" | "REJECTED";
+export type JobStatus =
+  | "APPLIED"
+  | "NO_REPLY"
+  | "REPLIED_TOO_LATE"
+  | "INITIAL_INTERVIEW"
+  | "TECHNICAL"
+  | "SECOND_INTERVIEW"
+  | "THIRD_INTERVIEW"
+  | "FINAL_INTERVIEW"
+  | "OFFER"
+  | "REJECTED"
+  | "WITHDRAWN";
 
 // what user send when creating a job
 export interface createJobDto {
@@ -13,7 +24,6 @@ export interface createJobDto {
   followUpAt?: string; // iso date string
   resumeId?: string;
   orderIndex: Prisma.Decimal;
-
 }
 
 // what user send when updating a job

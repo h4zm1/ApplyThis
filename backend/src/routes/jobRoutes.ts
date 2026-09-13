@@ -5,9 +5,10 @@ import {
   getJob,
   listJobs,
   remove,
+  sankeyData,
   stats,
   update,
-  updateOrder
+  updateOrder,
 } from "../controllers/jobController";
 
 const router = Router();
@@ -22,5 +23,6 @@ router.get("/:id", getJob);
 router.post("/", create);
 router.put("/:id", update);
 router.delete("/:id", remove);
-router.post("/order/:id", updateOrder)
+router.post("/order/:id", updateOrder);
+router.get("/sankey", sankeyData);
 export default router;
