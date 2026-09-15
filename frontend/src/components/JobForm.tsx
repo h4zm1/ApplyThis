@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import type { CreateJobRequest, Job, JobStatus } from "../types/job";
 import type { Resume } from "../types/resume";
 import R_Select from "./ui/Select";
+import R_ToggleGroup, { R_ToggleItem } from "./ui/ToggleGroup";
 
 // form for creating/editing job application
 interface JobFormProps {
@@ -10,14 +11,24 @@ interface JobFormProps {
   onSubmit: (data: CreateJobRequest) => void;
   onCancel: () => void;
   isSubmitting: boolean;
+  isNew: boolean;
 }
 // status options for dropdown
-export const STATUS_OPTIONS: { value: JobStatus; label: string }[] = [
+export const PRIME_STATUS: { value: JobStatus; label: string }[] = [
   { value: "ALL", label: "All" },
   { value: "APPLIED", label: "Applied" },
-  { value: "GHOSTED", label: "Ghosted" },
+  { value: "NO_REPLY", label: "Ghosted" },
   { value: "REJECTED", label: "Rejected" },
-  { value: "SAVED", label: "Saved" },
+];
+export const SECOND_STATUS: { value: JobStatus; label: string }[] = [
+  { value: "INITIAL_INTERVIEW", label: "1st Interview" },
+  { value: "TECHNICAL", label: "Technical" },
+  { value: "SECOND_INTERVIEW", label: "2nd Interview" },
+  { value: "THIRD_INTERVIEW", label: "3nd Interview" },
+  { value: "FINAL_INTERVIEW", label: "Final Interview" },
+  { value: "OFFER", label: "Offer" },
+
+  { value: "REJECTED", label: "Rejected" },
 ];
 
 const JobForm = ({
@@ -26,12 +37,14 @@ const JobForm = ({
   onSubmit,
   onCancel,
   isSubmitting,
+  isNew,
 }: JobFormProps) => {
   // form state
   const [company, setCompany] = useState(job?.company || ""); // set to empty if on create mod or retrieve from job if we editing existing
   const [position, setPosition] = useState(job?.position || "");
   const [url, setUrl] = useState(job?.url || "");
   const [status, setStatus] = useState<JobStatus>(job?.status || "APPLIED");
+  const [subStatus, setSubStatus] = useState<JobStatus | "">("");
   const [notes, setNotes] = useState(job?.notes || "");
   const [resumeId, setResumeId] = useState(job?.resumeId || "");
   const [followUpAt, setFollowUpAt] = useState(
@@ -96,14 +109,37 @@ const JobForm = ({
           placeholder="https://..."
         />
       </div>
-      <div className="popup-line">
-        <label htmlFor="status">Status</label>
-        <R_Select
-          value={status}
-          onChange={(e) => setStatus(e as JobStatus)}
-          options={STATUS_OPTIONS.slice(1)} // we don't want "All" to appear in the list
-          className="r-select"
-        />
+      <div className="status-popup-line">
+        <div className="top">
+          <label htmlFor="status">Status</label>
+          <R_ToggleGroup
+            value={status}
+            onChange={(e) => {
+              setStatus(e as JobStatus);
+            }}
+            items={PRIME_STATUS.slice(1)}
+          />
+        </div>
+
+        {!isNew && ( // only show extra status on edit
+          <div className="second-toggle">
+            <R_ToggleGroup
+              value={subStatus}
+              onChange={(e) => {
+                setSubStatus(e as JobStatus);
+              }}
+              items={SECOND_STATUS}
+              type="sub"
+            />
+          </div>
+        )}
+
+        {/* <R_Select */}
+        {/*   value={status} */}
+        {/*   onChange={(e) => setStatus(e as JobStatus)} */}
+        {/*   options={STATUS_OPTIONS.slice(1)} // we don't want "All" to appear in the list */}
+        {/*   className="r-select" */}
+        {/* /> */}
       </div>
       <div className="popup-line">
         <label htmlFor="resumeId">Linked Resume</label>

@@ -30,12 +30,14 @@ const R_ToggleGroup = ({
       value={value}
       type="single"
       onValueChange={(val) => {
-        if (val) {
-          onChange(val);
-          if (type === "color") {
-            console.log("selected colr: ", val);
-            setAccentColor(val);
-          }
+        // if val is empty (deselected) and type isn't "sub", block change (bloc the deselect)
+        if (!val && type !== "sub") return;
+
+        onChange(val);
+
+        if (val && type === "color") {
+          // console.log("selected colr: ", val);
+          setAccentColor(val);
         }
       }}
     >

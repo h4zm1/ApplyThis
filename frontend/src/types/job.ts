@@ -1,5 +1,16 @@
-export type JobStatus = "ALL" | "SAVED" | "APPLIED" | "GHOSTED" | "REJECTED";
-
+export type JobStatus =
+  | "APPLIED"
+  | "NO_REPLY"
+  | "REPLIED_TOO_LATE"
+  | "INITIAL_INTERVIEW"
+  | "TECHNICAL"
+  | "SECOND_INTERVIEW"
+  | "THIRD_INTERVIEW"
+  | "FINAL_INTERVIEW"
+  | "OFFER"
+  | "REJECTED"
+  | "WITHDRAWN"
+  | "ALL";
 export interface Job {
   id: string;
   company: string;
@@ -41,9 +52,17 @@ export interface UpdateJobRequest {
 }
 
 export interface JobStats {
-  SAVED: number;
   APPLIED: number;
-  GHOSTED: number;
+  NO_REPLY: number;
+  REPLIED_TOO_LATE: number;
+  INITIAL_INTERVIEW: number;
+  TECHNICAL: number;
+  SECOND_INTERVIEW: number;
+  THIRD_INTERVIEW: number;
+  FINAL_INTERVIEW: number;
+  OFFER: number;
   REJECTED: number;
+  WITHDRAWN: number;
+
   total: number;
 }

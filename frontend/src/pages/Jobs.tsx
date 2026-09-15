@@ -10,7 +10,7 @@ import {
 } from "../services/jobService";
 import { getResumes } from "../services/resumeService";
 import logger from "../services/logger";
-import JobForm, { STATUS_OPTIONS } from "../components/JobForm";
+import JobForm, { PRIME_STATUS } from "../components/JobForm";
 import {
   Briefcase,
   Edit,
@@ -32,7 +32,7 @@ import { useNavigate } from "react-router-dom";
 import Tooltip from "../components/ui/tooltip";
 
 // filter options
-const STATUS_FILTERS = STATUS_OPTIONS;
+const STATUS_FILTERS = PRIME_STATUS;
 
 const Jobs = () => {
   // data state
@@ -327,6 +327,7 @@ const Jobs = () => {
           onSubmit={handleSubmit}
           onCancel={handleClosePopup}
           isSubmitting={isSubmitting}
+          isNew={editingJob ? false : true}
         />
       </Popup>
     </div>

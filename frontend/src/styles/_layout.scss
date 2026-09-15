@@ -14,7 +14,7 @@
   // background-color: lightcoral;
   // padding-bottom: 1rem;
   a {
-    color: #4b4950;
+    color: #4b4950cf;
   }
   .side-btn {
     // background-color: #e7e7e7;
@@ -48,11 +48,12 @@
   font-family: "Buenard";
   font-weight: bold;
   margin-left: -0.5rem;
+  color: #4b4950 !important;
 }
 .main-content {
   height: -webkit-fill-available;
   border-top-left-radius: 7px;
-  background-color: white;
+  background-color: #f8f8f8;
   // box-shadow: 0px 4px 12px #5955658f;
   box-shadow: 0px 4px 12px rgb(89 85 101 / 34%);
   padding: 2rem; // this needed incase a refresh happend in /resumes

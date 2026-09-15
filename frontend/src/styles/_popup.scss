@@ -54,9 +54,45 @@
   gap: 4rem;
   justify-content: space-between;
   padding-bottom: 1rem;
+  align-items: center;
   textarea {
     width: stretch;
     width: 100%;
+  }
+  .second-toggle {
+    // background-color: red;
+    .toggle-group {
+      background-color: red;
+      /* display: flex; */
+      /* flex-direction: row; */
+      /* contain: size; */
+      /* overflow-wrap: anywhere; */
+      /* min-width: 0; */
+      /* flex-basis: 100%; */
+      width: 19rem;
+      overflow: overlay;
+      button {
+        font-size: 14px;
+        padding: 6px;
+      }
+    }
+  }
+}
+.status-popup-line {
+  @extend .popup-line;
+  flex-direction: column;
+  gap: 0;
+  .top {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    .toggle-group {
+      // background-color: green;
+      button {
+        font-size: 14px;
+        padding: 6px;
+      }
+    }
   }
 }
 // settings form styles

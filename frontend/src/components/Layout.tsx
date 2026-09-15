@@ -23,6 +23,8 @@ const Layout = () => {
   const insideEditor = location.pathname.includes("editor");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const { accentColor, setAccentColor } = useUIContext();
+  const [tabColor, setTabColor] = useState("");
+
   // no main content overflow in editor (make box shadow not working correctly)
   const mainContentStyle = {
     overflow: insideEditor ? "unset" : "auto",
@@ -43,6 +45,7 @@ const Layout = () => {
   useEffect(() => {
     if (accentColor) {
       const bgColor = `color-mix(in srgb, ${accentColor} 20%, transparent`;
+      setTabColor(`color-mix(in srgb, ${accentColor} 40%, transparent`);
       document.body.style.setProperty("--body-bg", bgColor);
       localStorage.setItem("ACCENT-COLOR", accentColor);
     } else {
@@ -61,7 +64,7 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/dashboard"
-              style={{ "--active-bg": accentColor } as React.CSSProperties}
+              style={{ "--active-bg": tabColor } as React.CSSProperties}
               end // 'end' means exact match only
             >
               <LayoutDashboard size={21} />
@@ -75,7 +78,7 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/resumes"
-              style={{ "--active-bg": accentColor } as React.CSSProperties}
+              style={{ "--active-bg": tabColor } as React.CSSProperties}
             >
               <FileText size={21} />
               {/* Resumes */}
@@ -88,7 +91,7 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/jobs"
-              style={{ "--active-bg": accentColor } as React.CSSProperties}
+              style={{ "--active-bg": tabColor } as React.CSSProperties}
             >
               <Briefcase size={21} />
               {/* Jobs */}
