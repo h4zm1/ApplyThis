@@ -22,13 +22,11 @@ export const PRIME_STATUS: { value: JobStatus; label: string }[] = [
 ];
 export const SECOND_STATUS: { value: JobStatus; label: string }[] = [
   { value: "INITIAL_INTERVIEW", label: "1st Interview" },
-  { value: "TECHNICAL", label: "Technical" },
   { value: "SECOND_INTERVIEW", label: "2nd Interview" },
+  { value: "TECHNICAL", label: "Technical" },
   { value: "THIRD_INTERVIEW", label: "3nd Interview" },
   { value: "FINAL_INTERVIEW", label: "Final Interview" },
   { value: "OFFER", label: "Offer" },
-
-  { value: "REJECTED", label: "Rejected" },
 ];
 
 const JobForm = ({
@@ -121,18 +119,22 @@ const JobForm = ({
           />
         </div>
 
-        {!isNew && ( // only show extra status on edit
-          <div className="second-toggle">
-            <R_ToggleGroup
-              value={subStatus}
-              onChange={(e) => {
-                setSubStatus(e as JobStatus);
-              }}
-              items={SECOND_STATUS}
-              type="sub"
-            />
-          </div>
-        )}
+        {/* {!isNew && */}
+        {/* status == "APPLIED" && ( // only show extra status on edit */}
+        {/* <div className="second-toggle"> */}
+        <div
+          className={`second-toggle ${!isNew && status === "APPLIED" ? "visible" : ""}`}
+        >
+          <R_ToggleGroup
+            value={subStatus}
+            onChange={(e) => {
+              setSubStatus(e as JobStatus);
+            }}
+            items={SECOND_STATUS}
+            type="sub"
+          />
+        </div>
+        {/* )} */}
 
         {/* <R_Select */}
         {/*   value={status} */}
@@ -150,19 +152,6 @@ const JobForm = ({
           placeholder="No resume linked"
           className="r-select"
         />
-
-        {/* <select */}
-        {/*   id="resumeId" */}
-        {/*   value={resumeId} */}
-        {/*   onChange={(e) => setResumeId(e.target.value)} */}
-        {/* > */}
-        {/*   <option value="">No resume linked</option> */}
-        {/*   {resumes.map((resume) => ( */}
-        {/*     <option key={resume.id} value={resume.id}> */}
-        {/*       {resume.name} */}
-        {/*     </option> */}
-        {/*   ))} */}
-        {/* </select> */}
       </div>
       <div className="popup-line">
         <label htmlFor="followUpAt">Follow Up Date</label>
