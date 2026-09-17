@@ -5,6 +5,7 @@ import { useUIContext } from "../../context/UIContext";
 interface Item {
   label: string;
   value: string;
+  disabled?: boolean;
 }
 
 interface ToggleGroupProps {
@@ -49,6 +50,7 @@ const R_ToggleGroup = ({
               className="toggle-item"
               key={item.value}
               value={item.value}
+              disabled={item.disabled}
             >
               {item.label}
             </ToggleGroup.Item>

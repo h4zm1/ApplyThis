@@ -1,4 +1,4 @@
-import type { CreateJobRequest, Job } from "../types/job";
+import type { CreateJobRequest, Job, JobStatus } from "../types/job";
 import { useEffect, useState } from "react";
 import type { Resume } from "../types/resume";
 import {
@@ -10,7 +10,7 @@ import {
 } from "../services/jobService";
 import { getResumes } from "../services/resumeService";
 import logger from "../services/logger";
-import JobForm, { PRIME_STATUS } from "../components/JobForm";
+import JobForm, { PRIME_STATUS, SECOND_STATUS } from "../components/JobForm";
 import {
   Briefcase,
   Edit,
@@ -32,7 +32,16 @@ import { useNavigate } from "react-router-dom";
 import Tooltip from "../components/ui/tooltip";
 
 // filter options
-const STATUS_FILTERS = PRIME_STATUS;
+export const STATUS_FILTERS: {
+  value: JobStatus;
+  label: string;
+  disabled?: boolean;
+}[] = [
+  { value: "ALL", label: "All" },
+  { value: "APPLIED", label: "Applied" },
+  { value: "NO_REPLY", label: "Ghosted" },
+  { value: "REJECTED", label: "Rejected" },
+];
 
 const Jobs = () => {
   // data state
@@ -204,6 +213,20 @@ const Jobs = () => {
     REJECTED: { label: "Rejected", color: "#ffb1b1" },
     SAVED: { label: "Saved", color: "Transparent" },
   };
+  let noJobMessage = "";
+  switch (statusFilter) {
+    case "NO_REPLY":
+      noJobMessage = "No one ghosted you yet!";
+      break;
+    case "APPLIED":
+      noJobMessage = "You didn't apply for any job";
+      break;
+    case "REJECTED":
+      noJobMessage = "No rejections so far";
+      break;
+    default:
+      noJobMessage = "Nothing to show";
+  }
 
   return (
     <div className="jobs">
@@ -225,9 +248,10 @@ const Jobs = () => {
         <div>
           {/* <Briefcase /> */}
           <p>
-            {statusFilter
-              ? "No " + statusFilter.toLowerCase() + " jobs found"
-              : "No job application yet. Start tracking!"}
+            {noJobMessage}
+            {/* {statusFilter */}
+            {/*   ? "No " + statusFilter.toLowerCase() + " jobs found" */}
+            {/*   : "No job application yet. Start tracking!"} */}
           </p>
         </div>
       ) : (
@@ -235,7 +259,7 @@ const Jobs = () => {
           <DragDropProvider onDragEnd={handleDragEnd}>
             {jobs.map((job, index) => {
               const statusInfo =
-                STATUS_MAP[job.status?.toString()] || STATUS_MAP.SAVED;
+                STATUS_MAP[job.status?.toString()] || STATUS_MAP.APPLIED;
               return (
                 <SortableJobItem
                   key={job.id}
@@ -253,7 +277,11 @@ const Jobs = () => {
                             backgroundColor: statusInfo.color,
                           }}
                         >
-                          {job.status.substring(0, 1)}
+                          {PRIME_STATUS.some((ps) => ps.value === job.status)
+                            ? job.status.substring(0, 1)
+                            : SECOND_STATUS.find(
+                                (ss) => ss.value === job.status,
+                              )?.label.substring(0, 1)}
                         </div>
                       </Tooltip>
                     </div>

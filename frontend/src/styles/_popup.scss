@@ -26,14 +26,19 @@
   }
   form {
     text-align: center;
+    // .submit-btn {
+    .submit-btn:hover {
+      color: #00b400;
+    }
     button {
       background-color: transparent;
       border-color: transparent;
       font-size: 1rem;
-      &:hover {
-        // color: #00d300;
-        color: #00b400;
-      }
+
+      // &:hover {
+      //   // color: #00d300;
+      //   color: #00b400;
+      // }
     }
   }
 }
@@ -65,7 +70,6 @@
     border: dashed rgb(0 0 0 / 23%);
     border-width: 2px;
     border-radius: 10px;
-    margin-top: 0.5rem;
 
     // hide/show animation
     opacity: 0;
@@ -73,6 +77,7 @@
     overflow: hidden;
     transform: translateY(-10px);
     pointer-events: none;
+    margin-block: 0;
 
     transition:
       opacity 0.2s ease,
@@ -84,6 +89,8 @@
       max-height: 100px; // enough to contain the toggle
       transform: translateY(0);
       pointer-events: auto;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
     }
     .toggle-group {
       display: flex;
@@ -116,6 +123,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
+    align-items: center;
     .toggle-group {
       // background-color: green;
       button {

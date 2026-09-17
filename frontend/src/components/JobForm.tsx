@@ -14,11 +14,15 @@ interface JobFormProps {
   isNew: boolean;
 }
 // status options for dropdown
-export const PRIME_STATUS: { value: JobStatus; label: string }[] = [
+export const PRIME_STATUS: {
+  value: JobStatus;
+  label: string;
+  disabled?: boolean;
+}[] = [
   { value: "ALL", label: "All" },
   { value: "APPLIED", label: "Applied" },
-  { value: "NO_REPLY", label: "Ghosted" },
-  { value: "REJECTED", label: "Rejected" },
+  { value: "NO_REPLY", label: "Ghosted", disabled: true },
+  { value: "REJECTED", label: "Rejected", disabled: true },
 ];
 export const SECOND_STATUS: { value: JobStatus; label: string }[] = [
   { value: "INITIAL_INTERVIEW", label: "1st Interview" },
@@ -41,20 +45,33 @@ const JobForm = ({
   const [company, setCompany] = useState(job?.company || ""); // set to empty if on create mod or retrieve from job if we editing existing
   const [position, setPosition] = useState(job?.position || "");
   const [url, setUrl] = useState(job?.url || "");
-  const [status, setStatus] = useState<JobStatus>(job?.status || "APPLIED");
-  const [subStatus, setSubStatus] = useState<JobStatus | "">("");
+  const isSubStatus = SECOND_STATUS.some((ss) => ss.value === job?.status)
+    ? true
+    : false;
+  const [status, setStatus] = useState<JobStatus>(
+    isSubStatus ? "APPLIED" : job?.status || "APPLIED",
+  );
+  // if there's a job status AND it one of the sub status then assign it to subStatus
+  const [subStatus, setSubStatus] = useState<JobStatus | "">(
+    isSubStatus ? job!.status : "",
+  );
   const [notes, setNotes] = useState(job?.notes || "");
   const [resumeId, setResumeId] = useState(job?.resumeId || "");
   const [followUpAt, setFollowUpAt] = useState(
     job?.followUpAt ? job.followUpAt.split("T")[0] : "",
   ); // extract date
-
+  const primeStatus = PRIME_STATUS.slice(1).map((ps) => ({
+    ...ps,
+    disabled: isNew && ps.value !== "APPLIED",
+  }));
   // push new data into the state variables if the props change
+  // this to update the form ui whenever we create/edit a job
   useEffect(() => {
     setCompany(job?.company || "");
     setPosition(job?.position || "");
     setUrl(job?.url || "");
-    setStatus(job?.status || "APPLIED");
+    setStatus(status);
+    setSubStatus(subStatus);
     setNotes(job?.notes || "");
     setResumeId(job?.resumeId || "");
     setFollowUpAt(job?.followUpAt ? job.followUpAt.split("T")[0] : "");
@@ -66,7 +83,7 @@ const JobForm = ({
       company,
       position,
       url: url || undefined,
-      status,
+      status: status === "APPLIED" && subStatus ? subStatus : status,
       notes: notes || undefined,
       resumeId: resumeId || undefined,
       followUpAt: followUpAt ? new Date(followUpAt).toISOString() : undefined,
@@ -115,14 +132,13 @@ const JobForm = ({
             onChange={(e) => {
               setStatus(e as JobStatus);
             }}
-            items={PRIME_STATUS.slice(1)}
+            items={primeStatus}
+            // items={PRIME_STATUS.slice(1)}
           />
         </div>
 
-        {/* {!isNew && */}
-        {/* status == "APPLIED" && ( // only show extra status on edit */}
-        {/* <div className="second-toggle"> */}
         <div
+          // only show extra status while editing "applied" job
           className={`second-toggle ${!isNew && status === "APPLIED" ? "visible" : ""}`}
         >
           <R_ToggleGroup
@@ -176,7 +192,7 @@ const JobForm = ({
       {/* <button type="button" onClick={onCancel} disabled={isSubmitting}> */}
       {/*   Cancel */}
       {/* </button> */}
-      <button type="submit" disabled={isSubmitting}>
+      <button className="submit-btn" type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Saving..." : job ? "Update" : "Create"}
       </button>
     </form>
