@@ -15,11 +15,12 @@ export default function Tooltip({
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
   const timeRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const [isMouseInside, setIsMouseInside] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     // hid and trigger tooltip whenever mouse move
-    handleMouseLeave();
-    handleMouseEnter();
+    // handleMouseLeave();
+    // handleMouseEnter();
     setCoords({ x: e.clientX, y: e.clientY });
     // move the tooltip bit to the left when on the right helf of the screen to fix the clipping issue
     // const onRightSide = e.clientX > window.innerWidth / 2;
@@ -30,11 +31,13 @@ export default function Tooltip({
     // });
   };
   const handleMouseEnter = () => {
+    setIsMouseInside(true);
     timeRef.current = setTimeout(() => {
       setVisible(true);
-    }, 700); // this seems to be the same as default tooltip timer
+    }, 400); // this seems to be the same as default tooltip timer
   };
   const handleMouseLeave = () => {
+    setIsMouseInside(false);
     if (timeRef.current) {
       clearTimeout(timeRef.current);
       timeRef.current = null;

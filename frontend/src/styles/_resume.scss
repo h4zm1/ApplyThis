@@ -2,6 +2,14 @@
   // background-color: red;
   // width: fit-content;
   // width: 10rem;
+  .container-header {
+    .toggle-group {
+      gap: 5px;
+      button {
+        padding-inline: 1rem;
+      }
+    }
+  }
 }
 
 .new-resume-btn {

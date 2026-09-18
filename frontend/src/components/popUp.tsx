@@ -16,10 +16,12 @@ const popup = ({ isOpen, onClose, title, children }: popUpProps) => {
   return createPortal(
     <div className="popup-overlay" onClick={onClose}>
       <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-        <h2>{title}</h2>
-        <button className="close-btn" onClick={onClose}>
-          <X size={20} />
-        </button>
+        <div className="popup-header">
+          <h1>{title}</h1>
+          <button className="close-btn" onClick={onClose}>
+            <X size={18} />
+          </button>
+        </div>
         <div>{children}</div>
       </div>
     </div>,

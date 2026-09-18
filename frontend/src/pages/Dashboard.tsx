@@ -83,7 +83,7 @@ const Dashboard = () => {
 
         <div>
           <div>Ghosted</div>
-          <div>{stats?.GHOSTED || 0}</div>
+          <div>{stats?.NO_REPLY || 0}</div>
         </div>
       </div>
 

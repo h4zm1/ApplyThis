@@ -54,12 +54,17 @@ button {
     font-size: xx-large;
   }
 }
+.container-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
 
 .new-btn {
   display: flex;
   background-color: transparent;
-  border: solid thin #828282;
-  border-radius: 5px;
+  border: solid thin #bdbfcc;
+  border-radius: 6px;
   // padding: 0.16rem;
   padding-inline: 0.5rem;
   align-items: center;
@@ -73,7 +78,7 @@ button {
     font-size: 20px;
   }
   &:hover {
-    background-color: #f4f4f4;
+    background-color: #e4e5ea;
   }
 }
 

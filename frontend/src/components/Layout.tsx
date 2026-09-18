@@ -24,6 +24,7 @@ const Layout = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const { accentColor, setAccentColor } = useUIContext();
   const [tabColor, setTabColor] = useState("");
+  const [tabHoverColor, setTabHoverColor] = useState("");
 
   // no main content overflow in editor (make box shadow not working correctly)
   const mainContentStyle = {
@@ -45,11 +46,12 @@ const Layout = () => {
   useEffect(() => {
     if (accentColor) {
       const bgColor = `color-mix(in srgb, ${accentColor} 20%, transparent`;
-      setTabColor(`color-mix(in srgb, ${accentColor} 40%, transparent`);
+      setTabColor(`color-mix(in srgb, ${accentColor} 100%, transparent`);
+      setTabHoverColor(`color-mix(in srgb, ${accentColor} 60%, transparent`);
       document.body.style.setProperty("--body-bg", bgColor);
       localStorage.setItem("ACCENT-COLOR", accentColor);
     } else {
-      document.body.style.removeProperty("--body-bg");
+      document.body.style.removeProperty("--body-btn-bg");
     }
   }, [accentColor]);
 
@@ -64,7 +66,12 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/dashboard"
-              style={{ "--active-bg": tabColor } as React.CSSProperties}
+              style={
+                {
+                  "--active-btn-bg": tabColor,
+                  "--hover-btn-bg": tabHoverColor,
+                } as React.CSSProperties
+              }
               end // 'end' means exact match only
             >
               <LayoutDashboard size={21} />
@@ -78,7 +85,12 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/resumes"
-              style={{ "--active-bg": tabColor } as React.CSSProperties}
+              style={
+                {
+                  "--active-btn-bg": tabColor,
+                  "--hover-btn-bg": tabHoverColor,
+                } as React.CSSProperties
+              }
             >
               <FileText size={21} />
               {/* Resumes */}
@@ -91,7 +103,12 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/jobs"
-              style={{ "--active-bg": tabColor } as React.CSSProperties}
+              style={
+                {
+                  "--active-btn-bg": tabColor,
+                  "--hover-btn-bg": tabHoverColor,
+                } as React.CSSProperties
+              }
             >
               <Briefcase size={21} />
               {/* Jobs */}
