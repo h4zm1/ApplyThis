@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type SubmitEvent } from "react";
 import type { CreateJobRequest, Job, JobStatus } from "../types/job";
 import type { Resume } from "../types/resume";
 import R_Select from "./ui/Select";
@@ -77,7 +77,7 @@ const JobForm = ({
     setFollowUpAt(job?.followUpAt ? job.followUpAt.split("T")[0] : "");
   }, [job]);
 
-  function handleSubmit(e: FormEvent) {
+  function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     onSubmit({
       company,

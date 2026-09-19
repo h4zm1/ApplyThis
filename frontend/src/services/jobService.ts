@@ -49,6 +49,11 @@ export async function updateJobOrder(
   id: string,
   newOrderIndex: number,
 ): Promise<void> {
-  console.log("Sending:", { id, orderIndex: newOrderIndex });
+  // console.log("Sending:", { id, orderIndex: newOrderIndex });
   await api.post<Job>("/jobs/order/" + id, { orderIndex: newOrderIndex });
+}
+
+export async function getSankeyData() {
+  const response = await api.get("/jobs/sankey");
+  return response.data;
 }

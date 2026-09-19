@@ -117,6 +117,8 @@ const Jobs = () => {
         const created = await createJob(data);
         setJobs([created, ...jobs]);
       }
+      setIsPopupOpen(false);
+      setIsSumitting(false);
     } catch (error: any) {
       setError(error.response.data.error || "failed to save job");
       setIsSumitting(false);

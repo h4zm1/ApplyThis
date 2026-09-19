@@ -17,6 +17,7 @@ router.use(authenticate);
 
 // this need to come first before GET /:id or it will mistakes 'stats' as an id
 router.get("/stats", stats);
+router.get("/sankey", sankeyData);
 
 router.get("/", listJobs);
 router.get("/:id", getJob);
@@ -24,5 +25,4 @@ router.post("/", create);
 router.put("/:id", update);
 router.delete("/:id", remove);
 router.post("/order/:id", updateOrder);
-router.get("/sankey", sankeyData);
 export default router;

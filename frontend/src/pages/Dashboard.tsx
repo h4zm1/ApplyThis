@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getJobStats, getJobs } from "../services/jobService";
+import { getJobStats, getJobs, getSankeyData } from "../services/jobService";
 import { getResumes } from "../services/resumeService";
 import type { JobStats, Job } from "../types/job";
 import type { Resume } from "../types/resume";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
+import SankeyChart from "../components/SankeyChart";
 
 // only showing job stats, resumes and recent applications for now
 const Dashboard = () => {
@@ -18,6 +19,10 @@ const Dashboard = () => {
   const [error, setError] = useState("");
   const { user } = useAuth();
   const { setHeaderTitle } = useAction();
+  const [sankeyData, setSankeyData] = useState<{ nodes: any[]; links: any[] }>({
+    nodes: [],
+    links: [],
+  });
 
   // useEffect will run code when component mounts (like ngOnInit in angular)
   // empty array [] means run once on mount
@@ -30,15 +35,18 @@ const Dashboard = () => {
   async function loadDashboardData() {
     try {
       // Promise.all can run many async calls in parallel like forkJoin in rxjs (and wait for all to finish before emmiting)
-      const [statsData, jobsData, resumesData] = await Promise.all([
-        getJobStats(),
-        getJobs(),
-        getResumes(),
-      ]);
+      const [statsData, jobsData, resumesData, sankeyResult] =
+        await Promise.all([
+          getJobStats(),
+          getJobs(),
+          getResumes(),
+          getSankeyData(),
+        ]);
 
       setStats(statsData);
       setRecentJobs(jobsData.slice(0, 5)); // only show recent 5
       setRecentResumes(resumesData.slice(0, 5));
+      setSankeyData(sankeyResult);
     } catch (error) {
       setError("failed to load dashboard data");
       console.error(error);
@@ -63,6 +71,8 @@ const Dashboard = () => {
         <h1>Dashboard</h1>
         <p>Track your job applications</p>
       </div>
+
+      <SankeyChart data={sankeyData} width={800} height={400} />
 
       {/* TODO: make these cards */}
       <div>
