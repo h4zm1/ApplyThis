@@ -1,4 +1,5 @@
 // src/components/SankeyChart.tsx
+import { useEffect, useRef } from "react";
 import {
   Sankey,
   Tooltip,
@@ -84,14 +85,65 @@ function CustomNode({ x, y, width, height, index, payload }: SankeyNodeProps) {
   );
 }
 
-function SankeyChart({ data, width = 800, height = 400 }: Props) {
+export const CustomTooltip = ({ active, payload }: any) => {
+  // save the last valid payload using Ref
+  const lastPayloadRef = useRef<typeof payload>(null);
+  // this to make sure the tooltip won't return to 0.0 coordinate when the cursor isn't over the chart
+  useEffect(() => {
+    if (active && payload?.length) {
+      lastPayloadRef.current = payload;
+    }
+  }, [active, payload]);
+
+  const displayPayload = payload?.length ? payload : lastPayloadRef.current;
+
+  if (!displayPayload || !displayPayload.length) {
+    return null;
+  }
+
+  // if (!active || !payload?.length) return null;
+
+  if (!lastPayloadRef.current) return null;
+  const data = lastPayloadRef.current[0]?.payload;
+  if (!data) return null;
+
+  // different tooltip on node vs links
+  const isLink = data.source !== undefined;
+
+  return (
+    <div className="chart-tooltip">
+      {isLink ? (
+        // link tooltip: "Applied - Rejected: 3 jobs"
+        <span>
+          {data.source.name} - {data.target.name}:{" "}
+          <span>
+            {data.value} job{data.value !== 1 ? "s" : ""}
+          </span>
+        </span>
+      ) : (
+        // node tooltip: "Rejected: 4 jobs"
+        <span>
+          {data.name}:{" "}
+          <span>
+            {data.value} job{data.value !== 1 ? "s" : ""}
+          </span>
+        </span>
+      )}
+    </div>
+  );
+};
+
+function SankeyChart({ data, width = 800, height = 200 }: Props) {
   // don't render if no transitions yet
   if (!data.links.length) {
     return <div>start applying to see your journey</div>;
   }
   return (
-    <ResponsiveContainer width="100%" aspect={2}>
+    // seems like increasing aspect reduce the height of the chart
+    <ResponsiveContainer width="100%" aspect={5}>
       <Sankey
+        width={width}
+        height={height}
         data={data}
         node={CustomNode}
         nodePadding={50}
@@ -101,7 +153,11 @@ function SankeyChart({ data, width = 800, height = 400 }: Props) {
         }}
         link={{ stroke: "#77c878" }}
       >
-        <Tooltip />
+        <Tooltip
+          content={CustomTooltip}
+          cursor={false}
+          isAnimationActive={true}
+        />
       </Sankey>
     </ResponsiveContainer>
   );

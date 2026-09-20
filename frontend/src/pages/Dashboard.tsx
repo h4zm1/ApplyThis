@@ -72,7 +72,7 @@ const Dashboard = () => {
         <p>Track your job applications</p>
       </div>
 
-      <SankeyChart data={sankeyData} width={800} height={400} />
+      <SankeyChart data={sankeyData} width={800} height={200} />
 
       {/* TODO: make these cards */}
       <div>

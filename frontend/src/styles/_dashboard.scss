@@ -3,3 +3,25 @@
 .left-bar {
   background-color: red;
 }
+
+.chart-tooltip {
+  padding: 0.25rem;
+  padding-inline: 1rem;
+  border: 1px solid rgba(229, 229, 229, 0.5019607843);
+  border-radius: 0.5rem;
+  background: #ffffffab;
+  font-size: 0.75rem;
+  color: rgb(26, 26, 26);
+  line-height: 1.3rem;
+  box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.34);
+  backdrop-filter: blur(5px);
+  span {
+    font-weight: 450;
+    color: #000000d6;
+    span {
+      font-weight: bold;
+      color: black;
+      padding-left: 5px;
+    }
+  }
+}
