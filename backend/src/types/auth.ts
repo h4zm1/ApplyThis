@@ -13,4 +13,5 @@ export interface TokenPayload {
 // express request with user attached (after auth middleware verify token)
 export interface AuthRequest extends Request {
   user?: TokenPayload;
+  params: Record<string, string>;
 }
