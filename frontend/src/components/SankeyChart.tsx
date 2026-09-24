@@ -38,8 +38,8 @@ const NODE_OPACITY: Record<string, number> = {
   Rejected: 100,
   "Replied Too Late": 100,
   "Initial Interview": 95,
-  Technical: 85,
   "Second Interview": 90,
+  Technical: 85,
   "Third Interview": 80,
   "Final Interview": 75,
   Offer: 70,
@@ -49,19 +49,14 @@ const NODE_OPACITY: Record<string, number> = {
 // apperently recharts need x, y, width, height, index ,payload for custom nodes
 function CustomNode({ x, y, width, height, index, payload }: any) {
   const { accentColor } = useUIContext();
-  function getNodeColor(nodeName: string): string {
-    const opacity = NODE_OPACITY[nodeName] ?? 60;
-    return `color-mix(in srgb, ${accentColor} ${opacity}%, #1a1a1a)`;
-  }
   const color = `color-mix(in srgb, ${accentColor} 60%, #1a1a1a)`;
-  // const color = `color-mix(in srgb, ${accentColor} 0%, transparent)`;
   const containerWidth = useChartWidth();
   if (containerWidth == null) {
     return null;
   }
   const isOut = x + width + 6 > containerWidth;
   return (
-    <Layer key={`CustomNode${index}`}>
+    <Layer key={`CustomNode${index}`} className="custom-link">
       <Rectangle
         x={x}
         y={y}
@@ -76,19 +71,12 @@ function CustomNode({ x, y, width, height, index, payload }: any) {
         x={isOut ? x - 6 : x + width + 6}
         y={y + height / 2}
         fontSize="12"
-        stroke="#3c3c3c"
+        className="sk-status"
       >
-        {payload.name}
-      </text>
-      <text
-        textAnchor={isOut ? "end" : "start"}
-        x={isOut ? x - 6 : x + width + 6}
-        y={y + height / 2 + 13}
-        fontSize="12"
-        stroke="#8a8a8a"
-        strokeOpacity="0.5"
-      >
-        {`${payload.value}`}
+        <tspan>{payload.name + ":"}</tspan>
+        <tspan dx="6" fontSize="12" fill="#8a8a8a">
+          {payload.value}
+        </tspan>
       </text>
     </Layer>
   );
@@ -216,6 +204,8 @@ function SankeyChart({ data, width = 800, height = 200 }: Props) {
           content={CustomTooltip}
           cursor={false}
           isAnimationActive={true}
+          animationDuration={150}
+          animationEasing="ease-out"
         />
       </Sankey>
     </ResponsiveContainer>

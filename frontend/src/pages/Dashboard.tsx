@@ -68,10 +68,14 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div>
-        <h1>Dashboard</h1>
+        <p className="title">Overview</p>
         <p>Track your job applications</p>
       </div>
-
+      <div className="card-holder">
+        <div className="c-1"></div>
+        <div className="c-2"></div>
+        <div className="c-3"></div>
+      </div>
       <SankeyChart data={sankeyData} width={800} height={200} />
 
       {/* TODO: make these cards */}
