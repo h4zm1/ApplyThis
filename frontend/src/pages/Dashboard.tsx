@@ -7,6 +7,8 @@ import type { Resume } from "../types/resume";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
 import SankeyChart from "../components/SankeyChart";
+import { ArrowUpRight, MoveUpRight } from "lucide-react";
+import NortheastIcon from "@mui/icons-material/NorthEast";
 
 // only showing job stats, resumes and recent applications for now
 const Dashboard = () => {
@@ -69,12 +71,56 @@ const Dashboard = () => {
     <div className="dashboard">
       <div>
         <p className="title">Overview</p>
-        <p>Track your job applications</p>
+        {/* <p>Track your job applications</p> */}
       </div>
-      <div className="card-holder">
-        <div className="c-1"></div>
-        <div className="c-2"></div>
-        <div className="c-3"></div>
+      <div className="overview-content">
+        <div className="card-holder">
+          <div className="side-div"></div>
+          <div className="c-1 status-card">
+            <span className="status-name">Applied</span>
+            <div>
+              <span className="status-value">60</span>
+              <span className="weekly-perecentage">
+                <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
+                0%
+              </span>
+            </div>
+            <span className="lastweek-value">25 in last week</span>
+          </div>
+          <div className="c-2 status-card">
+            <span className="status-name">Ghosted</span>
+            <div>
+              <span className="status-value">60</span>
+              <span className="weekly-perecentage">
+                <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
+                0%
+              </span>
+            </div>
+            <span className="lastweek-value">25 in last week</span>
+          </div>
+          <div className="c-3 status-card">
+            <span className="status-name">Rejected</span>
+            <div>
+              <span className="status-value">60</span>
+              <span className="weekly-perecentage">
+                <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
+                0%
+              </span>
+            </div>
+            <span className="lastweek-value">25 in last week</span>
+          </div>
+          <div className="side-div"></div>
+        </div>
+        <div className="extension-btn">
+          <p>Start tracking jobs easily with this Firefox extension</p>
+          <a href="https://addons.mozilla.org/en-US/firefox/addon/applythis/">
+            ApplyThis
+          </a>
+        </div>
+        <div className="w-chart"></div>
+        <div className="recent-jobs"></div>
+        <div className="filler-div" style={{ gridArea: "topMid" }}></div>
+        <div className="filler-div" style={{ gridArea: "midMid" }}></div>
       </div>
       <SankeyChart data={sankeyData} width={800} height={200} />
 

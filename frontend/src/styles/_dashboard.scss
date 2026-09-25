@@ -1,59 +1,131 @@
 @use "variables" as *;
 
 .dashboard {
+  --border-color: #80808047;
+  --corner-color: #666666;
   .title {
     font-size: 3rem;
     font-weight: 400;
+    padding-block: 0;
+    margin: 0;
   }
 }
-
+.overview-content {
+  display: grid;
+  grid-template-columns: 2fr 3rem 1fr;
+  grid-template-rows: 1fr 4fr;
+  margin-inline: -2rem;
+  grid-template-areas: "topLeft topMid topRight" "midLeft midMid midRight";
+  margin-inline: -2rem;
+  padding-top: 2rem;
+}
+.extension-btn {
+  grid-area: topRight;
+  border: 1px solid var(--border-color);
+  border-left: 1px dashed var(--border-color);
+  border-bottom: unset;
+  border-right: unset;
+}
+.w-chart {
+  grid-area: midLeft;
+}
+.recent-jobs {
+  grid-area: midRight;
+  border: 1px solid var(--border-color);
+  border-right: unset;
+}
+.filler-div {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border-color);
+  border-right: unset;
+  border-bottom: unset;
+}
 .card-holder {
-  width: -webkit-fill-available;
-  height: 12rem;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  padding-inline: 5rem;
-  border: 1px solid gray;
-  border-left: unset;
+  min-height: 9rem;
+  border: 1px solid var(--border-color);
+  border-inline: unset;
+
+  .side-div {
+    height: 100%;
+    width: 30%;
+  }
+  .status-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+    border-block: unset;
+    & > * {
+      position: relative;
+      left: 2.3rem;
+    }
+    .status-name {
+      font-size: 1.1rem;
+      font-weight: 300;
+    }
+    .status-value {
+      font-size: 2.5rem;
+      font-weight: 500;
+    }
+    .weekly-perecentage {
+      color: green;
+      font-size: small;
+      svg {
+        margin-bottom: -2px;
+      }
+    }
+    .lastweek-value {
+      font-size: 0.9rem;
+    }
+  }
   .c-1 {
     width: 100%;
     height: 100%;
     padding-block: -1px;
     margin-block: -1px;
-    border: 1px solid #8080805c;
+    border: 1px solid var(--border-color);
     background:
-      linear-gradient(black, black) top -1px left -1px / 20px 1px no-repeat,
-      linear-gradient(black, black) top -1px left -1px / 1px 20px no-repeat,
-      linear-gradient(black, black) bottom left / 20px 1px no-repeat,
-      linear-gradient(black, black) bottom left / 1px 20px no-repeat;
+      linear-gradient(var(--corner-color), var(--corner-color)) top -1px
+        left -1px / 15px 1px no-repeat,
+      linear-gradient(var(--corner-color), var(--corner-color)) top -1px
+        left -1px / 1px 15px no-repeat,
+      linear-gradient(var(--corner-color), var(--corner-color)) bottom -1px
+        left -1px/ 15px 1px no-repeat,
+      linear-gradient(var(--corner-color), var(--corner-color)) bottom -1px
+        left -1px/ 1px 15px no-repeat;
   }
   .c-2 {
     width: 100%;
     height: 100%;
+    border: 1px solid var(--border-color);
+    border-inline: unset;
   }
   .c-3 {
     width: 100%;
     height: 100%;
-    border: 1px solid gray;
+    border: 1px solid var(--border-color);
     background:
-      linear-gradient(black, black) top right / 20px 2px no-repeat,
-      linear-gradient(black, black) top right / 2px 20px no-repeat,
-      linear-gradient(black, black) bottom right / 20px 2px no-repeat,
-      linear-gradient(black, black) bottom right / 2px 20px no-repeat;
+      linear-gradient(var(--corner-color), var(--corner-color)) top -1px
+        right -1px/ 15px 1px no-repeat,
+      linear-gradient(var(--corner-color), var(--corner-color)) top -1px
+        right -1px / 1px 15px no-repeat,
+      linear-gradient(var(--corner-color), var(--corner-color)) bottom -1px
+        right -1px/ 15px 1px no-repeat,
+      linear-gradient(var(--corner-color), var(--corner-color)) bottom -1px
+        right -1px/ 1px 15px no-repeat;
   }
 }
+
 .left-bar {
   background-color: red;
 }
 
 .dotted-bg {
-  // position: absolute;
-  // width: 100%;
-  // height: 100%;
-  // // min-width: 400px;
-  // background-color: #fafafa;
   color: #6666664f;
 }
 
@@ -78,7 +150,7 @@
     color: #000000d6;
     span {
       font-weight: bold;
-      color: black;
+      color: var(--corner-color);
       padding-left: 5px;
     }
   }
