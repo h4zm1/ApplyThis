@@ -4,6 +4,7 @@ import { JobStatus } from "../types/job";
 import {
   createJob,
   deleteJob,
+  getBarData,
   getJobById,
   getJobStats,
   getSankeyData,
@@ -159,6 +160,18 @@ export async function sankeyData(req: AuthRequest, res: Response) {
   try {
     const userId = req.user!.userId;
     const data = await getSankeyData(userId);
+    return res.status(200).json(data);
+  } catch (error) {
+    logger.error({ error }, "failed to get sankey data");
+    res.status(500).json({ error: "failed to get sankey data" });
+  }
+}
+
+export async function barData(req: AuthRequest, res: Response) {
+  try {
+    logger.info("inside barData");
+    const userId = req.user!.userId;
+    const data = await getBarData(userId);
     return res.status(200).json(data);
   } catch (error) {
     logger.error({ error }, "failed to get sankey data");

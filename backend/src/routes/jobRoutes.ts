@@ -9,6 +9,7 @@ import {
   stats,
   update,
   updateOrder,
+  barData,
 } from "../controllers/jobController";
 
 const router = Router();
@@ -18,6 +19,7 @@ router.use(authenticate);
 // this need to come first before GET /:id or it will mistakes 'stats' as an id
 router.get("/stats", stats);
 router.get("/sankey", sankeyData);
+router.get("/weekly", barData);
 
 router.get("/", listJobs);
 router.get("/:id", getJob);

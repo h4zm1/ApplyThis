@@ -361,3 +361,74 @@ export async function getSankeyData(userId: string) {
 
   return { nodes, links };
 }
+
+export async function getBarData(userId: string) {
+  const jobs = await prisma.job.findMany({
+    where: { userId },
+  });
+  if (jobs.length === 0) return {};
+
+  const weekly: Record<string, number> = {
+    Monday: 0,
+    Tuesday: 0,
+    Wednesday: 0,
+    Thursday: 0,
+    Friday: 0,
+    Saturday: 0,
+  };
+  const lastWeekly: Record<string, number> = {
+    Monday: 0,
+    Tuesday: 0,
+    Wednesday: 0,
+    Thursday: 0,
+    Friday: 0,
+    Saturday: 0,
+  };
+
+  // take the time out
+  const startOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+
+  const today = new Date();
+  const currentDayOfWeek = today.getDay(); // 0=sunday 1=monday 6=saturday
+
+  // this week
+  // if today is sunday we go back 6 days, otherwise we go back (currentDayofweek - 1) days
+  const daysSinceMonday = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
+  const thisMonday = startOfDay(
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - daysSinceMonday,
+    ),
+  );
+
+  // last week boundries (from monday to sunday)
+  const lastWeekMonday = startOfDay(
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - daysSinceMonday - 7,
+    ),
+  );
+  const lastWeekSunday = startOfDay(
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - daysSinceMonday - 1,
+    ),
+  );
+
+  const datesThisWeek = jobs.filter((date) => {
+    const applyDate = startOfDay(date.appliedAt);
+    return applyDate >= thisMonday && date.appliedAt <= today;
+  });
+
+  // for (const job of jobs) {
+  //   const date = new Date(job.appliedAt);
+  //   const day = date.toLocaleDateString("en-US", { weekday: "long" });
+  //   weekly[day] += 1;
+  // }
+
+  return { datesThisWeek };
+}
