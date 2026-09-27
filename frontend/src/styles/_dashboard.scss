@@ -26,8 +26,16 @@
   border-bottom: unset;
   border-right: unset;
 }
+
+// weekly chart
 .w-chart {
   grid-area: midLeft;
+  .bar1 {
+    fill: url(#lastWeekGradient);
+  }
+  .bar2 {
+    fill: #008fee;
+  }
 }
 .recent-jobs {
   grid-area: midRight;

@@ -1,4 +1,3 @@
-// src/components/SankeyChart.tsx
 import { useEffect, useRef } from "react";
 import {
   Sankey,

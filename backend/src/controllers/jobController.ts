@@ -169,12 +169,11 @@ export async function sankeyData(req: AuthRequest, res: Response) {
 
 export async function barData(req: AuthRequest, res: Response) {
   try {
-    logger.info("inside barData");
     const userId = req.user!.userId;
     const data = await getBarData(userId);
     return res.status(200).json(data);
   } catch (error) {
-    logger.error({ error }, "failed to get sankey data");
-    res.status(500).json({ error: "failed to get sankey data" });
+    logger.error({ error }, "failed to get weekly bar data");
+    res.status(500).json({ error: "failed to get weekly bar data" });
   }
 }

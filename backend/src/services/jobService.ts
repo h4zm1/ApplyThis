@@ -368,25 +368,20 @@ export async function getBarData(userId: string) {
   });
   if (jobs.length === 0) return {};
 
-  const weekly: Record<string, number> = {
-    Monday: 0,
-    Tuesday: 0,
-    Wednesday: 0,
-    Thursday: 0,
-    Friday: 0,
-    Saturday: 0,
-  };
-  const lastWeekly: Record<string, number> = {
-    Monday: 0,
-    Tuesday: 0,
-    Wednesday: 0,
-    Thursday: 0,
-    Friday: 0,
-    Saturday: 0,
-  };
+  // const weekly: Record<string, number> = {
+  // };
+  // const lastWeekly: Record<string, number> = {
+  //   Monday: 0,
+  //   Tuesday: 0,
+  //   Wednesday: 0,
+  //   Thursday: 0,
+  //   Friday: 0,
+  //   Saturday: 0,
+  //   Sunday: 0,
+  // };
 
   // take the time out
-  const startOfDay = (d: Date) =>
+  const trueDate = (d: Date) =>
     new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 
   const today = new Date();
@@ -395,7 +390,7 @@ export async function getBarData(userId: string) {
   // this week
   // if today is sunday we go back 6 days, otherwise we go back (currentDayofweek - 1) days
   const daysSinceMonday = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
-  const thisMonday = startOfDay(
+  const thisMonday = trueDate(
     new Date(
       today.getFullYear(),
       today.getMonth(),
@@ -404,31 +399,84 @@ export async function getBarData(userId: string) {
   );
 
   // last week boundries (from monday to sunday)
-  const lastWeekMonday = startOfDay(
+  const lastWeekMonday = trueDate(
     new Date(
       today.getFullYear(),
       today.getMonth(),
       today.getDate() - daysSinceMonday - 7,
     ),
   );
-  const lastWeekSunday = startOfDay(
+  const lastWeekSunday = trueDate(
     new Date(
       today.getFullYear(),
       today.getMonth(),
       today.getDate() - daysSinceMonday - 1,
     ),
   );
+  //
+  // const datesThisWeek = jobs.filter((date) => {
+  //   const applyDate = trueDate(date.appliedAt);
+  //   return applyDate >= thisMonday && applyDate <= trueDate(today);
+  // });
+  //
+  // const datesLastWeek = jobs.filter((date) => {
+  //   const applyDate = trueDate(date.appliedAt);
+  //   return applyDate >= lastWeekMonday && applyDate <= lastWeekSunday;
+  // });
+  const weeklyData: { dayName: string; thisWeek: number; lastWeek: number }[] =
+    [
+      { dayName: "Monday", thisWeek: 0, lastWeek: 0 },
+      { dayName: "Tuesday", thisWeek: 0, lastWeek: 0 },
+      { dayName: "Wednesday", thisWeek: 0, lastWeek: 0 },
+      { dayName: "Thursday", thisWeek: 0, lastWeek: 0 },
+      { dayName: "Friday", thisWeek: 0, lastWeek: 0 },
+      { dayName: "Saturday", thisWeek: 0, lastWeek: 0 },
+      { dayName: "Sunday", thisWeek: 0, lastWeek: 0 },
+    ];
+  const dayIndex = [6, 0, 1, 2, 3, 4, 5];
 
-  const datesThisWeek = jobs.filter((date) => {
-    const applyDate = startOfDay(date.appliedAt);
-    return applyDate >= thisMonday && date.appliedAt <= today;
+  jobs.forEach((job, i) => {
+    const jobDate = new Date(job.appliedAt);
+    const dayName = jobDate.toLocaleDateString("en-US", { weekday: "long" });
+    const applyDate = trueDate(job.appliedAt);
+    const index = dayIndex[jobDate.getDay()];
+    // logger.info(
+    //   i + " job date:" + dayName + " =>> " + jobDate + " INDEX: " + index,
+    // );
+    if (applyDate >= thisMonday && applyDate <= trueDate(today)) {
+      // logger.info(
+      //   i +
+      //     " THIS week:" +
+      //     dayName +
+      //     " weeklydata " +
+      //     index +
+      //     " >> " +
+      //     weeklyData[index].dayName,
+      // );
+      // weekly[dayName] += 1;
+      weeklyData[index].thisWeek += 1;
+    }
+    if (applyDate >= lastWeekMonday && applyDate <= lastWeekSunday) {
+      // logger.info(
+      //   i +
+      //     " LAST week:" +
+      //     dayName +
+      //     " weeklydata " +
+      //     index +
+      //     " >> " +
+      //     weeklyData[index].dayName,
+      // );
+
+      // logger.info(i + " LAST week:" + dayName);
+      // lastWeekly[dayName] += 1;
+      weeklyData[index].lastWeek += 1;
+    }
   });
-
   // for (const job of jobs) {
   //   const date = new Date(job.appliedAt);
   //   const day = date.toLocaleDateString("en-US", { weekday: "long" });
   //   weekly[day] += 1;
   // }
 
-  return { datesThisWeek };
+  return { weeklyData };
 }

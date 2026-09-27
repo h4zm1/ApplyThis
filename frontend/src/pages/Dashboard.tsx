@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import SankeyChart from "../components/SankeyChart";
 import { ArrowUpRight, MoveUpRight } from "lucide-react";
 import NortheastIcon from "@mui/icons-material/NorthEast";
+import WeeklyBarChart from "../components/BarChart";
 
 // only showing job stats, resumes and recent applications for now
 const Dashboard = () => {
@@ -117,7 +118,9 @@ const Dashboard = () => {
             ApplyThis
           </a>
         </div>
-        <div className="w-chart"></div>
+        <div className="w-chart">
+          <WeeklyBarChart></WeeklyBarChart>
+        </div>
         <div className="recent-jobs"></div>
         <div className="filler-div" style={{ gridArea: "topMid" }}></div>
         <div className="filler-div" style={{ gridArea: "midMid" }}></div>
