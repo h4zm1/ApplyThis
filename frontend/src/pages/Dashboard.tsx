@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getJobStats, getJobs, getSankeyData } from "../services/jobService";
+import {
+  getJobStats,
+  getJobs,
+  getSankeyData,
+  getWeeklyData,
+} from "../services/jobService";
 import { getResumes } from "../services/resumeService";
 import type { JobStats, Job } from "../types/job";
 import type { Resume } from "../types/resume";
@@ -26,6 +31,7 @@ const Dashboard = () => {
     nodes: [],
     links: [],
   });
+  const [barCharData, setBarChartData] = useState(null);
 
   // useEffect will run code when component mounts (like ngOnInit in angular)
   // empty array [] means run once on mount
@@ -38,18 +44,20 @@ const Dashboard = () => {
   async function loadDashboardData() {
     try {
       // Promise.all can run many async calls in parallel like forkJoin in rxjs (and wait for all to finish before emmiting)
-      const [statsData, jobsData, resumesData, sankeyResult] =
+      const [statsData, jobsData, resumesData, sankeyResult, weeklyResult] =
         await Promise.all([
           getJobStats(),
           getJobs(),
           getResumes(),
           getSankeyData(),
+          getWeeklyData(),
         ]);
-
+      console.log(weeklyResult);
       setStats(statsData);
       setRecentJobs(jobsData.slice(0, 5)); // only show recent 5
       setRecentResumes(resumesData.slice(0, 5));
       setSankeyData(sankeyResult);
+      setBarChartData(weeklyResult);
     } catch (error) {
       setError("failed to load dashboard data");
       console.error(error);
@@ -118,8 +126,8 @@ const Dashboard = () => {
             ApplyThis
           </a>
         </div>
-        <div className="w-chart">
-          <WeeklyBarChart></WeeklyBarChart>
+        <div className="bar-chart">
+          <WeeklyBarChart data={barCharData}></WeeklyBarChart>
         </div>
         <div className="recent-jobs"></div>
         <div className="filler-div" style={{ gridArea: "topMid" }}></div>

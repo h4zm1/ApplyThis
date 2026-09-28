@@ -57,3 +57,7 @@ export async function getSankeyData() {
   const response = await api.get("/jobs/sankey");
   return response.data;
 }
+export async function getWeeklyData() {
+  const response = await api.get("/jobs/weekly");
+  return response.data;
+}

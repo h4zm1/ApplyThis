@@ -368,18 +368,6 @@ export async function getBarData(userId: string) {
   });
   if (jobs.length === 0) return {};
 
-  // const weekly: Record<string, number> = {
-  // };
-  // const lastWeekly: Record<string, number> = {
-  //   Monday: 0,
-  //   Tuesday: 0,
-  //   Wednesday: 0,
-  //   Thursday: 0,
-  //   Friday: 0,
-  //   Saturday: 0,
-  //   Sunday: 0,
-  // };
-
   // take the time out
   const trueDate = (d: Date) =>
     new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
@@ -413,16 +401,6 @@ export async function getBarData(userId: string) {
       today.getDate() - daysSinceMonday - 1,
     ),
   );
-  //
-  // const datesThisWeek = jobs.filter((date) => {
-  //   const applyDate = trueDate(date.appliedAt);
-  //   return applyDate >= thisMonday && applyDate <= trueDate(today);
-  // });
-  //
-  // const datesLastWeek = jobs.filter((date) => {
-  //   const applyDate = trueDate(date.appliedAt);
-  //   return applyDate >= lastWeekMonday && applyDate <= lastWeekSunday;
-  // });
   const weeklyData: { dayName: string; thisWeek: number; lastWeek: number }[] =
     [
       { dayName: "Monday", thisWeek: 0, lastWeek: 0 },
@@ -438,45 +416,16 @@ export async function getBarData(userId: string) {
   jobs.forEach((job, i) => {
     const jobDate = new Date(job.appliedAt);
     const dayName = jobDate.toLocaleDateString("en-US", { weekday: "long" });
-    const applyDate = trueDate(job.appliedAt);
+    const applyDate = trueDate(job.appliedAt); // convert date to numbers
     const index = dayIndex[jobDate.getDay()];
-    // logger.info(
-    //   i + " job date:" + dayName + " =>> " + jobDate + " INDEX: " + index,
-    // );
+    // if the date is between this monday and today
     if (applyDate >= thisMonday && applyDate <= trueDate(today)) {
-      // logger.info(
-      //   i +
-      //     " THIS week:" +
-      //     dayName +
-      //     " weeklydata " +
-      //     index +
-      //     " >> " +
-      //     weeklyData[index].dayName,
-      // );
-      // weekly[dayName] += 1;
       weeklyData[index].thisWeek += 1;
     }
     if (applyDate >= lastWeekMonday && applyDate <= lastWeekSunday) {
-      // logger.info(
-      //   i +
-      //     " LAST week:" +
-      //     dayName +
-      //     " weeklydata " +
-      //     index +
-      //     " >> " +
-      //     weeklyData[index].dayName,
-      // );
-
-      // logger.info(i + " LAST week:" + dayName);
-      // lastWeekly[dayName] += 1;
       weeklyData[index].lastWeek += 1;
     }
   });
-  // for (const job of jobs) {
-  //   const date = new Date(job.appliedAt);
-  //   const day = date.toLocaleDateString("en-US", { weekday: "long" });
-  //   weekly[day] += 1;
-  // }
 
-  return { weeklyData };
+  return weeklyData;
 }

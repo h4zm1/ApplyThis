@@ -28,13 +28,27 @@
 }
 
 // weekly chart
-.w-chart {
+.bar-chart {
   grid-area: midLeft;
   .bar1 {
     fill: url(#lastWeekGradient);
   }
   .bar2 {
-    fill: #008fee;
+    fill: #9a9a9a;
+  }
+  .bar-char-tooltip {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffffe3;
+    :first-child {
+      color: #3a3a3a;
+    }
+    :nth-child(2) {
+      color: #838383;
+    }
+    .tt-value {
+      font-size: 0.85rem;
+    }
   }
 }
 .recent-jobs {
