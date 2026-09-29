@@ -10,6 +10,7 @@ import {
   update,
   updateOrder,
   barData,
+  weeklyStats,
 } from "../controllers/jobController";
 
 const router = Router();
@@ -20,6 +21,7 @@ router.use(authenticate);
 router.get("/stats", stats);
 router.get("/sankey", sankeyData);
 router.get("/weekly", barData);
+router.get("/weeklystats", weeklyStats);
 
 router.get("/", listJobs);
 router.get("/:id", getJob);

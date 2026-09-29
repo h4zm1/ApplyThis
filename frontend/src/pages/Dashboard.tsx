@@ -15,6 +15,7 @@ import SankeyChart from "../components/SankeyChart";
 import { ArrowUpRight, MoveUpRight } from "lucide-react";
 import NortheastIcon from "@mui/icons-material/NorthEast";
 import WeeklyBarChart from "../components/BarChart";
+import type { BData } from "../components/BarChart.tsx";
 
 // only showing job stats, resumes and recent applications for now
 const Dashboard = () => {
@@ -31,7 +32,7 @@ const Dashboard = () => {
     nodes: [],
     links: [],
   });
-  const [barCharData, setBarChartData] = useState(null);
+  const [barCharData, setBarChartData] = useState<BData[]>([]);
 
   // useEffect will run code when component mounts (like ngOnInit in angular)
   // empty array [] means run once on mount
@@ -52,7 +53,7 @@ const Dashboard = () => {
           getSankeyData(),
           getWeeklyData(),
         ]);
-      console.log(weeklyResult);
+      console.log(statsData);
       setStats(statsData);
       setRecentJobs(jobsData.slice(0, 5)); // only show recent 5
       setRecentResumes(resumesData.slice(0, 5));
@@ -88,7 +89,7 @@ const Dashboard = () => {
           <div className="c-1 status-card">
             <span className="status-name">Applied</span>
             <div>
-              <span className="status-value">60</span>
+              <span className="status-value">{stats?.TOTAL}</span>
               <span className="weekly-perecentage">
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
                 0%
@@ -97,9 +98,20 @@ const Dashboard = () => {
             <span className="lastweek-value">25 in last week</span>
           </div>
           <div className="c-2 status-card">
+            <span className="status-name">Initial Interview</span>
+            <div>
+              <span className="status-value">{stats?.INITIAL_INTERVIEW}</span>
+              <span className="weekly-perecentage">
+                <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
+                0%
+              </span>
+            </div>
+            <span className="lastweek-value">25 in last week</span>
+          </div>
+          <div className="c-22 status-card">
             <span className="status-name">Ghosted</span>
             <div>
-              <span className="status-value">60</span>
+              <span className="status-value">{stats?.NO_REPLY}</span>
               <span className="weekly-perecentage">
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
                 0%
@@ -110,7 +122,7 @@ const Dashboard = () => {
           <div className="c-3 status-card">
             <span className="status-name">Rejected</span>
             <div>
-              <span className="status-value">60</span>
+              <span className="status-value">{stats?.REJECTED}</span>
               <span className="weekly-perecentage">
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
                 0%
@@ -134,29 +146,6 @@ const Dashboard = () => {
         <div className="filler-div" style={{ gridArea: "midMid" }}></div>
       </div>
       <SankeyChart data={sankeyData} width={800} height={200} />
-
-      {/* TODO: make these cards */}
-      <div>
-        <div>
-          <div>Total Applications</div>
-          <div>{stats?.total || 0}</div>
-        </div>
-
-        <div>
-          <div>Applied</div>
-          <div>{stats?.APPLIED || 0}</div>
-        </div>
-
-        <div>
-          <div>Rejected</div>
-          <div>{stats?.REJECTED || 0}</div>
-        </div>
-
-        <div>
-          <div>Ghosted</div>
-          <div>{stats?.NO_REPLY || 0}</div>
-        </div>
-      </div>
 
       {/* recent jobs */}
       <div>

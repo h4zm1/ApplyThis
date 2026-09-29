@@ -12,7 +12,7 @@
 }
 .overview-content {
   display: grid;
-  grid-template-columns: 2fr 3rem 1fr;
+  grid-template-columns: 1.5fr 3rem 1fr;
   grid-template-rows: 1fr 4fr;
   margin-inline: -2rem;
   grid-template-areas: "topLeft topMid topRight" "midLeft midMid midRight";
@@ -30,6 +30,7 @@
 // weekly chart
 .bar-chart {
   grid-area: midLeft;
+  margin: 2rem;
   .bar1 {
     fill: url(#lastWeekGradient);
   }
@@ -72,10 +73,6 @@
   border: 1px solid var(--border-color);
   border-inline: unset;
 
-  .side-div {
-    height: 100%;
-    width: 30%;
-  }
   .status-card {
     display: flex;
     flex-direction: column;
@@ -105,6 +102,11 @@
       font-size: 0.9rem;
     }
   }
+  .side-div {
+    height: 100%;
+    width: 23%;
+  }
+
   .c-1 {
     width: 100%;
     height: 100%;
@@ -125,8 +127,16 @@
     width: 100%;
     height: 100%;
     border: 1px solid var(--border-color);
+    // border-inline: unset;
+    border-left: unset;
+  }
+  .c-22 {
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--border-color);
     border-inline: unset;
   }
+
   .c-3 {
     width: 100%;
     height: 100%;

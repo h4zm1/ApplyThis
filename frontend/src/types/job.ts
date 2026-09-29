@@ -64,5 +64,5 @@ export interface JobStats {
   REJECTED: number;
   WITHDRAWN: number;
 
-  total: number;
+  TOTAL: number;
 }

@@ -11,11 +11,11 @@ import {
 } from "recharts";
 
 interface Props {
-  data: bData[];
+  data: BData[];
   width?: number;
   height?: number;
 }
-interface bData {
+export interface BData {
   name: string;
   thisWeek: number;
   lastWeek: number;
@@ -42,6 +42,7 @@ export default function OverlappingBarChart({
           axisLine={false}
           tickLine={false}
           tick={{ fontSize: "15px", fill: "black", fontWeight: "300" }}
+          tickMargin={15}
         />
         {/* <YAxis /> */}
         {/* <Tooltip cursor={false} /> */}

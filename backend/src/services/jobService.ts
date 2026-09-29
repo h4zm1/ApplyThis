@@ -362,45 +362,43 @@ export async function getSankeyData(userId: string) {
   return { nodes, links };
 }
 
+export function getWeekBoundries() {
+  const startOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+  const today = new Date();
+  const todayStart = startOfDay(today);
+
+  const currentDayOfWeek = today.getDay();
+  const daysSinceMonday = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
+
+  const thisMonday = new Date(todayStart);
+  thisMonday.setDate(thisMonday.getDate() - daysSinceMonday);
+
+  const lastWeekMonday = new Date(thisMonday);
+  lastWeekMonday.setDate(lastWeekMonday.getDate() - 7);
+
+  const tomorrow = new Date(todayStart);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  return { lastWeekMonday, thisMonday, tomorrow };
+}
+
 export async function getBarData(userId: string) {
+  const { lastWeekMonday, thisMonday, tomorrow } = getWeekBoundries();
+
+  // make prisma only get jobs from mast week till today, no need to go any further
   const jobs = await prisma.job.findMany({
-    where: { userId },
+    where: {
+      userId,
+      appliedAt: {
+        gte: lastWeekMonday, // gte = greater than or equal to
+        lt: tomorrow, // lesser than tomorrow, this should be better than lte:today (lesser than or equal to today)
+      },
+    },
   });
   if (jobs.length === 0) return {};
 
-  // take the time out
-  const trueDate = (d: Date) =>
-    new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-
-  const today = new Date();
-  const currentDayOfWeek = today.getDay(); // 0=sunday 1=monday 6=saturday
-
-  // this week
-  // if today is sunday we go back 6 days, otherwise we go back (currentDayofweek - 1) days
-  const daysSinceMonday = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
-  const thisMonday = trueDate(
-    new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - daysSinceMonday,
-    ),
-  );
-
-  // last week boundries (from monday to sunday)
-  const lastWeekMonday = trueDate(
-    new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - daysSinceMonday - 7,
-    ),
-  );
-  const lastWeekSunday = trueDate(
-    new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - daysSinceMonday - 1,
-    ),
-  );
   const weeklyData: { dayName: string; thisWeek: number; lastWeek: number }[] =
     [
       { dayName: "Monday", thisWeek: 0, lastWeek: 0 },
@@ -411,21 +409,64 @@ export async function getBarData(userId: string) {
       { dayName: "Saturday", thisWeek: 0, lastWeek: 0 },
       { dayName: "Sunday", thisWeek: 0, lastWeek: 0 },
     ];
+  // lookup map so each day is O(1)
   const dayIndex = [6, 0, 1, 2, 3, 4, 5];
 
   jobs.forEach((job, i) => {
+    logger.info("i: " + i);
     const jobDate = new Date(job.appliedAt);
     const dayName = jobDate.toLocaleDateString("en-US", { weekday: "long" });
-    const applyDate = trueDate(job.appliedAt); // convert date to numbers
+    // const applyDate = trueDate(job.appliedAt); // convert date to numbers
     const index = dayIndex[jobDate.getDay()];
     // if the date is between this monday and today
-    if (applyDate >= thisMonday && applyDate <= trueDate(today)) {
-      weeklyData[index].thisWeek += 1;
-    }
-    if (applyDate >= lastWeekMonday && applyDate <= lastWeekSunday) {
-      weeklyData[index].lastWeek += 1;
+    if (jobDate >= thisMonday) {
+      weeklyData[index].thisWeek++;
+    } else {
+      weeklyData[index].lastWeek++;
     }
   });
 
   return weeklyData;
+}
+
+export async function getWeeklyStats(userId: string) {
+  const { lastWeekMonday, thisMonday, tomorrow } = getWeekBoundries();
+  const history = await prisma.jobStatusHistory.findMany({
+    where: {
+      job: { userId },
+      changedAt: {
+        gte: lastWeekMonday,
+        lt: tomorrow,
+      },
+    },
+  });
+  const weeklyStatusData: {
+    stats: string;
+    thisWeek: number;
+    lastWeek: number;
+  }[] = [
+    { stats: "applied", thisWeek: 0, lastWeek: 0 },
+    { stats: "intial", thisWeek: 0, lastWeek: 0 },
+    { stats: "ghosted", thisWeek: 0, lastWeek: 0 },
+    { stats: "rejected", thisWeek: 0, lastWeek: 0 },
+  ];
+
+  // basic lookup to for simpler loop, using Partial to make all props of Jobstatus optional, so i can only pick what i want
+  const statusIndex: Partial<Record<JobStatus, number>> = {
+    APPLIED: 0,
+    INITIAL_INTERVIEW: 1,
+    NO_REPLY: 2,
+    REJECTED: 3,
+  };
+  history.forEach((h) => {
+    const index = statusIndex[h.toStatus];
+    logger.info("ALL h: " + h);
+    if (index === undefined) return;
+    if (h.changedAt >= thisMonday) {
+      logger.info("THIS WEEK h: " + h);
+      weeklyStatusData[index].thisWeek++;
+    } else weeklyStatusData[index].lastWeek++;
+  });
+
+  return weeklyStatusData;
 }

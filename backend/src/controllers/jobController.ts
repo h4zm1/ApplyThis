@@ -9,6 +9,7 @@ import {
   getJobStats,
   getSankeyData,
   getUserJobs,
+  getWeeklyStats,
   updateJob,
   updateJobOrderInDB,
 } from "../services/jobService";
@@ -175,5 +176,16 @@ export async function barData(req: AuthRequest, res: Response) {
   } catch (error) {
     logger.error({ error }, "failed to get weekly bar data");
     res.status(500).json({ error: "failed to get weekly bar data" });
+  }
+}
+
+export async function weeklyStats(req: AuthRequest, res: Response) {
+  try {
+    const userId = req.user!.userId;
+    const data = await getWeeklyStats(userId);
+    return res.status(200).json(data);
+  } catch (error) {
+    logger.error({ error }, "failed to get weekly stats data");
+    res.status(500).json({ error: "failed to get weekly stats data" });
   }
 }
