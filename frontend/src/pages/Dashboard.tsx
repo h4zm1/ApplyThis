@@ -5,14 +5,14 @@ import {
   getJobs,
   getSankeyData,
   getWeeklyData,
+  getWeeklyStats,
 } from "../services/jobService";
 import { getResumes } from "../services/resumeService";
-import type { JobStats, Job } from "../types/job";
+import type { JobStats, Job, WeeklyStats } from "../types/job";
 import type { Resume } from "../types/resume";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
 import SankeyChart from "../components/SankeyChart";
-import { ArrowUpRight, MoveUpRight } from "lucide-react";
 import NortheastIcon from "@mui/icons-material/NorthEast";
 import WeeklyBarChart from "../components/BarChart";
 import type { BData } from "../components/BarChart.tsx";
@@ -33,6 +33,7 @@ const Dashboard = () => {
     links: [],
   });
   const [barCharData, setBarChartData] = useState<BData[]>([]);
+  const [weeklyStatsData, setWeeklyStatsData] = useState<WeeklyStats[]>([]);
 
   // useEffect will run code when component mounts (like ngOnInit in angular)
   // empty array [] means run once on mount
@@ -41,24 +42,45 @@ const Dashboard = () => {
     setHeaderTitle(user?.email + " > Dashboard");
   }, []);
 
+  function getPercentage(lw: number, tw: number) {
+    if (lw === 0 && tw === 0) return 0;
+    if (lw === 0 && tw > 0) return 100;
+    const dif = tw - lw;
+    const prcnt = (dif / lw) * 100;
+    return Math.trunc(prcnt);
+  }
+
+  // calculate all change percentage in one go
+  const percentages = weeklyStatsData.map((stat) =>
+    getPercentage(stat.lastWeek, stat.thisWeek),
+  );
+
   // load all dashboard data at same time
   async function loadDashboardData() {
     try {
       // Promise.all can run many async calls in parallel like forkJoin in rxjs (and wait for all to finish before emmiting)
-      const [statsData, jobsData, resumesData, sankeyResult, weeklyResult] =
-        await Promise.all([
-          getJobStats(),
-          getJobs(),
-          getResumes(),
-          getSankeyData(),
-          getWeeklyData(),
-        ]);
+      const [
+        statsData,
+        jobsData,
+        resumesData,
+        sankeyResult,
+        weeklyResult,
+        weeklyStatsResult,
+      ] = await Promise.all([
+        getJobStats(),
+        getJobs(),
+        getResumes(),
+        getSankeyData(),
+        getWeeklyData(),
+        getWeeklyStats(),
+      ]);
       console.log(statsData);
       setStats(statsData);
       setRecentJobs(jobsData.slice(0, 5)); // only show recent 5
       setRecentResumes(resumesData.slice(0, 5));
       setSankeyData(sankeyResult);
       setBarChartData(weeklyResult);
+      setWeeklyStatsData(weeklyStatsResult);
     } catch (error) {
       setError("failed to load dashboard data");
       console.error(error);
@@ -89,46 +111,70 @@ const Dashboard = () => {
           <div className="c-1 status-card">
             <span className="status-name">Applied</span>
             <div>
-              <span className="status-value">{stats?.TOTAL}</span>
-              <span className="weekly-perecentage">
+              <span className="status-value">
+                {weeklyStatsData[0].thisWeek}
+              </span>
+              <span
+                className={`weekly-perecentage ${percentages[0] >= 0 ? "positive" : "negative"}`}
+              >
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
-                0%
+                {percentages[0]}%
               </span>
             </div>
-            <span className="lastweek-value">25 in last week</span>
+            <span className="lastweek-value">
+              {weeklyStatsData[0].lastWeek} in last week
+            </span>
           </div>
           <div className="c-2 status-card">
             <span className="status-name">Initial Interview</span>
             <div>
-              <span className="status-value">{stats?.INITIAL_INTERVIEW}</span>
-              <span className="weekly-perecentage">
+              <span className="status-value">
+                {weeklyStatsData[1].thisWeek}
+              </span>
+              <span
+                className={`weekly-perecentage ${percentages[1] >= 0 ? "positive" : "negative"}`}
+              >
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
-                0%
+                {percentages[1]}%
               </span>
             </div>
-            <span className="lastweek-value">25 in last week</span>
+            <span className="lastweek-value">
+              {weeklyStatsData[1].lastWeek} in last week
+            </span>
           </div>
           <div className="c-22 status-card">
             <span className="status-name">Ghosted</span>
             <div>
-              <span className="status-value">{stats?.NO_REPLY}</span>
-              <span className="weekly-perecentage">
+              <span className="status-value">
+                {weeklyStatsData[2].thisWeek}
+              </span>
+              <span
+                className={`weekly-perecentage ${percentages[2] >= 0 ? "positive" : "negative"}`}
+              >
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
-                0%
+                {percentages[2]}%
               </span>
             </div>
-            <span className="lastweek-value">25 in last week</span>
+            <span className="lastweek-value">
+              {weeklyStatsData[2].lastWeek} in last week
+            </span>
           </div>
           <div className="c-3 status-card">
             <span className="status-name">Rejected</span>
             <div>
-              <span className="status-value">{stats?.REJECTED}</span>
-              <span className="weekly-perecentage">
+              <span className="status-value">
+                {weeklyStatsData[3].thisWeek}
+              </span>
+              <span
+                className={`weekly-perecentage ${percentages[3] >= 0 ? "positive" : "negative"}`}
+              >
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
-                0%
+                {percentages[3]}%
               </span>
             </div>
-            <span className="lastweek-value">25 in last week</span>
+            <span className="lastweek-value">
+              {weeklyStatsData[3].lastWeek} in last week
+            </span>
           </div>
           <div className="side-div"></div>
         </div>

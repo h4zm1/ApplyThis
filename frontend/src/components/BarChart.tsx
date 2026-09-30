@@ -1,14 +1,5 @@
 import { useEffect, useRef } from "react";
-import {
-  BarChart,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Bar,
-  ResponsiveContainer,
-  CartesianGrid,
-  Legend,
-} from "recharts";
+import { BarChart, XAxis, Tooltip, Bar, ResponsiveContainer } from "recharts";
 
 interface Props {
   data: BData[];

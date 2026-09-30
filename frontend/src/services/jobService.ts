@@ -61,3 +61,7 @@ export async function getWeeklyData() {
   const response = await api.get("/jobs/weekly");
   return response.data;
 }
+export async function getWeeklyStats() {
+  const response = await api.get("/jobs/weeklystats");
+  return response.data;
+}

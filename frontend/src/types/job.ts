@@ -66,3 +66,9 @@ export interface JobStats {
 
   TOTAL: number;
 }
+
+export interface WeeklyStats {
+  stats: string;
+  thisWeek: number;
+  lastWeek: number;
+}

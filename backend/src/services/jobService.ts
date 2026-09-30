@@ -413,12 +413,10 @@ export async function getBarData(userId: string) {
   const dayIndex = [6, 0, 1, 2, 3, 4, 5];
 
   jobs.forEach((job, i) => {
-    logger.info("i: " + i);
+    // logger.info("i: " + i);
     const jobDate = new Date(job.appliedAt);
-    const dayName = jobDate.toLocaleDateString("en-US", { weekday: "long" });
-    // const applyDate = trueDate(job.appliedAt); // convert date to numbers
     const index = dayIndex[jobDate.getDay()];
-    // if the date is between this monday and today
+    // jobs that got applied to in AND after monday of this week
     if (jobDate >= thisMonday) {
       weeklyData[index].thisWeek++;
     } else {
@@ -458,12 +456,11 @@ export async function getWeeklyStats(userId: string) {
     NO_REPLY: 2,
     REJECTED: 3,
   };
+
   history.forEach((h) => {
     const index = statusIndex[h.toStatus];
-    logger.info("ALL h: " + h);
-    if (index === undefined) return;
+    if (index === undefined) return; // needed for ts type check below
     if (h.changedAt >= thisMonday) {
-      logger.info("THIS WEEK h: " + h);
       weeklyStatusData[index].thisWeek++;
     } else weeklyStatusData[index].lastWeek++;
   });

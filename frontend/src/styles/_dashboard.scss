@@ -64,6 +64,8 @@
   border-right: unset;
   border-bottom: unset;
 }
+
+//============Weekly stats cards================
 .card-holder {
   display: flex;
   flex-direction: row;
@@ -93,9 +95,16 @@
     }
     .weekly-perecentage {
       color: green;
-      font-size: small;
+      font-size: 0.8rem;
+      font-weight: 401;
       svg {
         margin-bottom: -2px;
+      }
+      &.negative {
+        color: #d40000 !important;
+        svg {
+          rotate: 90deg;
+        }
       }
     }
     .lastweek-value {
