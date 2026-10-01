@@ -76,8 +76,8 @@ const Dashboard = () => {
       ]);
       console.log(statsData);
       setStats(statsData);
-      setRecentJobs(jobsData.slice(0, 5)); // only show recent 5
-      setRecentResumes(resumesData.slice(0, 5));
+      setRecentJobs(jobsData.slice(0, 2)); // only show recent 5
+      setRecentResumes(resumesData.slice(0, 2));
       setSankeyData(sankeyResult);
       setBarChartData(weeklyResult);
       setWeeklyStatsData(weeklyStatsResult);
@@ -108,14 +108,14 @@ const Dashboard = () => {
       <div className="overview-content">
         <div className="card-holder">
           <div className="side-div"></div>
-          <div className="c-1 status-card">
+          <div className="c-1 status-card corner-highlight left-corners-highlight">
             <span className="status-name">Applied</span>
             <div>
               <span className="status-value">
                 {weeklyStatsData[0].thisWeek}
               </span>
               <span
-                className={`weekly-perecentage ${percentages[0] >= 0 ? "positive" : "negative"}`}
+                className={`weekly-perecentage ${percentages[0] === 0 ? "zero" : percentages[0] > 0 ? "positive" : "negative"}`}
               >
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
                 {percentages[0]}%
@@ -132,7 +132,7 @@ const Dashboard = () => {
                 {weeklyStatsData[1].thisWeek}
               </span>
               <span
-                className={`weekly-perecentage ${percentages[1] >= 0 ? "positive" : "negative"}`}
+                className={`weekly-perecentage ${percentages[1] === 0 ? "zero" : percentages[1] > 0 ? "positive" : "negative"}`}
               >
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
                 {percentages[1]}%
@@ -149,7 +149,7 @@ const Dashboard = () => {
                 {weeklyStatsData[2].thisWeek}
               </span>
               <span
-                className={`weekly-perecentage ${percentages[2] >= 0 ? "positive" : "negative"}`}
+                className={`weekly-perecentage ${percentages[2] === 0 ? "zero" : percentages[2] > 0 ? "positive" : "negative"}`}
               >
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
                 {percentages[2]}%
@@ -159,14 +159,14 @@ const Dashboard = () => {
               {weeklyStatsData[2].lastWeek} in last week
             </span>
           </div>
-          <div className="c-3 status-card">
+          <div className="c-3 status-card corner-highlight right-corners-highlight">
             <span className="status-name">Rejected</span>
             <div>
               <span className="status-value">
                 {weeklyStatsData[3].thisWeek}
               </span>
               <span
-                className={`weekly-perecentage ${percentages[3] >= 0 ? "positive" : "negative"}`}
+                className={`weekly-perecentage ${percentages[3] === 0 ? "zero" : percentages[3] > 0 ? "positive" : "negative"}`}
               >
                 <NortheastIcon sx={{ fontSize: 15 }}></NortheastIcon>
                 {percentages[3]}%
@@ -187,67 +187,81 @@ const Dashboard = () => {
         <div className="bar-chart">
           <WeeklyBarChart data={barCharData}></WeeklyBarChart>
         </div>
-        <div className="recent-jobs"></div>
+        <div className="recent-jobs corner-highlight left-corners-highlight right-corners-highlight">
+          <div className="rj-title">recent jobs</div>
+          {recentJobs.length === 0 ? (
+            <div className="no-recent-job">
+              <p>No job applications yet</p>
+              <Link to="/jobs">Add your first application</Link>
+            </div>
+          ) : (
+            <div className="rj-list">
+              {recentJobs.map((job) => (
+                <div className="rj-job" key={job.id}>
+                  <div>
+                    <span>{job.position}</span>
+                    <span>{job.company}</span>
+                  </div>
+                  <div>
+                    <span>{job.status}</span>
+                    <span>{job.appliedAt.substring(0, 10)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="rj-title">recent resumes</div>
+
+          {recentResumes.length === 0 ? (
+            <div className="empty-state">
+              <p>No resumes yet</p>
+              <Link to="/resumes">Create your first resume</Link>
+            </div>
+          ) : (
+            <div>
+              {recentResumes.map((resume) => (
+                <div className="rj-list" key={resume.id}>
+                  <div className="rj-job">
+                    <span>{resume.name}</span>
+                    <span>
+                      {resume.pdfUrl ? "PDF compiled" : "Not compiled"}
+                    </span>
+                  </div>
+                  <span>{resume.updatedAt}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="filler-div" style={{ gridArea: "topMid" }}></div>
-        <div className="filler-div" style={{ gridArea: "midMid" }}></div>
+        <div
+          className="filler-div"
+          style={{ gridArea: "midMid", borderTop: "unset" }}
+        ></div>
+        <div
+          className="filler-div"
+          style={{
+            gridArea: "topRight2",
+            borderLeft: "1px dashed #80808047",
+            // borderBottom: "unset",
+          }}
+        ></div>
+        <div
+          className="filler-div"
+          style={{
+            gridArea: "midRight2",
+            borderLeft: "1px dashed var(--border-color);",
+            borderBottom: "unset",
+            borderTop: "unset",
+          }}
+        ></div>
       </div>
       <SankeyChart data={sankeyData} width={800} height={200} />
 
       {/* recent jobs */}
-      <div>
-        <h2>Recent Applications</h2>
-        {/* if no job found put a link for job page*/}
-        {recentJobs.length === 0 ? (
-          <div>
-            <p>No job applications yet</p>
-            <Link to="/jobs">Add your first application</Link>
-          </div>
-        ) : (
-          <ul>
-            {/* 
-              .map() loops over array and returns JSX for each item
-              like @for in angular
-              'key' prop here is like 'track'
-            */}
-            {recentJobs.map((job) => (
-              <li key={job.id}>
-                <div>
-                  <h3>{job.position}</h3>
-                  <p>{job.company}</p>
-                </div>
-                <div>
-                  <span>{job.status}</span>
-                  <span>{job.appliedAt}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
 
       {/* recent resumes */}
-      <div>
-        <h2>Resumes</h2>
-
-        {recentResumes.length === 0 ? (
-          <div className="empty-state">
-            <p>No resumes yet</p>
-            <Link to="/resumes">Create your first resume</Link>
-          </div>
-        ) : (
-          <ul>
-            {recentResumes.map((resume) => (
-              <li key={resume.id}>
-                <div>
-                  <h3>{resume.name}</h3>
-                  <p>{resume.pdfUrl ? "PDF compiled" : "Not compiled"}</p>
-                </div>
-                <span>{resume.updatedAt}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
     </div>
   );
 };

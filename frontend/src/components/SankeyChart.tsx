@@ -177,6 +177,9 @@ function SankeyChart({ data, width = 800, height = 200 }: Props) {
         node={CustomNode}
         nodePadding={50}
         align="left"
+        // verticalAlign="top"
+        sort={false}
+        // iterations={0}
         margin={{
           bottom: 30,
         }}
