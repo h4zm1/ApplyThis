@@ -19,12 +19,67 @@
   margin-inline: -2rem;
   padding-top: 2rem;
 }
-.extension-btn {
+
+//===============Extention section================
+.extension-section {
   grid-area: topRight;
   border: 1px solid var(--border-color);
   border-left: 1px dashed var(--border-color);
   border-bottom: unset;
   border-right: unset;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-inline: 1rem;
+  gap: 5rem;
+  div {
+    align-content: center;
+    p {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: gray;
+    }
+  }
+  .btn-holder {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-direction: row;
+    justify-content: center;
+    a {
+      background-color: #353535;
+      color: white;
+      text-decoration: none;
+      height: fit-content;
+      padding: 0.6rem;
+      border-radius: 0.8rem;
+      padding-inline: 1.6rem;
+      display: flex;
+      gap: 0.6rem;
+      width: 100%;
+      /* padding-inline: 0.8rem; */
+      justify-content: center;
+      svg {
+        width: 1.8rem;
+        padding: 0;
+        margin: 0;
+        color: white;
+        fill: white;
+        height: 1.8rem;
+        margin-bottom: -1px;
+      }
+      span {
+        align-content: center;
+        color: white;
+        font-size: 0.8rem;
+      }
+    }
+  }
 }
 
 //=====================Weekly chart=================
@@ -69,10 +124,12 @@
   border: 1px solid var(--border-color);
   border-right: unset;
   margin-top: -1px;
+  display: flex;
+  flex-direction: column;
   .rj-title {
     display: flex;
     justify-content: center;
-    border-bottom: 1px solid var(--border-color);
+    border-block: 1px solid var(--border-color);
     padding-block: 1rem;
     background-color: #c9c9c914;
     // background: repeating-linear-gradient(
@@ -82,11 +139,15 @@
     // );
   }
   .rj-list {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     .rj-job {
       contain: layout;
       padding: 0.5rem;
       border-bottom: 1px solid var(--border-color);
       color: #454545;
+      height: -webkit-fill-available;
       // > will make sure that this will only get applied to first child and no nested childs
       & > :first-child {
         display: flex;
@@ -109,9 +170,64 @@
         font-size: 0.9rem;
       }
     }
+    .rj-resume {
+      contain: layout;
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      color: #454545;
+      display: flex;
+      flex-direction: column;
+      height: -webkit-fill-available;
+      & > :first-child {
+        font-size: 1.5rem;
+        text-align: center;
+      }
+      div {
+        display: flex;
+        justify-content: space-between;
+        & > :nth-child(2) {
+        }
+        & > :nth-child(3) {
+        }
+      }
+    }
   }
 }
-
+.no-recent-activity {
+  height: 100%;
+  display: flex;
+  a {
+    width: 100%;
+    text-align: center;
+    height: 100%;
+    place-content: center;
+    text-decoration: none;
+    color: #595959;
+    font-size: 1.2rem;
+  }
+  span {
+    position: absolute;
+  }
+}
+.no-recent-resume {
+  display: flex;
+  height: 100%;
+  a {
+    width: 100%;
+    text-align: center;
+    height: 100%;
+    place-content: center;
+  }
+  p {
+    position: absolute;
+  }
+}
+//============Sankey Chart===============
+.sankey-chart {
+  svg {
+    outline: none;
+  }
+}
 //============Weekly stats cards================
 .card-holder {
   display: flex;
@@ -242,6 +358,7 @@
   position: absolute;
   inset: 0;
   margin: -1px;
+  pointer-events: none; // this so the empty jobs/resumes links work
   background:
     linear-gradient(var(--corner-color), var(--corner-color)) top left / 15px
       1px no-repeat,
@@ -258,6 +375,7 @@
   position: absolute;
   inset: 0;
   margin: -1px;
+  pointer-events: none;
   background:
     linear-gradient(var(--corner-color), var(--corner-color)) top right / 15px
       1px no-repeat,

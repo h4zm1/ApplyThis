@@ -18,7 +18,7 @@ export default function OverlappingBarChart({
   height = 400,
 }: Props) {
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height={500}>
       <BarChart
         data={data}
         width={width}
