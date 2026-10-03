@@ -1,4 +1,4 @@
-import type { CreateJobRequest, Job, JobStatus } from "../types/job";
+import type { CreateJobRequest, Job, JobStats, JobStatus } from "../types/job";
 import { useEffect, useState } from "react";
 import type { Resume } from "../types/resume";
 import {
@@ -12,6 +12,8 @@ import { getResumes } from "../services/resumeService";
 import logger from "../services/logger";
 import JobForm, { PRIME_STATUS, SECOND_STATUS } from "../components/JobForm";
 import {
+  ArrowBigDown,
+  ArrowBigDownDash,
   Briefcase,
   Edit,
   ExternalLink,
@@ -90,6 +92,22 @@ const Jobs = () => {
       logger.error(error);
     } finally {
       setIsloading(false);
+    }
+  }
+
+  function isGhosted(SChangeDate: string, status: string) {
+    const SCDate = new Date(SChangeDate);
+    const difMs = Date.now() - SCDate.getTime();
+    const difDays = Math.floor(difMs / (1000 * 60 * 60 * 24));
+    // console.log(status + " days since last status change " + difDays);
+    if (difDays >= 14 && status != "NO_REPLY") return true;
+  }
+  async function setGhosted(id: string) {
+    try {
+      const updated = await updateJob(id, { status: "NO_REPLY" });
+      setJobs(jobs.map((j) => (j.id === updated.id ? updated : j)));
+    } catch (error) {
+      console.error("Ghosted failed", error);
     }
   }
   function handleCreate() {
@@ -286,6 +304,33 @@ const Jobs = () => {
                               )?.label.substring(0, 1)}
                         </div>
                       </Tooltip>
+                      <div
+                        className={`ghost-switcher ${isGhosted(job.lastStatusChangedAt, job.status) ? "on" : "off"}`}
+                      >
+                        <Tooltip label={"arrow down"}>
+                          <ArrowBigDown
+                            size={18}
+                            style={{ color: "#4f4f4f40" }}
+                          ></ArrowBigDown>
+                        </Tooltip>
+                        <Tooltip label={"Mark as Ghosted"}>
+                          <h1
+                            className="job-status"
+                            // title={statusInfo.label}
+                            style={{
+                              backgroundColor: "transparent",
+                              fontWeight: "500",
+                              color: "#4f4f4f40",
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setGhosted(job.id);
+                            }}
+                          >
+                            G
+                          </h1>
+                        </Tooltip>
+                      </div>
                     </div>
                     <div className="midline">
                       <h3>{job.position}</h3>

@@ -71,9 +71,34 @@
   display: flex;
   align-self: end;
   justify-content: flex-end;
-  margin-bottom: -2rem;
+  margin-bottom: -5.5rem;
   justify-self: end;
+  // height: 5.4rem;
+  flex-direction: column;
+  align-items: center;
   // position: absolute;
+  .tooltip-wrapper {
+    width: 100%;
+    justify-content: center;
+    h1 {
+      padding: 0;
+      font-size: 18px;
+      margin: 0;
+      cursor: pointer;
+    }
+    svg {
+      padding-top: 9.1px;
+      padding-bottom: 3px;
+    }
+  }
+  .ghost-switcher {
+    &.on {
+      // background-color: red;
+    }
+    &.off {
+      opacity: 0;
+    }
+  }
   .job-status {
     background-color: #afafaf;
     // position: absolute;
@@ -83,6 +108,8 @@
     padding-block: 0.4rem;
     border-bottom-left-radius: 6px;
     border-top-right-radius: 7px;
+    width: 100%;
+    text-align-last: center;
   }
 }
 .midline {

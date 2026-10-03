@@ -92,6 +92,7 @@ export async function createJob(userId: string, data: createJobDto) {
         resumeId: data.resumeId,
         userId,
         orderIndex: newOrder,
+        lastStatusChangedAt: new Date(),
       },
       include: {
         resume: {
@@ -156,6 +157,7 @@ export async function updateJob(
             followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
           }),
           ...(data.resumeId !== undefined && { resumeId: data.resumeId }),
+          lastStatusChangedAt: new Date(),
         },
         include: {
           resume: {
@@ -183,7 +185,6 @@ export async function updateJob(
     );
     return job;
   }
-
   // no status changed, just updated job as normal
   const job = await prisma.job.update({
     where: { id },

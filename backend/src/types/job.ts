@@ -35,6 +35,7 @@ export interface updateJobDto {
   notes?: string;
   followUpAt?: string | null; // null to clear
   resumeId?: string | null; // null to unlink
+  lastStatusChangedAt?: Date; // optional cause job can be updated without status change
 }
 
 // what we return to use
@@ -51,4 +52,5 @@ export interface JobResponse {
   createdAt: Date;
   updatedAt: Date;
   orderIndex: Prisma.Decimal;
+  lastStatusChangedAt: Date;
 }

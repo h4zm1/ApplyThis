@@ -62,6 +62,7 @@ model Job {
   updatedAt       DateTime       @updatedAt
   orderIndex      Decimal        @db.Decimal(32,16) @default(0)
   statusHistory   JobStatusHistory[]  // reloation to history table
+  lastStatusChangedAt DateTime   @default(now())
 }
 
 model JobStatusHistory {
