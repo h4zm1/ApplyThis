@@ -1,7 +1,12 @@
 import { Job, Prisma } from "@prisma/client";
 import prisma from "../config/database";
 import logger from "../config/logger";
-import { createJobDto, JobStatus, updateJobDto } from "../types/job";
+import {
+  createJobDto,
+  JobStatus,
+  STATUS_ORDER,
+  updateJobDto,
+} from "../types/job";
 
 // get all jobs for a user
 export async function getUserJobs(userId: string, status?: string) {
@@ -296,15 +301,22 @@ export async function getSankeyData(userId: string) {
   });
 
   // only stores unique values
-  const statusSet = new Set<string>();
+  const statusSet = new Set<JobStatus>();
   history.forEach((entry) => {
-    if (entry.fromStatus) statusSet.add(entry.fromStatus);
+    if (entry.fromStatus) statusSet.add(entry.fromStatus); // this's a check for "applied" cause they have no "from" status
     statusSet.add(entry.toStatus);
+  });
+
+  // sorting node list by the prio of STATUS ORDER, so i can get the longest path in the chart to be on the top
+  const sortedStatus = Array.from(statusSet).sort((a, b) => {
+    const indexA = STATUS_ORDER.indexOf(a);
+    const indexB = STATUS_ORDER.indexOf(b);
+    return indexA - indexB;
   });
 
   // convert to array of nodes for rechart
   // [{ name: "APPLIED" }, { name: "REJECTED" }, ...]
-  const nodes = Array.from(statusSet).map((status) => ({
+  const nodes = Array.from(sortedStatus).map((status) => ({
     // takes INITIAL_INTERVIEW and make it Initial Interview
     name: status
       .split("_")

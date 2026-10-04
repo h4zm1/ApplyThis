@@ -181,7 +181,10 @@ function SankeyChart({ data, width = 800, height = 200 }: Props) {
         sort={false}
         // iterations={0}
         margin={{
-          bottom: 30,
+          bottom: 60,
+          top: 60,
+          left: 5,
+          right: 5,
         }}
         // link={{ stroke: "#77c878" }}
         link={CustomLink}

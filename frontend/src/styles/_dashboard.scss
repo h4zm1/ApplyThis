@@ -13,9 +13,9 @@
 .overview-content {
   display: grid;
   grid-template-columns: 1.5fr 3rem 1fr 3rem;
-  grid-template-rows: 1fr 4fr;
+  grid-template-rows: 0.3fr 1.2fr 0.1fr;
   margin-inline: -2rem;
-  grid-template-areas: "topLeft topMid topRight topRight2" "midLeft midMid midRight midRight2";
+  grid-template-areas: "topLeft topMid topRight topRight2" "midLeft midMid midRight midRight2" "bottom bottom bottom bottom";
   margin-inline: -2rem;
   padding-top: 2rem;
 }
@@ -56,13 +56,13 @@
       color: white;
       text-decoration: none;
       height: fit-content;
-      padding: 0.6rem;
+      padding: 0.4rem;
       border-radius: 0.8rem;
-      padding-inline: 1.6rem;
+      padding-inline: 1.3rem;
       display: flex;
       gap: 0.6rem;
       width: 100%;
-      /* padding-inline: 0.8rem; */
+      justify-content: center;
       justify-content: center;
       svg {
         width: 1.8rem;
@@ -224,6 +224,11 @@
 }
 //============Sankey Chart===============
 .sankey-chart {
+  grid-area: bottom;
+  padding-inline: 0.5rem;
+  margin-inline: 2.9rem;
+  border-right: 1px solid var(--border-color);
+  border-left: unset;
   svg {
     outline: none;
   }

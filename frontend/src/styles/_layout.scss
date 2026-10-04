@@ -52,6 +52,8 @@
   font-weight: bold;
   margin-left: -0.5rem;
   color: #4b4950 !important;
+  pointer-events: none;
+  user-select: none;
 }
 .main-content {
   height: -webkit-fill-available;

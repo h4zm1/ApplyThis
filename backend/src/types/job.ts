@@ -1,18 +1,21 @@
 import { Prisma } from "@prisma/client";
 
-// job status enum (matches prisma schema)
-export type JobStatus =
-  | "APPLIED"
-  | "INITIAL_INTERVIEW"
-  | "TECHNICAL"
-  | "SECOND_INTERVIEW"
-  | "THIRD_INTERVIEW"
-  | "FINAL_INTERVIEW"
-  | "OFFER"
-  | "REPLIED_TOO_LATE"
-  | "NO_REPLY"
-  | "REJECTED"
-  | "WITHDRAWN";
+// job status array (matches prisma schema)
+export const STATUS_ORDER = [
+  "APPLIED",
+  "INITIAL_INTERVIEW",
+  "TECHNICAL",
+  "SECOND_INTERVIEW",
+  "THIRD_INTERVIEW",
+  "FINAL_INTERVIEW",
+  "OFFER",
+  "REPLIED_TOO_LATE",
+  "NO_REPLY",
+  "REJECTED",
+  "WITHDRAWN",
+] as const;
+// convert array to union, since i need the index of items and at same time keep the union type
+export type JobStatus = (typeof STATUS_ORDER)[number];
 
 // what user send when creating a job
 export interface createJobDto {
