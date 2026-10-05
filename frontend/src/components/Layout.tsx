@@ -15,6 +15,7 @@ import logger from "../services/logger";
 import Popup from "../components/popUp";
 import SettingsForm from "./SettingsForm";
 import { useUIContext } from "../context/UIContext";
+import { getStaleJobsCount } from "../services/jobService";
 
 // main layout wrapper
 const Layout = () => {
@@ -25,7 +26,7 @@ const Layout = () => {
   const { accentColor, setAccentColor } = useUIContext();
   const [tabColor, setTabColor] = useState("");
   const [tabHoverColor, setTabHoverColor] = useState("");
-
+  const [staleCount, setStaleCount] = useState("0");
   // no main content overflow in editor (make box shadow not working correctly)
   const mainContentStyle = {
     overflow: insideEditor ? "unset" : "auto",
@@ -37,10 +38,15 @@ const Layout = () => {
   function handleClosePopup() {
     setIsPopupOpen(false);
   }
+  async function getStateCount() {
+    const count = await getStaleJobsCount();
+    setStaleCount(count);
+  }
   useEffect(() => {
     const saved = localStorage.getItem("ACCENT-COLOR");
     if (saved) setAccentColor(saved);
     else setAccentColor("#e7e7e7");
+    getStateCount();
   }, []);
 
   useEffect(() => {
@@ -111,7 +117,13 @@ const Layout = () => {
               }
             >
               <Briefcase size={21} />
-              {/* Jobs */}
+              {staleCount > "0" ? (
+                <div className="stale-jobs-notif">
+                  <span>{staleCount}</span>
+                </div>
+              ) : (
+                <div></div>
+              )}
             </NavLink>
           </Tooltip>
         </nav>

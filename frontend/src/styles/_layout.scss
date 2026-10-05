@@ -72,7 +72,21 @@
   display: flex;
   flex-direction: column;
 }
-
+.stale-jobs-notif {
+  background-color: #e80000;
+  color: white;
+  border-radius: 50%;
+  font-weight: 500;
+  display: flex;
+  width: 17px;
+  height: 17px;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 4px;
+  top: 0px;
+  font-size: 12px;
+}
 .logout-holder {
   margin-top: auto;
   margin-bottom: 7rem;

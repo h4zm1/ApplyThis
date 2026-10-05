@@ -11,6 +11,7 @@ import {
   updateOrder,
   barData,
   weeklyStats,
+  staleJobsCount,
 } from "../controllers/jobController";
 
 const router = Router();
@@ -22,6 +23,7 @@ router.get("/stats", stats);
 router.get("/sankey", sankeyData);
 router.get("/weekly", barData);
 router.get("/weeklystats", weeklyStats);
+router.get("/stalecount", staleJobsCount);
 
 router.get("/", listJobs);
 router.get("/:id", getJob);

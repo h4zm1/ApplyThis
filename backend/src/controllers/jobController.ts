@@ -8,6 +8,7 @@ import {
   getJobById,
   getJobStats,
   getSankeyData,
+  getStaleJobsCount,
   getUserJobs,
   getWeeklyStats,
   updateJob,
@@ -108,7 +109,10 @@ export async function update(req: AuthRequest, res: Response) {
       resumeId,
     });
 
-    return res.json(job);
+    // also return the new state count
+    const newStaleCount = await getStaleJobsCount(req.user!.userId);
+
+    return res.json({ job, meta: { statecount: newStaleCount } });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "job not found") {
@@ -187,5 +191,16 @@ export async function weeklyStats(req: AuthRequest, res: Response) {
   } catch (error) {
     logger.error({ error }, "failed to get weekly stats data");
     res.status(500).json({ error: "failed to get weekly stats data" });
+  }
+}
+
+export async function staleJobsCount(req: AuthRequest, res: Response) {
+  try {
+    const userId = req.user!.userId;
+    const data = await getStaleJobsCount(userId);
+    return res.status(200).json(data);
+  } catch (error) {
+    logger.error({ error }, "failed to get state jobs count");
+    res.status(500).json({ error: "failed to get state jobs count" });
   }
 }

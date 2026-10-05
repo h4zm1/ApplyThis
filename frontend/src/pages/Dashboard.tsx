@@ -110,8 +110,9 @@ const Dashboard = () => {
         {/* <p>Track your job applications</p> */}
       </div>
       <div className="overview-content">
+        <div className="side-div"></div>
         <div className="card-holder">
-          <div className="side-div"></div>
+          {/* <div className="side-div"></div> */}
           <div className="c-1 status-card corner-highlight left-corners-highlight">
             <span className="status-name">Applied</span>
             <div>
@@ -281,14 +282,17 @@ const Dashboard = () => {
         <div className="filler-div" style={{ gridArea: "topMid" }}></div>
         <div
           className="filler-div"
-          style={{ gridArea: "midMid", borderTop: "unset" }}
+          style={{
+            gridArea: "midMid",
+            borderTop: "unset",
+            borderBottom: "unset",
+          }}
         ></div>
         <div
           className="filler-div"
           style={{
             gridArea: "topRight2",
             borderLeft: "1px dashed #80808047",
-            // borderBottom: "unset",
           }}
         ></div>
         <div
@@ -300,14 +304,26 @@ const Dashboard = () => {
             borderTop: "unset",
           }}
         ></div>
-      </div>
-      <div className="sankey-chart">
-        <SankeyChart data={sankeyData} width={800} height={200} />
-      </div>
+        <div
+          className="filler-div"
+          style={{
+            gridArea: "bottomLeft0",
+            borderBottom: "unset",
+          }}
+        ></div>
 
-      {/* recent jobs */}
-
-      {/* recent resumes */}
+        <div className="sankey-chart">
+          <SankeyChart data={sankeyData} width={800} height={200} />
+        </div>
+        <div
+          className="filler-div"
+          style={{
+            gridArea: "bottomRight",
+            borderBottom: "unset",
+            borderLeft: "unset",
+          }}
+        ></div>
+      </div>
     </div>
   );
 };

@@ -9,4 +9,19 @@ h1 {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  div {
+    display: flex;
+    align-content: center;
+    /* flex-direction: row; */
+    align-items: center;
+    padding-block: 0.5rem;
+    svg {
+      color: #19181f;
+    }
+    span {
+      color: #19181f;
+      font-size: 13px;
+      font-weight: 401;
+    }
+  }
 }

@@ -480,3 +480,21 @@ export async function getWeeklyStats(userId: string) {
 
   return weeklyStatusData;
 }
+
+export async function getStaleJobsCount(userId: string) {
+  const fourteenDayAgo = new Date();
+  fourteenDayAgo.setDate(fourteenDayAgo.getDate() - 14);
+  const count = await prisma.job.count({
+    where: {
+      userId,
+      status: {
+        not: "NO_REPLY",
+      },
+      lastStatusChangedAt: {
+        lt: fourteenDayAgo,
+      },
+    },
+  });
+
+  return count;
+}

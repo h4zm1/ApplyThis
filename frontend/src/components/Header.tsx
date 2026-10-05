@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAction } from "../context/AppContext";
 
 const Header = () => {
@@ -9,7 +10,7 @@ const Header = () => {
     zoomOutAction,
     headerTitle,
   } = useAction();
-
+  const [t1, t2] = (headerTitle ?? "").split(" > ", 2);
   return (
     <div className="header">
       <div className="header-content">
@@ -28,7 +29,9 @@ const Header = () => {
         {/*   - */}
         {/* </button> */}
         <div>
-          <h1>{headerTitle}</h1>
+          <span>{t1}</span>
+          <ChevronRight size={15}></ChevronRight>
+          <span>{t2}</span>
         </div>
       </div>
     </div>
