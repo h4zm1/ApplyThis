@@ -3,12 +3,6 @@
 .dashboard {
   --border-color: #80808047;
   --corner-color: #666666;
-  .title {
-    font-size: 3rem;
-    font-weight: 400;
-    padding-block: 0;
-    margin: 0;
-  }
 }
 .overview-content {
   display: grid;
@@ -17,7 +11,6 @@
   margin-inline: -2rem;
   grid-template-areas: "topLeft0 topLeft topMid topRight topRight2" "midLeft0 midLeft midMid midRight midRight2" "bottomLeft0 bottom bottom bottom bottomRight";
   margin-inline: -2rem;
-  padding-top: 2rem;
   .side-div {
     grid-area: "topLeft0";
     border-block: 1px solid var(--border-color);

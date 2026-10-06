@@ -20,18 +20,14 @@ import { getStaleJobsCount } from "../services/jobService";
 // main layout wrapper
 const Layout = () => {
   const { user, logout } = useAuth();
+  const { staleCount, setStaleCount } = useUIContext();
   const { headerTitle } = useAction();
   const insideEditor = location.pathname.includes("editor");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const { accentColor, setAccentColor } = useUIContext();
   const [tabColor, setTabColor] = useState("");
   const [tabHoverColor, setTabHoverColor] = useState("");
-  const [staleCount, setStaleCount] = useState("0");
-  // no main content overflow in editor (make box shadow not working correctly)
-  const mainContentStyle = {
-    overflow: insideEditor ? "unset" : "auto",
-  };
-
+  // const [staleCount, setStaleCount] = useState("0");
   function openSettings() {
     setIsPopupOpen(true);
   }
@@ -140,14 +136,21 @@ const Layout = () => {
             </button>
           </Tooltip>
         </div>
-        <NavLink className="logo-nav" to="/dashboard">
+        <NavLink
+          className={`logo-nav ${user ? "inside" : "outside"}`}
+          to="/dashboard"
+        >
           applythis
         </NavLink>
       </div>
       {/* 'outlet' indicate where child routes will render */}
       <div className="main-holder">
         <Header />
-        <main className="main-content" style={mainContentStyle}>
+        {/* no main content overflow in editor (make box shadow not working correctly) */}
+        <main
+          className="main-content"
+          style={{ overflow: insideEditor ? "unset" : "auto" }}
+        >
           <Outlet />
         </main>
       </div>

@@ -129,6 +129,7 @@ const Login = () => {
                 <Link to="/register">Create new account instead</Link>
               </p>
             </div>
+            <button className="try-it-btn">Try it yourself!</button>
             <div className="auth-error">{error}</div>
           </form>
         </div>

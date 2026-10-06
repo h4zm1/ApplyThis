@@ -49,8 +49,14 @@ button {
   font-weight: 600;
 }
 // these are the stuff shared between resume and job page
-.title {
-  padding-bottom: 8rem;
+.page-title {
+  padding-bottom: 5rem;
+  span {
+    font-size: 3rem;
+    font-weight: 400;
+    padding-block: 0;
+    margin: 0;
+  }
   h1 {
     font-size: xx-large;
   }
@@ -59,6 +65,44 @@ button {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+}
+
+.loading-holder {
+  color: #565565;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 0.9rem;
+  gap: 0.6rem;
+}
+.loader-spinner {
+  aspect-ratio: 1;
+  border: 2px gray solid;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  width: 22px;
+  height: 22px;
+  margin: 4px;
+  transition: border 0.2s;
+  display: flex;
+  border-radius: 50% !important;
+  border-color: #bdbfcc;
+  border-top-color: #19181f;
+  animation: 0.8s cubic-bezier(0.46, 0.22, 0.24, 0.49) infinite spin;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .new-btn {

@@ -112,7 +112,7 @@ export async function update(req: AuthRequest, res: Response) {
     // also return the new state count
     const newStaleCount = await getStaleJobsCount(req.user!.userId);
 
-    return res.json({ job, meta: { statecount: newStaleCount } });
+    return res.json({ job, meta: { stalecount: newStaleCount } });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "job not found") {

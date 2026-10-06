@@ -32,6 +32,7 @@ import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../components/ui/tooltip";
+import { useUIContext } from "../context/UIContext";
 
 // filter options
 export const STATUS_FILTERS: {
@@ -65,6 +66,7 @@ const Jobs = () => {
 
   const { setHeaderTitle } = useAction();
   const { user } = useAuth();
+  const { staleCount, setStaleCount } = useUIContext();
   const navigate = useNavigate();
 
   // load data on mount and when filter change
@@ -104,8 +106,10 @@ const Jobs = () => {
   }
   async function setGhosted(id: string) {
     try {
-      const updated = await updateJob(id, { status: "NO_REPLY" });
-      setJobs(jobs.map((j) => (j.id === updated.id ? updated : j)));
+      const response = await updateJob(id, { status: "NO_REPLY" });
+      const updatedJob = response.job;
+      setJobs(jobs.map((j) => (j.id === updatedJob.id ? updatedJob : j)));
+      setStaleCount(response.meta.stalecount);
     } catch (error) {
       console.error("Ghosted failed", error);
     }
@@ -130,7 +134,7 @@ const Jobs = () => {
     try {
       if (editingJob) {
         const updated = await updateJob(editingJob.id, data);
-        setJobs(jobs.map((j) => (j.id === updated.id ? updated : j)));
+        setJobs(jobs.map((j) => (j.id === updated.job.id ? updated.job : j)));
       } else {
         const created = await createJob(data);
         setJobs([created, ...jobs]);
@@ -248,10 +252,20 @@ const Jobs = () => {
       noJobMessage = "Nothing to show";
   }
 
+  // show loading indic
+  if (isLoading) {
+    return (
+      <div className="loading-holder">
+        <div className="loader-spinner"></div>
+        <span>Loading jobs</span>
+      </div>
+    );
+  }
+
   return (
     <div className="jobs">
-      <div className="title">
-        <h1>Jobs</h1>
+      <div className="page-title">
+        <span>Jobs</span>
         {/* <p>Track job applications</p> */}
       </div>
       <div className="container-header">
@@ -307,7 +321,7 @@ const Jobs = () => {
                       <div
                         className={`ghost-switcher ${isGhosted(job.lastStatusChangedAt, job.status) ? "on" : "off"}`}
                       >
-                        <Tooltip label={"arrow down"}>
+                        <Tooltip label={"You definitely got ghosted"}>
                           <ArrowBigDown
                             size={18}
                             style={{ color: "#4f4f4f40" }}
@@ -315,13 +329,8 @@ const Jobs = () => {
                         </Tooltip>
                         <Tooltip label={"Mark as Ghosted"}>
                           <h1
-                            className="job-status"
+                            className="g-mark"
                             // title={statusInfo.label}
-                            style={{
-                              backgroundColor: "transparent",
-                              fontWeight: "500",
-                              color: "#4f4f4f40",
-                            }}
                             onClick={(e) => {
                               e.stopPropagation();
                               setGhosted(job.id);

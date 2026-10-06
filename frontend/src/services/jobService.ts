@@ -32,11 +32,8 @@ export async function createJob(data: CreateJobRequest): Promise<Job> {
 }
 
 // update job
-export async function updateJob(
-  id: string,
-  data: UpdateJobRequest,
-): Promise<Job> {
-  const response = await api.put<Job>("/jobs/" + id, data);
+export async function updateJob(id: string, data: UpdateJobRequest) {
+  const response = await api.put("/jobs/" + id, data);
   return response.data;
 }
 

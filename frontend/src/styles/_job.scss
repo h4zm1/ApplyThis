@@ -94,6 +94,14 @@
   .ghost-switcher {
     &.on {
       // background-color: red;
+      .g-mark {
+        background-color: transparent;
+        font-weight: 500;
+        color: #4f4f4f40;
+        &:hover {
+          color: #ff7272;
+        }
+      }
     }
     &.off {
       opacity: 0;

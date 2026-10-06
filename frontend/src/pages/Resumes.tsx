@@ -267,10 +267,20 @@ const Resumes = () => {
     }
   };
 
+  // show loading indic
+  if (isLoading) {
+    return (
+      <div className="loading-holder">
+        <div className="loader-spinner"></div>
+        <span>Loading resumes</span>
+      </div>
+    );
+  }
+
   return (
     <div className="resumes">
-      <div className="title">
-        <h1>Resumes</h1>
+      <div className="page-title">
+        <span>Resumes</span>
       </div>
       <div className="container-header">
         {/* {resumes.length} resume{resumes.length !== 1 ? "s" : ""} */}

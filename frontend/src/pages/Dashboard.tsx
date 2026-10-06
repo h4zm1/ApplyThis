@@ -16,8 +16,7 @@ import SankeyChart from "../components/SankeyChart";
 import NortheastIcon from "@mui/icons-material/NorthEast";
 import WeeklyBarChart from "../components/BarChart";
 import type { BData } from "../components/BarChart.tsx";
-import Icon from "@mdi/react";
-import { mdiFirefox } from "@mdi/js";
+import { useUIContext } from "../context/UIContext.tsx";
 
 // only showing job stats, resumes and recent applications for now
 const Dashboard = () => {
@@ -96,17 +95,17 @@ const Dashboard = () => {
   // show loading state
   if (isLoading) {
     return (
-      <div className="page-header">
-        <h1>Dashboard</h1>
-        <p>Loading...</p>
+      <div className="loading-holder">
+        <div className="loader-spinner"></div>
+        <span>Loading overview</span>
       </div>
     );
   }
 
   return (
     <div className="dashboard">
-      <div>
-        <p className="title">Overview</p>
+      <div className="page-title">
+        <span>Overview</span>
         {/* <p>Track your job applications</p> */}
       </div>
       <div className="overview-content">
@@ -238,7 +237,7 @@ const Dashboard = () => {
                 <div
                   className="rj-job"
                   key={i}
-                  style={{ border: "unset" }}
+                  style={{ border: "unset", pointerEvents: "none" }}
                 ></div>
               ))}
             </div>
@@ -273,7 +272,7 @@ const Dashboard = () => {
                 <div
                   className="rj-resume"
                   key={i}
-                  style={{ border: "unset" }}
+                  style={{ border: "unset", pointerEvents: "none" }}
                 ></div>
               ))}
             </div>
