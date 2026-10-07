@@ -66,3 +66,7 @@ export async function getStaleJobsCount() {
   const response = await api.get("/jobs/stalecount");
   return response.data;
 }
+export async function markStaleJobsAsGhosted() {
+  const response = await api.get("/jobs/markallstale");
+  return response.data;
+}

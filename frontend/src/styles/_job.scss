@@ -18,6 +18,20 @@
     position: absolute;
   }
 }
+.clean-stale-btn {
+  display: flex;
+  background-color: transparent;
+  border: solid thin #bdbfcc;
+  border-radius: 6px;
+  padding-inline: 0.5rem;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 13px;
+  margin-left: 1.1rem;
+  height: 29px;
+  align-self: center;
+  font-weight: 500;
+}
 
 .job-body {
   height: 8rem;

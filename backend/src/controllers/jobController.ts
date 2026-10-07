@@ -2,6 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../types/auth";
 import { JobStatus } from "../types/job";
 import {
+  cleanAllStaleJobs,
   createJob,
   deleteJob,
   getBarData,
@@ -202,5 +203,16 @@ export async function staleJobsCount(req: AuthRequest, res: Response) {
   } catch (error) {
     logger.error({ error }, "failed to get state jobs count");
     res.status(500).json({ error: "failed to get state jobs count" });
+  }
+}
+
+export async function markAllStaleAsGhosted(req: AuthRequest, res: Response) {
+  try {
+    const userId = req.user!.userId;
+    const data = await cleanAllStaleJobs(userId);
+    return res.status(200).json(data);
+  } catch (error) {
+    logger.error({ error }, "failed to clean all stale jobs");
+    res.status(500).json({ error: "failed to clean all stale jobs" });
   }
 }

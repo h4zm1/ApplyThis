@@ -498,3 +498,36 @@ export async function getStaleJobsCount(userId: string) {
 
   return count;
 }
+
+// mark all stale jobs as ghosted (no reply)
+export async function cleanAllStaleJobs(userId: string) {
+  const fourteenDayAgo = new Date();
+  fourteenDayAgo.setDate(fourteenDayAgo.getDate() - 14);
+
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.job.updateMany({
+      where: {
+        userId,
+        status: { not: "NO_REPLY" },
+        lastStatusChangedAt: { lt: fourteenDayAgo },
+      },
+      data: {
+        status: "NO_REPLY",
+        lastStatusChangedAt: new Date(),
+      },
+    });
+
+    // return new stale count (zero)
+    const newStaleCount = await tx.job.count({
+      where: {
+        userId: userId,
+        status: { not: "NO_REPLY" },
+        lastStatusChangedAt: { lt: fourteenDayAgo },
+      },
+    });
+
+    return newStaleCount;
+  });
+
+  return result;
+}

@@ -5,26 +5,16 @@ import {
   createJob,
   deleteJob,
   getJobs,
+  markStaleJobsAsGhosted,
   updateJob,
   updateJobOrder,
 } from "../services/jobService";
 import { getResumes } from "../services/resumeService";
 import logger from "../services/logger";
 import JobForm, { PRIME_STATUS, SECOND_STATUS } from "../components/JobForm";
-import {
-  ArrowBigDown,
-  ArrowBigDownDash,
-  Briefcase,
-  Edit,
-  ExternalLink,
-  File,
-  FileUser,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { ArrowBigDown, BrushCleaning, Edit, File, Trash2 } from "lucide-react";
 import Popup from "../components/popUp";
 import R_ToggleGroup from "../components/ui/ToggleGroup";
-import R_Select from "../components/ui/Select";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import SortableJobItem from "../components/SortableJobItem";
@@ -63,6 +53,7 @@ const Jobs = () => {
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [isSubmitting, setIsSumitting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
 
   const { setHeaderTitle } = useAction();
   const { user } = useAuth();
@@ -114,6 +105,23 @@ const Jobs = () => {
       console.error("Ghosted failed", error);
     }
   }
+
+  const clearAllStale = async () => {
+    setIsClearing(true);
+    try {
+      const response = await markStaleJobsAsGhosted();
+      const data = await response.json();
+
+      setStaleCount(data.meta.staleCount);
+
+      //TODO: change jobs ui
+    } catch (error) {
+      console.error("failed to clear stale jobs", error);
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
   function handleCreate() {
     setEditingJob(null);
     setIsPopupOpen(true);
@@ -271,6 +279,9 @@ const Jobs = () => {
       <div className="container-header">
         <button className="new-btn" onClick={handleCreate}>
           <div>+</div> Add Job
+        </button>
+        <button className="clean-stale-btn" onClick={clearAllStale}>
+          <BrushCleaning size={19}></BrushCleaning>Clean stale jobs
         </button>
         <R_ToggleGroup
           value={statusFilter}
