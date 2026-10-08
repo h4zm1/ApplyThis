@@ -40,12 +40,8 @@
   border-color: #a7a7a7;
   border-radius: 8px;
   cursor: default;
-  // contain: content;
+  contain: layout;
   background-color: white;
-  // padding: 0.5rem;
-  // display: flex;
-  // flex-direction: column;
-  // gap: 0.6rem;
   display: grid; // needed to make context bar work right in ff
 
   .context-bar {
@@ -85,7 +81,7 @@
   display: flex;
   align-self: end;
   justify-content: flex-end;
-  margin-bottom: -5.5rem;
+  margin-bottom: -5.4rem;
   justify-self: end;
   // height: 5.4rem;
   flex-direction: column;
@@ -111,7 +107,7 @@
       .g-mark {
         background-color: transparent;
         font-weight: 500;
-        color: #4f4f4f40;
+        color: #ff000061;
         &:hover {
           color: #ff7272;
         }

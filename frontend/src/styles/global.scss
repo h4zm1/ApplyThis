@@ -134,19 +134,20 @@ button {
   padding: 1rem;
   margin-top: 1rem;
   flex-wrap: wrap;
-  // overflow: auto;
-  height: calc(100vh - 23rem);
+  overflow: auto;
+  height: calc(100vh - 20rem);
   scrollbar-width: thin;
   border: solid 2px;
   border-color: transparent;
   align-content: flex-start;
-  height: auto;
+  // height: auto;
+
   &.dragging {
     display: flex;
     gap: 2rem;
     flex-wrap: wrap;
     overflow: auto;
-    height: calc(100vh - 24rem);
+    height: calc(100vh - 20rem);
     scrollbar-width: thin;
     border-width: thick;
     border-radius: 7px;

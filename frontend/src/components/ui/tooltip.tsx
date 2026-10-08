@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 interface TooltipProps {
   label: string;
   children: React.ReactNode;
-  side?: "bottom" | "right";
+  side?: "bottom" | "right" | "top";
 }
 // i started with radix tooltip but when i found it has no visibility timer i moved to handmade version
 export default function Tooltip({

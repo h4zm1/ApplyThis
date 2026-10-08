@@ -43,12 +43,14 @@ const Resumes = () => {
   const navigate = useNavigate();
 
   // ui stuff
-  const [layout, setLayout] = useState("grid");
+  const [layout, setLayout] = useState("");
 
   // load resumes on mount (like ngOnInit)
   useEffect(() => {
     loadResumes();
     setHeaderTitle(user?.email + " > Resume");
+    const savedLayout = localStorage.getItem("layout");
+    if (savedLayout) setLayout(savedLayout);
   }, []);
 
   async function loadResumes() {
@@ -190,6 +192,7 @@ const Resumes = () => {
   }
 
   useEffect(() => {
+    localStorage.setItem("layout", layout);
     // console.log("layout changed", layout);
   }, [layout]);
 

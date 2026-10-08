@@ -505,18 +505,27 @@ export async function cleanAllStaleJobs(userId: string) {
   fourteenDayAgo.setDate(fourteenDayAgo.getDate() - 14);
 
   const result = await prisma.$transaction(async (tx) => {
-    await tx.job.updateMany({
+    const staleJobs = await tx.job.findMany({
       where: {
         userId,
         status: { not: "NO_REPLY" },
         lastStatusChangedAt: { lt: fourteenDayAgo },
       },
-      data: {
-        status: "NO_REPLY",
-        lastStatusChangedAt: new Date(),
+      select: {
+        id: true,
       },
     });
+    const idsToUpdate = staleJobs.map((job) => job.id);
 
+    if (idsToUpdate.length > 0) {
+      await tx.job.updateMany({
+        where: { id: { in: idsToUpdate } },
+        data: {
+          status: "NO_REPLY",
+          lastStatusChangedAt: new Date(),
+        },
+      });
+    }
     // return new stale count (zero)
     const newStaleCount = await tx.job.count({
       where: {
@@ -526,8 +535,8 @@ export async function cleanAllStaleJobs(userId: string) {
       },
     });
 
-    return newStaleCount;
+    return { updatedIds: idsToUpdate, newStaleCount };
   });
-
+  logger.info(result);
   return result;
 }

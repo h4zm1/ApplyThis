@@ -113,7 +113,7 @@ const Layout = () => {
               }
             >
               <Briefcase size={21} />
-              {staleCount > "0" ? (
+              {staleCount > 0 ? (
                 <div className="stale-jobs-notif">
                   <span>{staleCount}</span>
                 </div>

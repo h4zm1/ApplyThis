@@ -29,6 +29,10 @@
     top: 50%;
     transform: translateY(-50%);
   }
+  &.top {
+    top: calc(100% + -64px);
+    left: 50%;
+  }
 }
 
 @keyframes tooltipFadeIn {

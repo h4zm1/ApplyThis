@@ -110,11 +110,24 @@ const Jobs = () => {
     setIsClearing(true);
     try {
       const response = await markStaleJobsAsGhosted();
-      const data = await response.json();
+      const updatedIds = new Set(response.updatedIds);
 
-      setStaleCount(data.meta.staleCount);
-
-      //TODO: change jobs ui
+      setStaleCount(response.newStaleCount);
+      setJobs(
+        jobs.map((j) => {
+          // if the job is stale, update it's status and date
+          // if (isGhosted(j.lastStatusChangedAt, j.status)) {
+          if (updatedIds.has(j.id)) {
+            return {
+              ...j,
+              status: "NO_REPLY",
+              lastStatusChangedAt: new Date().toISOString(),
+            };
+          }
+          // otherwise keep it as it is
+          return j;
+        }),
+      );
     } catch (error) {
       console.error("failed to clear stale jobs", error);
     } finally {
@@ -240,7 +253,7 @@ const Jobs = () => {
   };
 
   const STATUS_MAP: Record<string, { label: string; color: string }> = {
-    GHOSTED: { label: "Ghosted", color: "#d2d2d2" },
+    NO_REPLY: { label: "Ghosted", color: "#d2d2d2" },
     APPLIED: { label: "Applied", color: "#b0ffb0" },
     REJECTED: { label: "Rejected", color: "#ffb1b1" },
     SAVED: { label: "Saved", color: "Transparent" },
@@ -251,7 +264,7 @@ const Jobs = () => {
       noJobMessage = "No one ghosted you yet!";
       break;
     case "APPLIED":
-      noJobMessage = "You didn't apply for any job";
+      noJobMessage = "No jobs match the current filter";
       break;
     case "REJECTED":
       noJobMessage = "No rejections so far";
@@ -280,8 +293,13 @@ const Jobs = () => {
         <button className="new-btn" onClick={handleCreate}>
           <div>+</div> Add Job
         </button>
-        <button className="clean-stale-btn" onClick={clearAllStale}>
-          <BrushCleaning size={19}></BrushCleaning>Clean stale jobs
+        <button
+          className="clean-stale-btn"
+          onClick={clearAllStale}
+          disabled={staleCount === 0 ? true : false}
+        >
+          <BrushCleaning size={18}></BrushCleaning>
+          {isClearing ? "Clearing..." : " Clear stale jobs"}
         </button>
         <R_ToggleGroup
           value={statusFilter}
@@ -322,11 +340,12 @@ const Jobs = () => {
                             backgroundColor: statusInfo.color,
                           }}
                         >
-                          {PRIME_STATUS.some((ps) => ps.value === job.status)
-                            ? job.status.substring(0, 1)
-                            : SECOND_STATUS.find(
-                                (ss) => ss.value === job.status,
-                              )?.label.substring(0, 1)}
+                          {PRIME_STATUS.find(
+                            (ps) => ps.value === job.status,
+                          )?.label.substring(0, 1) ||
+                            SECOND_STATUS.find(
+                              (ss) => ss.value === job.status,
+                            )?.label.substring(0, 1)}
                         </div>
                       </Tooltip>
                       <div
