@@ -6,6 +6,7 @@ import prisma from "../config/database";
 import logger from "../config/logger";
 import { log } from "node:console";
 import { sendVerificationEmail } from "./emailService";
+import { DEMO_JOBS, SAMPLE_LATEX } from "../types/demoSeed";
 
 // hash password before storing
 // like passswordEncoder.encode() in spring
@@ -23,8 +24,8 @@ export async function comparePassword(
 }
 
 // generate both tokens (jwt + refresh)
-export function generateTokens(userId: string, email: string) {
-  const payload: TokenPayload = { userId, email };
+export function generateTokens(userId: string, email: string, demo = false) {
+  const payload: TokenPayload = { userId, email, ...(demo && { demo: true }) }; // if demo=false => ...false => won't get included
 
   const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRETE!, {
     expiresIn: process.env.JWT_ACCESS_EXPIRES as any, // apparently casting is needed here cause expireIn requires StringValue and not string
@@ -98,6 +99,7 @@ export async function loginUser(email: string, password: string) {
     where: { email },
   });
 
+  if (user?.isDemo) throw new Error("invalid credentials"); // yea, no!
   if (!user) {
     throw new Error("invalid credentials");
   }
@@ -130,7 +132,7 @@ export async function refreshTokens(refreshToken: string) {
   }
 
   // generate new token
-  return generateTokens(user.id, user.email);
+  return generateTokens(user.id, user.email, user.isDemo);
 }
 
 // verify from the token in link
@@ -204,4 +206,57 @@ export async function exchangeAuthCode(code: string) {
 
   // return jwt tokens (for auto login after mail verificatiin)
   return generateTokens(user.id, user.email);
+}
+
+//===============demo session============
+const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000);
+
+export async function createDemoSession() {
+  const password = await hashPassword(crypto.randomUUID()); // no one need to know this
+
+  const user = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        email: `demo_${crypto.randomUUID()}@demo.local`,
+        password,
+        isVerified: true, // no need for mail verification
+        isDemo: true,
+        resumes: {
+          create: [
+            { name: "Sample Resume", source: SAMPLE_LATEX, orderIndex: 1 },
+          ],
+        },
+      },
+      include: { resumes: true },
+    });
+
+    // this need to be seperated from user creation to be able to link to resume
+    for (const [i, job] of DEMO_JOBS.entries()) {
+      const first = job.history[0]; // grabbing for appliedAt date
+      const last = job.history[job.history.length - 1]; // for laststatusChange
+      await tx.job.create({
+        data: {
+          company: job.company,
+          position: job.position,
+          status: job.status,
+          appliedAt: daysAgo(first.daysAgo),
+          lastStatusChangedAt: daysAgo(last.daysAgo),
+          orderIndex: i + 1,
+          userId: user.id,
+          resumeId: user.resumes[0].id,
+          statusHistory: {
+            create: job.history.map((h, idx) => ({
+              fromStatus: idx === 0 ? null : job.history[idx - 1].status, // if first history then fromstatus is null, if not take previous history status
+              toStatus: h.status,
+              changedAt: daysAgo(h.daysAgo),
+            })),
+          },
+        },
+      });
+    }
+    return user;
+  });
+
+  logger.info({ userId: user.id }, "demo session created");
+  return generateTokens(user.id, user.email, true);
 }

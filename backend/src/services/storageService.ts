@@ -4,6 +4,8 @@ import s3Client from "../config/s3";
 const BUCKET_NAME = process.env.S3_BUCKET_NAME!;
 const REGION = process.env.AWS_REGION!;
 const REF = process.env.SUPABASE_REF;
+const publicUrl = (key: string) =>
+  `https://${REF}.supabase.co/storage/v1/object/public/${BUCKET_NAME}/${key}`;
 
 export async function uploadPdf(
   pdfBuffer: Buffer,
@@ -20,10 +22,7 @@ export async function uploadPdf(
 
   await s3Client.send(command);
 
-  // supabase public format
-  const url = `https://${REF}.supabase.co/storage/v1/object/public/${BUCKET_NAME}/${key}`;
-
-  return url;
+  return publicUrl(key);
 }
 
 export async function uploadThumbnail(
@@ -41,9 +40,7 @@ export async function uploadThumbnail(
 
   await s3Client.send(command);
 
-  const url = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/${key}`;
-
-  return url;
+  return publicUrl(key);
 }
 
 export async function deletePdf(fileName: string): Promise<void> {
@@ -57,7 +54,7 @@ export async function deletePdf(fileName: string): Promise<void> {
   await s3Client.send(command);
 }
 export async function deleteThumbnail(fileName: string): Promise<void> {
-  const key = `resume/${fileName}.png`;
+  const key = `thumbnail/${fileName}.png`;
 
   const command = new DeleteObjectCommand({
     Bucket: BUCKET_NAME,

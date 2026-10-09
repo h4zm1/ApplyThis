@@ -4,6 +4,7 @@ import { Request } from "express";
 export interface TokenPayload {
   userId: string;
   email: string;
+  demo?: boolean;
 }
 
 /*

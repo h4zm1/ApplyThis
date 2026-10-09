@@ -14,6 +14,7 @@ import {
   staleJobsCount,
   markAllStaleAsGhosted,
 } from "../controllers/jobController";
+import { capJobs } from "../middleware/demoLimits";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ router.get("/markallstale", markAllStaleAsGhosted);
 
 router.get("/", listJobs);
 router.get("/:id", getJob);
-router.post("/", create);
+router.post("/", capJobs, create);
 router.put("/:id", update);
 router.delete("/:id", remove);
 router.post("/order/:id", updateOrder);

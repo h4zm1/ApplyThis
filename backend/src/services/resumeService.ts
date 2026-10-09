@@ -104,9 +104,7 @@ export async function deleteResume(id: string, userId: string) {
     where: { id, userId },
   });
 
-  if (!resume) {
-    throw new Error("resume not found");
-  }
+  if (!resume) throw new Error("resume not found");
 
   // manual clean up for s3 files
   if (resume.pdfUrl) {
@@ -189,4 +187,14 @@ export async function updateResumeOrderInDB(
     where: { id: resumeId },
     data: { orderIndex },
   });
+}
+
+export async function resumeBelongsToUser(resumeId: string, userId: string) {
+  const resume = await prisma.resume.findFirst({
+    where: { id: resumeId, userId },
+    select: { id: true },
+  });
+  // if it find a resume then !resume => false and !!resume => true
+  // if it doesn't then !null => true and !!null =>false
+  return !!resume;
 }

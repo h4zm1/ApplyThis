@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  createDemoSession,
   exchangeAuthCode,
   generateAuthCode,
   loginUser,
@@ -143,5 +144,15 @@ export async function exchangeCode(req: Request, res: Response) {
       }
     }
     res.status(500).json({ error: "exchange failed" });
+  }
+}
+
+export async function demoLogin(req: Request, res: Response) {
+  try {
+    const demotokens = await createDemoSession();
+    return res.status(201).json(demotokens);
+  } catch (error) {
+    logger.error({ error }, "demo creation failed");
+    res.status(500).json({ error: "could not start demo session" });
   }
 }

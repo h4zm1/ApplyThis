@@ -4,7 +4,10 @@ import { randomUUID } from "node:crypto";
 import { uploadPdf, uploadThumbnail } from "../services/storageService";
 import logger from "../config/logger";
 import { AuthRequest } from "../types/auth";
-import { updateResumePdfAndThumbnailUrl } from "../services/resumeService";
+import {
+  resumeBelongsToUser,
+  updateResumePdfAndThumbnailUrl,
+} from "../services/resumeService";
 import { pdfToPng } from "pdf-to-png-converter";
 
 // TODO: limit page compilation to 3 pages max
@@ -61,18 +64,31 @@ export async function compileAndSave(req: AuthRequest, res: Response) {
   if (!source) {
     return res.status(400).json({ error: "latex source is required" });
   }
-
-  // compile the latex
-  const result = await compilationLatex(source);
-
-  if (!result.success || !result.pdf) {
-    return res.status(400).json({ error: result.errors });
+  if (!resumeId) {
+    return res.status(400).json({ error: "resumeId requied to save" });
+  }
+  if (!req.user?.userId) {
+    return res.status(401).json({ error: "unauthorized" });
   }
 
-  try {
-    // generate unique filename with UUID
-    const fileName = randomUUID();
+  // fail early before wasting time compiling, incase user to compile a resume they don't own (rabit hole)
+  if (!(await resumeBelongsToUser(resumeId, req.user.userId))) {
+    return res.status(404).json({ error: "resume not found" });
+  }
 
+  // demo files get a prefix so the cleanup cron can find them by user
+  const fileName = req.user.demo
+    ? `demo-${req.user.userId}-${randomUUID()}`
+    : randomUUID();
+  try {
+    // compile the latex
+    const result = await compilationLatex(source);
+
+    if (!result.success || !result.pdf) {
+      return res.status(400).json({ error: result.errors });
+    }
+
+    // upload pdf and generate thumbnail in paralel
     const [pdfUrl, thumbnailUrl] = await Promise.all([
       uploadPdf(result.pdf, fileName),
       generateThumbnail(result.pdf).then((thumbnailBuffer) =>
@@ -80,25 +96,15 @@ export async function compileAndSave(req: AuthRequest, res: Response) {
       ),
     ]);
 
-    // upload to s3
-    // const pdfUrl = await uploadPdf(result.pdf, fileName);
-
     // creating new resume and compiling it won't necesarly save the dpf in s3
     // but if a resumeId got proved means a save action happend
     // and now we need to save pdf file to s3 and link the already created resume to that url
-    if (resumeId && req.user) {
-      try {
-        await updateResumePdfAndThumbnailUrl(
-          resumeId,
-          req.user.userId,
-          pdfUrl,
-          thumbnailUrl,
-        );
-      } catch (error) {
-        // log but don't fail, PDF should be already uploaded
-        logger.warn({ resumeId, error }, "failed to update resume with pdfUrl");
-      }
-    }
+    await updateResumePdfAndThumbnailUrl(
+      resumeId,
+      req.user.userId,
+      pdfUrl,
+      thumbnailUrl,
+    );
 
     // return the url
     return res.json({
@@ -108,7 +114,7 @@ export async function compileAndSave(req: AuthRequest, res: Response) {
       fileName,
     });
   } catch (error) {
-    logger.error("s3 upload error: " + error);
-    return res.status(500).json({ error: "failed to save pdf" });
+    logger.error("s3 upload error or db update error: " + error);
+    return res.status(500).json({ error: "failed to save pdf and thumbnail" });
   }
 }

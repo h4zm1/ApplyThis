@@ -8,6 +8,7 @@ import {
   update,
   updateOrder,
 } from "../controllers/resumeController";
+import { capResumes, capSource } from "../middleware/demoLimits";
 
 const router = Router();
 
@@ -21,10 +22,10 @@ router.get("/", listResumes);
 router.get("/:id", getResume);
 
 // POST /api/resumes      create new resume
-router.post("/", create);
+router.post("/", capResumes, capSource, create);
 
-// PUT /api/resume/:id    update resume
-router.put("/:id", update);
+// PUT /api/resume/:id    cap source for demo users and update resume
+router.put("/:id", capSource, update);
 
 // DELETE /api/resume/:id   delete resume
 router.delete("/:id", remove);
