@@ -106,6 +106,11 @@ export async function deleteResume(id: string, userId: string) {
 
   if (!resume) throw new Error("resume not found");
 
+  // delete resume (cascades to version due to schema) from database
+  await prisma.resume.delete({
+    where: { id },
+  });
+
   // manual clean up for s3 files
   if (resume.pdfUrl) {
     try {
@@ -117,11 +122,6 @@ export async function deleteResume(id: string, userId: string) {
       logger.warn({ resumeId: resume.id }, "failed to delete pdf from s3");
     }
   }
-
-  // delete resume (cascades to version due to schema) from database
-  await prisma.resume.delete({
-    where: { id },
-  });
 
   logger.info({ resumeId: id, userId }, "resume deleted");
 }
@@ -138,6 +138,13 @@ export async function updateResumePdfAndThumbnailUrl(
   });
 
   if (!resume) throw new Error("resume not found");
+
+  await Promise.all([
+    prisma.resume.update({
+      where: { id: resumeId },
+      data: { pdfUrl, thumbnailUrl },
+    }),
+  ]);
 
   // delete old PDF from s3 if exist (to avoid orphan files in s3)
   if (resume.pdfUrl) {
@@ -160,12 +167,6 @@ export async function updateResumePdfAndThumbnailUrl(
       logger.warn("failed to delete old thumbnail from s3");
     }
   }
-  await Promise.all([
-    prisma.resume.update({
-      where: { id: resumeId },
-      data: { pdfUrl, thumbnailUrl },
-    }),
-  ]);
   // await prisma.resume.update({
   //   where: { id: resumeId },
   //   data: { pdfUrl },

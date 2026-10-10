@@ -17,7 +17,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, startDemo } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -64,6 +64,21 @@ const Login = () => {
     }
   }, [searchParams]);
 
+  async function enterPlayground() {
+    console.log("time to ply");
+    setError("");
+    try {
+      startDemo();
+      navigate("/dashboard");
+    } catch (error) {
+      setError(
+        axios.isAxiosError(error)
+          ? (error.response?.data.error ?? "could not start demo") // fallback if the left side is null or undefined (better than ||)
+          : "cound not start demo",
+      );
+    }
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
@@ -87,7 +102,7 @@ const Login = () => {
         else if (searchParams.get("error") === "code_expired") {
           setMessage("Verification link expired. Please log in manually.");
           setMessageType("error");
-        } else setError(error.response?.data?.error || "login failed");
+        } else setError(error.response?.data?.error ?? "login failed");
       }
     } finally {
       setIsSubmitting(false);
@@ -129,7 +144,13 @@ const Login = () => {
                 <Link to="/register">Create new account instead</Link>
               </p>
             </div>
-            <button className="try-it-btn">Try it yourself!</button>
+            <button
+              type="button"
+              className="try-it-btn"
+              onClick={enterPlayground}
+            >
+              Try it yourself!
+            </button>
             <div className="auth-error">{error}</div>
           </form>
         </div>

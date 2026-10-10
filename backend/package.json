@@ -23,6 +23,7 @@
     "express-rate-limit": "^8.7.1",
     "ioredis": "^5.9.2",
     "jsonwebtoken": "^9.0.3",
+    "node-cron": "^4.6.0",
     "pdf-to-png-converter": "^3.14.0",
     "pg": "^8.17.1",
     "pino": "^10.3.0",

@@ -1,6 +1,7 @@
 export interface User {
   userId: string;
   email: string;
+  isDemo?: boolean;
 }
 
 export interface AuthTokens {

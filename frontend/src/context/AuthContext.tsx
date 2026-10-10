@@ -21,7 +21,22 @@ interface AuthContextType {
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<{ message: string }>;
   logout: () => void;
-  setTokens: (accessToken: string, refreshToken: string)=>void
+  setTokens: (accessToken: string, refreshToken: string) => void;
+  startDemo: () => void;
+}
+
+function userFromToken(accessToken: string): User {
+  // jwt use base64url, but atob() expect base64
+  const base64 = accessToken
+    .split(".")[1]
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+  const payload = JSON.parse(atob(base64));
+  return {
+    userId: payload.userId,
+    email: payload.email,
+    isDemo: payload.demo === true,
+  };
 }
 
 // create context with undefined default to catch errors if used outside the provider
@@ -61,14 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // POST login credentials and store returned tokens
   const login = async (data: LoginRequest) => {
     const response = await api.post<AuthTokens>("/auth/login", data);
-    const { accessToken, refreshToken } = response.data;
-
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-
-    // decode and set user
-    const payload = JSON.parse(atob(accessToken.split(".")[1]));
-    setUser({ userId: payload.userId, email: payload.email });
+    setTokens(response.data.accessToken, response.data.refreshToken);
   };
 
   // create new user and automaticly log them in
@@ -87,12 +95,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const startDemo = async () => {
+    const response = await api.post<AuthTokens>("/auth/demo");
+    setTokens(response.data.accessToken, response.data.refreshToken);
+  };
+
   const setTokens = (accessToken: string, refreshToken: string) => {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
 
-    const payload = JSON.parse(atob(accessToken.split(".")[1]));
-    setUser({ userId: payload.userId, email: payload.email });
+    setUser(userFromToken(accessToken));
   };
 
   // when we created the context at the top, react gave us a component called 'Provider'
@@ -109,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         setTokens,
+        startDemo,
       }}
     >
       {children}

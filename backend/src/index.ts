@@ -17,6 +17,7 @@ import { demoWorker } from "./jobs/testJob";
 import { notFoundHandler } from "./middleware/notFoundHandler";
 import { errorHandler } from "./middleware/errorHandler";
 import { requestLogger } from "./middleware/requestLogger";
+import { startDemoCleanup } from "./services/demoCleaningService";
 
 // create express app
 const app = express();
@@ -75,4 +76,5 @@ process.on("beforeExit", async () => {
 // start server
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
+  startDemoCleanup();
 });

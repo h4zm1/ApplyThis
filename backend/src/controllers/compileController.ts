@@ -77,6 +77,7 @@ export async function compileAndSave(req: AuthRequest, res: Response) {
   }
 
   // demo files get a prefix so the cleanup cron can find them by user
+  // resume/demo-<userId>-<uuid>.pdf
   const fileName = req.user.demo
     ? `demo-${req.user.userId}-${randomUUID()}`
     : randomUUID();
