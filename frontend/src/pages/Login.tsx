@@ -26,6 +26,7 @@ const Login = () => {
   const [messageType, setMessageType] = useState<"success" | "error">(
     "success",
   );
+  const [demoLoading, setDemoLoading] = useState(false);
 
   // redirect if already logged in
   if (isAuthenticated) {
@@ -67,8 +68,9 @@ const Login = () => {
   async function enterPlayground() {
     console.log("time to ply");
     setError("");
+    setDemoLoading(true);
     try {
-      startDemo();
+      await startDemo();
       navigate("/dashboard");
     } catch (error) {
       setError(
@@ -76,6 +78,7 @@ const Login = () => {
           ? (error.response?.data.error ?? "could not start demo") // fallback if the left side is null or undefined (better than ||)
           : "cound not start demo",
       );
+      setDemoLoading(false);
     }
   }
 

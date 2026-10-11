@@ -193,9 +193,9 @@ const Jobs = () => {
     const draggedId = event.operation?.source?.id;
     if (!draggedId) return;
 
-    // find where the new resume is now  vs where it was before
+    // find where the new job is now vs where it was before
     const newIndex = newArray.findIndex((r) => r.id === draggedId);
-    const oldIndex = resumes.findIndex((r) => r.id === draggedId);
+    const oldIndex = jobs.findIndex((r) => r.id === draggedId);
 
     if (newIndex === oldIndex || newIndex === -1) return;
 

@@ -12,6 +12,7 @@ import type {
   User,
 } from "../types/auth";
 import api from "../services/api";
+import { queryClient } from "../services/queryClient";
 
 // this will be the data and methods available to any component using 'useAuth'
 interface AuthContextType {
@@ -22,7 +23,7 @@ interface AuthContextType {
   register: (data: RegisterRequest) => Promise<{ message: string }>;
   logout: () => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
-  startDemo: () => void;
+  startDemo: () => Promise<void>;
 }
 
 function userFromToken(accessToken: string): User {
@@ -92,6 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    queryClient.clear(); // clear endpoint catch on logout
     setUser(null);
   };
 
