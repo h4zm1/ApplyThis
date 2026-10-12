@@ -148,13 +148,8 @@ export async function remove(req: AuthRequest, res: Response) {
 export async function updateOrder(req: AuthRequest, res: Response) {
   try {
     const { orderIndex } = req.body;
-    logger.info("ORDER INDEX", orderIndex);
-    const job = await updateJobOrderInDB(
-      req.params.id,
-      req.user!.userId,
-      orderIndex,
-    );
-    return res.json(job);
+    // logger.info("ORDER INDEX", orderIndex);
+    await updateJobOrderInDB(req.params.id, req.user!.userId, orderIndex);
   } catch (error) {
     logger.error(error, "Failed to update order");
     return res.status(500).json({ error: "Failed to update order" });

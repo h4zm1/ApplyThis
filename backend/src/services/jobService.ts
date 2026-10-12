@@ -17,7 +17,7 @@ export async function getUserJobs(userId: string, status?: string) {
         userId,
         ...(filter && { status: filter as JobStatus }),
       },
-      orderBy: { updatedAt: "desc" },
+      orderBy: { updatedAt: "asc" },
       include: {
         resume: {
           select: {
@@ -28,7 +28,7 @@ export async function getUserJobs(userId: string, status?: string) {
         },
       },
     })
-  ).map((j: Job) => ({ ...j, orderIndex: j.orderIndex.toNumber }));
+  ).map((j) => ({ ...j, orderIndex: j.orderIndex.toNumber() }));
 }
 
 // get a single job by id

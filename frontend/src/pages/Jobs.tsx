@@ -1,5 +1,5 @@
 import type { CreateJobRequest, Job, JobStats, JobStatus } from "../types/job";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Resume } from "../types/resume";
 import {
   createJob,
@@ -23,6 +23,15 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../components/ui/tooltip";
 import { useUIContext } from "../context/UIContext";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  invalidateJobData,
+  jobsQuery,
+  normalizeJob,
+  resumesQuery,
+} from "../services/queries";
+import { keys } from "../services/queryKeys";
+import { queryClient } from "../services/queryClient";
 
 // filter options
 export const STATUS_FILTERS: {
@@ -38,9 +47,6 @@ export const STATUS_FILTERS: {
 
 const Jobs = () => {
   // data state
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [resumes, setResumes] = useState<Resume[]>([]);
-  const [isLoading, setIsloading] = useState(true);
   const [error, setError] = useState("");
   const [statusColor, setStatusColor] = useState("");
   // filter state
@@ -60,33 +66,39 @@ const Jobs = () => {
   const { staleCount, setStaleCount } = useUIContext();
   const navigate = useNavigate();
 
+  const queryClient = useQueryClient();
+  const jobsQ = useQuery(jobsQuery);
+  const resumesQ = useQuery(resumesQuery);
+  const resumes = resumesQ.data ?? [];
+  const isLoading = jobsQ.isPending || resumesQ.isPending; // if any of those two is true isLoading is true
+  const loadFailed = jobsQ.isError || resumesQ.isError;
+
+  // using ?? [] cause while fetching jobsQ.data will be null, and when it's null jobsQ will default to empty array
+  // useMemo will cache filter result and re run only when the dependency array content change
+  const jobs = useMemo(
+    () =>
+      statusFilter === "ALL"
+        ? (jobsQ.data ?? [])
+        : (jobsQ.data ?? []).filter((j) => j.status === statusFilter),
+    [jobsQ.data, statusFilter],
+  );
+
+  // passing a functiong give us access to cached data and change with better consitancy
+  function patchJobs(updateFunction: (oldJobs: Job[]) => Job[]) {
+    return queryClient.setQueryData<Job[]>(keys.jobs, (currentCache) => {
+      // default to empty if cache is empty
+      const existingJobs = currentCache ?? [];
+
+      // Run your transformation logic and return the new data
+      return updateFunction(existingJobs);
+    });
+  }
+
   // load data on mount and when filter change
   useEffect(() => {
-    loadData();
     localStorage.setItem("JOB-FILTER", statusFilter);
     setHeaderTitle(user?.email + " > Jobs");
   }, [statusFilter]);
-
-  async function loadData() {
-    try {
-      // load jobs in resumes at smae time
-      const [jobsData, resumeData] = await Promise.all([
-        getJobs(statusFilter || undefined),
-        getResumes(),
-      ]);
-      const normalized = jobsData.map((j) => ({
-        ...j,
-        orderIndex: Number(j.orderIndex || 0),
-      }));
-      setJobs(normalized);
-      setResumes(resumeData);
-    } catch (error) {
-      setError("failed to load job data");
-      logger.error(error);
-    } finally {
-      setIsloading(false);
-    }
-  }
 
   function isGhosted(SChangeDate: string, status: string) {
     const SCDate = new Date(SChangeDate);
@@ -95,12 +107,14 @@ const Jobs = () => {
     // console.log(status + " days since last status change " + difDays);
     if (difDays >= 14 && status != "NO_REPLY") return true;
   }
+
   async function setGhosted(id: string) {
     try {
       const response = await updateJob(id, { status: "NO_REPLY" });
       const updatedJob = response.job;
-      setJobs(jobs.map((j) => (j.id === updatedJob.id ? updatedJob : j)));
-      setStaleCount(response.meta.stalecount);
+      patchJobs((old) =>
+        old.map((j) => (j.id === updatedJob.id ? normalizeJob(updatedJob) : j)),
+      );
     } catch (error) {
       console.error("Ghosted failed", error);
     }
@@ -113,21 +127,18 @@ const Jobs = () => {
       const updatedIds = new Set(response.updatedIds);
 
       setStaleCount(response.newStaleCount);
-      setJobs(
-        jobs.map((j) => {
-          // if the job is stale, update it's status and date
-          // if (isGhosted(j.lastStatusChangedAt, j.status)) {
-          if (updatedIds.has(j.id)) {
-            return {
-              ...j,
-              status: "NO_REPLY",
-              lastStatusChangedAt: new Date().toISOString(),
-            };
-          }
-          // otherwise keep it as it is
-          return j;
-        }),
+      patchJobs((old) =>
+        old.map((j) =>
+          updatedIds.has(j.id)
+            ? {
+                ...j,
+                status: "NO_REPLY",
+                lastStatusChangedAt: new Date().toISOString(),
+              }
+            : j,
+        ),
       );
+      invalidateJobData(); // invalidate to get new fresh data (silently)
     } catch (error) {
       console.error("failed to clear stale jobs", error);
     } finally {
@@ -155,11 +166,17 @@ const Jobs = () => {
     try {
       if (editingJob) {
         const updated = await updateJob(editingJob.id, data);
-        setJobs(jobs.map((j) => (j.id === updated.job.id ? updated.job : j)));
+        patchJobs((old) =>
+          old.map((j) =>
+            j.id === updated.job.id ? normalizeJob(updated.job) : j,
+          ),
+        );
       } else {
+        // creating new job
         const created = await createJob(data);
-        setJobs([created, ...jobs]);
+        patchJobs((old) => [normalizeJob(created), ...old]);
       }
+      invalidateJobData();
       setIsPopupOpen(false);
       setIsSumitting(false);
     } catch (error: any) {
@@ -172,7 +189,8 @@ const Jobs = () => {
       return;
     try {
       await deleteJob(job.id);
-      setJobs(jobs.filter((j) => j.id !== job.id));
+      patchJobs((old) => old.filter((j) => j.id !== job.id));
+      invalidateJobData();
     } catch (error: any) {
       setError(error.response.data.error || "failed to delete job");
     }
@@ -237,18 +255,23 @@ const Jobs = () => {
       return;
     }
 
-    const updatedJob = { ...currentItem, orderIndex: newOrderIndex };
-    const finalArray = newArray.map((r) =>
-      r.id === draggedId ? updatedJob : r,
-    );
+    // update the order locally
+    await queryClient.cancelQueries({ queryKey: keys.jobs }); // cancel any ongoind backgrond fetch for now
+    const previous = queryClient.getQueryData<Job[]>(keys.jobs);
 
-    setJobs(finalArray);
+    patchJobs((old) =>
+      old
+        .map((j) =>
+          j.id === draggedId ? { ...j, orderIndex: newOrderIndex } : j,
+        )
+        .sort((a, b) => a.orderIndex - b.orderIndex),
+    );
 
     try {
       await updateJobOrder(draggedId, newOrderIndex);
     } catch (error) {
       logger.error(error, "Failed to save order");
-      setJobs(jobs); // rollback
+      queryClient.setQueryData(keys.jobs, previous);
     }
   };
 
