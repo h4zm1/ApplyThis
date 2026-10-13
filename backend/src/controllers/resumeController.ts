@@ -36,7 +36,7 @@ export async function getResume(req: AuthRequest, res: Response) {
 // POST /api/resumes
 export async function create(req: AuthRequest, res: Response) {
   try {
-    const { name, source, orderIndex } = req.body;
+    const { name, source } = req.body;
 
     if (!name || !source) {
       return res.status(400).json({ error: "name and source required" });
@@ -45,7 +45,6 @@ export async function create(req: AuthRequest, res: Response) {
     const resume = await createResume(req.user!.userId, {
       name,
       source,
-      orderIndex,
     });
     return res.status(201).json(resume);
   } catch (error) {

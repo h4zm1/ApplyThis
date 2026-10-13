@@ -88,9 +88,12 @@ const Jobs = () => {
     return queryClient.setQueryData<Job[]>(keys.jobs, (currentCache) => {
       // default to empty if cache is empty
       const existingJobs = currentCache ?? [];
-
+      const updatedJobs = updateFunction(existingJobs);
+      const sortedList = [...updatedJobs].sort(
+        (a, b) => a.orderIndex - b.orderIndex,
+      );
       // Run your transformation logic and return the new data
-      return updateFunction(existingJobs);
+      return sortedList;
     });
   }
 

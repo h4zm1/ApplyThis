@@ -10,11 +10,17 @@ import {
 import { getResumes } from "./resumeService";
 import type { Job } from "../types/job";
 import { queryClient } from "./queryClient";
+import type { Resume } from "../types/resume";
 
 // since we gonna be using the same job list between the overview page and jobs page they both need to be the same
 export const normalizeJob = (j: Job): Job => ({
   ...j,
   orderIndex: Number(j.orderIndex || 0),
+});
+// we using prisma decimal at the back, and we need to convert to number for sorting
+export const normalizeResume = (r: Resume): Resume => ({
+  ...r,
+  orderIndex: Number(r.orderIndex || 0),
 });
 
 export const statsQuery = queryOptions({
@@ -27,7 +33,7 @@ export const jobsQuery = queryOptions({
 });
 export const resumesQuery = queryOptions({
   queryKey: keys.resumes,
-  queryFn: getResumes,
+  queryFn: async () => (await getResumes()).map(normalizeResume),
 });
 export const sankeyQuery = queryOptions({
   queryKey: keys.sankey,
@@ -57,6 +63,14 @@ export function invalidateJobData() {
   return Promise.all(
     [keys.jobs, keys.stats, keys.sankey, keys.weekly, keys.weeklyStats].map(
       (queryKey) => queryClient.invalidateQueries({ queryKey }),
+    ),
+  );
+}
+
+export function invalidateResumeData() {
+  return Promise.all(
+    [keys.resumes, keys.jobs].map((queryKey) =>
+      queryClient.invalidateQueries({ queryKey }),
     ),
   );
 }

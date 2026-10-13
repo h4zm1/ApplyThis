@@ -77,7 +77,7 @@ export async function updateResume(
   data: UpateResumeDto,
 ) {
   // first check if resume exist and belong to user
-  const existing = prisma.resume.findFirst({
+  const existing = await prisma.resume.findFirst({
     where: { id, userId },
   });
 
@@ -85,15 +85,27 @@ export async function updateResume(
     throw new Error("resume not found");
   }
 
-  const resume = prisma.resume.update({
-    where: { id },
-    data: {
-      // only update the fields that are provided
-      ...(data.name && { name: data.name }), // if data.name is undefined then don't update it
-      ...(data.source && { source: data.source }),
-    },
+  const resume = await prisma.$transaction(async (tx) => {
+    // find the user's top resume (lowest orderIndex)
+    const top = await tx.resume.findFirst({
+      where: { userId },
+      orderBy: { orderIndex: "asc" },
+      select: { orderIndex: true },
+    });
+    const orderIndex = top ? top.orderIndex.minus(1000) : new Prisma.Decimal(0);
+
+    const updatedResume = await tx.resume.update({
+      where: { id },
+      data: {
+        // only update the fields that are provided
+        ...(data.name && { name: data.name }), // if data.name is undefined then don't update it
+        ...(data.source && { source: data.source }),
+        orderIndex,
+      },
+    });
+    logger.info({ resumeId: id, userId }, "resume updated");
+    return updatedResume;
   });
-  logger.info({ resumeId: id, userId }, "resume updated");
   return resume;
 }
 

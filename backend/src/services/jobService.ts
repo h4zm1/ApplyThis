@@ -17,7 +17,7 @@ export async function getUserJobs(userId: string, status?: string) {
         userId,
         ...(filter && { status: filter as JobStatus }),
       },
-      orderBy: { updatedAt: "asc" },
+      orderBy: { orderIndex: "asc" },
       include: {
         resume: {
           select: {
@@ -147,34 +147,44 @@ export async function updateJob(
   }
 
   // only log status history if status actually changed
-  const statusChanged = data.status && data.status !== existing.status;
-  if (statusChanged) {
-    const job = await prisma.$transaction(async (tx) => {
-      const updatedJob = await tx.job.update({
-        where: { id },
-        data: {
-          ...(data.company && { company: data.company }),
-          ...(data.position && { position: data.position }),
-          ...(data.url !== undefined && { url: data.url }), // if it's undefined, don't update
-          ...(data.status && { status: data.status }),
-          ...(data.notes !== undefined && { notes: data.notes }),
-          ...(data.followUpAt !== undefined && {
-            followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
-          }),
-          ...(data.resumeId !== undefined && { resumeId: data.resumeId }),
-          lastStatusChangedAt: new Date(),
-        },
-        include: {
-          resume: {
-            select: {
-              id: true,
-              name: true,
-              pdfUrl: true,
-            },
+  const statusChanged = !!data.status && data.status !== existing.status;
+  // if (statusChanged) {
+  const job = await prisma.$transaction(async (tx) => {
+    // get the top job while sorting by orderIndex
+    const top = await tx.job.findFirst({
+      where: { userId },
+      orderBy: { orderIndex: "asc" },
+      select: { orderIndex: true },
+    });
+    const orderIndex = top ? top.orderIndex.minus(1000) : new Prisma.Decimal(0);
+
+    const updatedJob = await tx.job.update({
+      where: { id },
+      data: {
+        ...(data.company && { company: data.company }),
+        ...(data.position && { position: data.position }),
+        ...(data.url !== undefined && { url: data.url }), // if it's undefined, don't update
+        ...(data.status && { status: data.status }),
+        ...(data.notes !== undefined && { notes: data.notes }),
+        ...(data.followUpAt !== undefined && {
+          followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
+        }),
+        ...(data.resumeId !== undefined && { resumeId: data.resumeId }),
+        ...(statusChanged && { lastStatusChangedAt: new Date() }),
+        orderIndex,
+      },
+      include: {
+        resume: {
+          select: {
+            id: true,
+            name: true,
+            pdfUrl: true,
           },
         },
-      });
+      },
+    });
 
+    if (statusChanged) {
       await tx.jobStatusHistory.create({
         data: {
           jobId: id,
@@ -182,39 +192,13 @@ export async function updateJob(
           toStatus: data.status!,
         },
       });
-      return updatedJob;
-    });
-    logger.info(
-      { jobId: id, userId, from: existing.status, to: data.status },
-      "job status changed",
-    );
-    return job;
-  }
-  // no status changed, just updated job as normal
-  const job = await prisma.job.update({
-    where: { id },
-    data: {
-      ...(data.company && { company: data.company }),
-      ...(data.position && { position: data.position }),
-      ...(data.url !== undefined && { url: data.url }), // if it's undefined, don't update
-      ...(data.status && { status: data.status }),
-      ...(data.notes !== undefined && { notes: data.notes }),
-      ...(data.followUpAt !== undefined && {
-        followUpAt: data.followUpAt ? new Date(data.followUpAt) : null,
-      }),
-      ...(data.resumeId !== undefined && { resumeId: data.resumeId }),
-    },
-    include: {
-      resume: {
-        select: {
-          id: true,
-          name: true,
-          pdfUrl: true,
-        },
-      },
-    },
+    }
+    return updatedJob;
   });
-  logger.info({ jobId: id, userId }, "job updated");
+  logger.info(
+    { jobId: id, userId, from: existing.status, to: data.status },
+    "job status changed",
+  );
   return job;
 }
 

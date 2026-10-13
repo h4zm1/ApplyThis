@@ -4,7 +4,6 @@ import { Prisma } from "@prisma/client";
 export interface CreateResumeDto {
   name: string;
   source: string;
-  orderIndex: Prisma.Decimal;
 }
 
 export interface UpateResumeDto {

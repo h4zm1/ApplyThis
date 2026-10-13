@@ -26,11 +26,17 @@ import { move } from "@dnd-kit/helpers";
 import SortableResumeItem from "../components/SortableResumeItem";
 import R_ToggleGroup, { R_ToggleItem } from "../components/ui/ToggleGroup";
 import Tooltip from "../components/ui/tooltip";
+import { queryClient } from "../services/queryClient";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  invalidateResumeData,
+  normalizeResume,
+  resumesQuery,
+} from "../services/queries";
+import { keys } from "../services/queryKeys";
 
 const Resumes = () => {
   // data state
-  const [resumes, setResumes] = useState<Resume[]>([]); // list of all user's resumes
-  const [isLoading, setIsLoading] = useState(true); // show/hide loading text
   const [error, setError] = useState(""); // store error message
 
   // popup state
@@ -42,31 +48,38 @@ const Resumes = () => {
   const [isDragging, setIsDragging] = useState(false);
   const navigate = useNavigate();
 
+  const queryClient = useQueryClient();
+  const resumesQ = useQuery(resumesQuery);
+  const isLoading = resumesQ.isPending;
+  const loadFailed = resumesQ.isError;
+
+  const savedResumes = resumesQ.data ?? [];
+  let resumes = savedResumes;
+  if (editingResume && editingResume.id === "-1") {
+    // create new list (based on cached list) and place editingResume at top (index 0)
+    resumes = [editingResume, ...savedResumes];
+  }
+
   // ui stuff
   const [layout, setLayout] = useState("");
 
+  function patchResumes(updatedFunction: (oldResumes: Resume[]) => Resume[]) {
+    return queryClient.setQueryData<Resume[]>(keys.resumes, (currentCache) => {
+      const existingResumes = currentCache ?? [];
+      const updatedResume = updatedFunction(existingResumes);
+      const sortedList = [...updatedResume].sort(
+        (a, b) => a.orderIndex - b.orderIndex,
+      );
+      return sortedList;
+    });
+  }
+
   // load resumes on mount (like ngOnInit)
   useEffect(() => {
-    loadResumes();
     setHeaderTitle(user?.email + " > Resume");
     const savedLayout = localStorage.getItem("layout");
     if (savedLayout) setLayout(savedLayout);
   }, []);
-
-  async function loadResumes() {
-    try {
-      const data = await getResumes();
-      const normalized = data.map((r) => ({
-        ...r,
-        orderIndex: Number(r.orderIndex || 0),
-      }));
-      setResumes(normalized); // "broadcast" data to UI
-    } catch (error) {
-      setError("failed to load resumes");
-    } finally {
-      setIsLoading(false); // stop showing loading message
-    }
-  }
 
   /**
    * open popup for creating new resume
@@ -86,8 +99,6 @@ const Resumes = () => {
     };
 
     setEditingResume(dummy);
-    // add to the list to update ui
-    setResumes([dummy, ...resumes]);
   }
 
   // events when the new resume input is focused
@@ -98,13 +109,11 @@ const Resumes = () => {
       handleSubmit(editingResume!);
     }
     if (event.key === "Escape") {
-      setResumes((prev) => prev.filter((r) => r.id !== "-1"));
       setEditingResume(null);
     }
   };
 
   function handleLostFocus() {
-    setResumes((prev) => prev.filter((r) => r.id !== "-1"));
     setEditingResume(null);
   }
   function handleOpen(resume: Resume) {
@@ -131,22 +140,24 @@ const Resumes = () => {
   async function handleSubmit(data: CreateResumeRequest) {
     setIsSubmitting(true);
     try {
+      // update existing
       if (editingResume && editingResume.id !== "-1") {
-        // update existing
         const updated = await updateResume(editingResume.id, data);
         // replace in list
-        setResumes(resumes.map((r) => (r.id === updated.id ? updated : r)));
+        patchResumes((old) =>
+          old.map((r) => (r.id === updated.id ? normalizeResume(updated) : r)),
+        );
       } else {
         // create new one
-        data.source =
-          "\\documentclass{article}\\begin{document}My Resume\\end{document}";
+        // only set template source when the source is empty (this to avoid reseting the source when duplicating a resume)
+        if (!data.source) {
+          data.source =
+            "\\documentclass{article}\\begin{document}My Resume\\end{document}";
+        }
         const created = await createResume(data);
-        setResumes((prev) => [
-          created,
-          ...prev.filter((r) => r.id !== "-1"), // filter out dummy resume
-        ]);
-        // add to the list to update ui
+        patchResumes((old) => [normalizeResume(created), ...old]);
       }
+      invalidateResumeData();
       handleClosePopup(); // success, close the popup
     } catch (error: any) {
       setError(error.response.data.error || "failed to save resume");
@@ -169,10 +180,7 @@ const Resumes = () => {
     };
 
     setEditingResume(dummy);
-    // add to the list to update ui
-    setResumes([dummy, ...resumes]);
-    const res: CreateResumeRequest = dummy;
-    handleSubmit(res);
+    handleSubmit({ name: dummy.name, source: dummy.source });
   }
 
   // delete resume (after confirmation)
@@ -185,7 +193,8 @@ const Resumes = () => {
     try {
       await deleteResume(resume.id);
       // remmove resume from the list (filter out the deleted ID)
-      setResumes(resumes.filter((r) => r.id !== resume.id));
+      patchResumes((old) => old.filter((r) => r.id !== resume.id));
+      invalidateResumeData();
     } catch (error: any) {
       setError(error.response.data.error || "failed to delete resume");
     }
@@ -255,18 +264,23 @@ const Resumes = () => {
       return;
     }
 
-    const updatedResume = { ...currentItem, orderIndex: newOrderIndex };
-    const finalArray = newArray.map((r) =>
-      r.id === draggedId ? updatedResume : r,
-    );
+    // cancel any ongoing fetching
+    await queryClient.cancelQueries({ queryKey: keys.resumes });
+    const previous = queryClient.getQueryData<Resume[]>(keys.resumes);
 
-    setResumes(finalArray);
+    patchResumes((old) =>
+      old
+        .map((r) =>
+          r.id === draggedId ? { ...r, orderIndex: newOrderIndex } : r,
+        )
+        .sort((a, b) => a.orderIndex - b.orderIndex),
+    );
 
     try {
       await updateResumeOrder(draggedId, newOrderIndex);
     } catch (error) {
       logger.error(error, "Failed to save order");
-      setResumes(resumes); // rollback
+      queryClient.setQueryData(keys.resumes, previous);
     }
   };
 
