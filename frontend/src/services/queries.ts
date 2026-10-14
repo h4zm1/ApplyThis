@@ -48,15 +48,6 @@ export const weeklyStatsQuery = queryOptions({
   queryFn: getWeeklyStats,
 });
 
-export const dashboardQueries = [
-  statsQuery,
-  jobsQuery,
-  resumesQuery,
-  sankeyQuery,
-  weeklyQuery,
-  weeklyStatsQuery,
-];
-
 // this will get called after any change to jobs,
 // loop through list of cache keys and invalidate them and force them to refetch fresh data
 export function invalidateJobData() {

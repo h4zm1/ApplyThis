@@ -13,6 +13,7 @@ export async function getUserJobs(userId: string, status?: string) {
   const filter = status && status.toLowerCase() !== "all" ? status : undefined;
   return (
     await prisma.job.findMany({
+      relationLoadStrategy: "join",
       where: {
         userId,
         ...(filter && { status: filter as JobStatus }),

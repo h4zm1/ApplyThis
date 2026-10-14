@@ -11,6 +11,7 @@ import rateLimit from "express-rate-limit";
 
 const router = Router();
 
+// this will be using the ip adress
 const rateLimitter = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 5,

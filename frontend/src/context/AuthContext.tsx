@@ -13,6 +13,14 @@ import type {
 } from "../types/auth";
 import api from "../services/api";
 import { queryClient } from "../services/queryClient";
+import {
+  jobsQuery,
+  resumesQuery,
+  sankeyQuery,
+  statsQuery,
+  weeklyQuery,
+  weeklyStatsQuery,
+} from "../services/queries";
 
 // this will be the data and methods available to any component using 'useAuth'
 interface AuthContextType {
@@ -99,6 +107,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const startDemo = async () => {
     const response = await api.post<AuthTokens>("/auth/demo");
+    const { accessToken, refreshToken } = response.data;
+
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+
+    const prefetches = [
+      queryClient.query(statsQuery),
+      queryClient.query(jobsQuery),
+      queryClient.query(resumesQuery),
+      queryClient.query(sankeyQuery),
+      queryClient.query(weeklyQuery),
+      queryClient.query(weeklyStatsQuery),
+    ];
+    // prefetch all queries in the list at same time
+    await Promise.allSettled(prefetches);
     setTokens(response.data.accessToken, response.data.refreshToken);
   };
 

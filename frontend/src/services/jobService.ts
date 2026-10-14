@@ -3,6 +3,7 @@ import type {
   Job,
   JobStats,
   UpdateJobRequest,
+  WeeklyStats,
 } from "../types/job";
 import api from "./api";
 
@@ -59,7 +60,7 @@ export async function getWeeklyData() {
   return response.data;
 }
 export async function getWeeklyStats() {
-  const response = await api.get("/jobs/weeklystats");
+  const response = await api.get<WeeklyStats[]>("/jobs/weeklystats");
   return response.data;
 }
 export async function getStaleJobsCount() {

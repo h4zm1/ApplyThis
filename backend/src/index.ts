@@ -21,6 +21,8 @@ import { startDemoCleanup } from "./services/demoCleaningService";
 
 // create express app
 const app = express();
+// this tell express to look at "x-forwared-for" header instead of raw connection which is 127.0.0.1 cause we using nginx
+app.set("trusted proxy", 1);
 const PORT = process.env.PORT || 3000;
 
 // middleware : run on every request

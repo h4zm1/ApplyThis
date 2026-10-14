@@ -1,13 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  getJobStats,
-  getJobs,
-  getSankeyData,
-  getWeeklyData,
-  getWeeklyStats,
-} from "../services/jobService";
-import { getResumes } from "../services/resumeService";
 import type { JobStats, Job, WeeklyStats } from "../types/job";
 import type { Resume } from "../types/resume";
 import { useAction } from "../context/AppContext";
@@ -17,29 +9,46 @@ import NortheastIcon from "@mui/icons-material/NorthEast";
 import WeeklyBarChart from "../components/BarChart";
 import type { BData } from "../components/BarChart.tsx";
 import { useUIContext } from "../context/UIContext.tsx";
+import { useQuery } from "@tanstack/react-query";
+import {
+  jobsQuery,
+  resumesQuery,
+  sankeyQuery,
+  statsQuery,
+  weeklyQuery,
+  weeklyStatsQuery,
+} from "../services/queries.ts";
 
 // only showing job stats, resumes and recent applications for now
 const Dashboard = () => {
   // state for our data
   // useState returns [currentValue, setterFunction]
-  const [stats, setStats] = useState<JobStats | null>(null);
-  const [recentJobs, setRecentJobs] = useState<Job[]>([]);
-  const [recentResumes, setRecentResumes] = useState<Resume[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const { user } = useAuth();
   const { setHeaderTitle } = useAction();
-  const [sankeyData, setSankeyData] = useState<{ nodes: any[]; links: any[] }>({
-    nodes: [],
-    links: [],
-  });
-  const [barCharData, setBarChartData] = useState<BData[]>([]);
-  const [weeklyStatsData, setWeeklyStatsData] = useState<WeeklyStats[]>([]);
+
+  const statsQ = useQuery(statsQuery);
+  const jobsQ = useQuery(jobsQuery);
+  const resumesQ = useQuery(resumesQuery);
+  const sankeyQ = useQuery(sankeyQuery);
+  const weeklyQ = useQuery(weeklyQuery);
+  const weeklyStatsQ = useQuery(weeklyStatsQuery);
+
+  const allQueries = [statsQ, jobsQ, resumesQ, sankeyQ, weeklyQ, weeklyStatsQ];
+  const isLoading = allQueries.some((q) => q.isPending);
+  const hasError = allQueries.some((q) => q.isError);
+
+  const stats = statsQ.data;
+  const allJobs = jobsQ.data ?? [];
+  const allResumes = resumesQ.data ?? [];
+  const recentJobs = allJobs.slice(0, 3);
+  const recentResumes = allResumes.slice(0, 3);
+  const sankeyData = sankeyQ.data ?? { nodes: [], links: [] };
+  const barChartData = weeklyQ.data ?? [];
+  const weeklyStatsData = weeklyStatsQ.data ?? [];
 
   // useEffect will run code when component mounts (like ngOnInit in angular)
   // empty array [] means run once on mount
   useEffect(() => {
-    loadDashboardData();
     setHeaderTitle(user?.email + " > Dashboard");
   }, []);
 
@@ -56,39 +65,6 @@ const Dashboard = () => {
     getPercentage(stat.lastWeek, stat.thisWeek),
   );
 
-  // load all dashboard data at same time
-  async function loadDashboardData() {
-    try {
-      // Promise.all can run many async calls in parallel like forkJoin in rxjs (and wait for all to finish before emmiting)
-      const [
-        statsData,
-        jobsData,
-        resumesData,
-        sankeyResult,
-        weeklyResult,
-        weeklyStatsResult,
-      ] = await Promise.all([
-        getJobStats(),
-        getJobs(),
-        getResumes(),
-        getSankeyData(),
-        getWeeklyData(),
-        getWeeklyStats(),
-      ]);
-      console.log(statsData);
-      setStats(statsData);
-      setRecentJobs(jobsData.slice(0, 3)); // only show recent 3
-      setRecentResumes(resumesData.slice(0, 3));
-      setSankeyData(sankeyResult);
-      setBarChartData(weeklyResult);
-      setWeeklyStatsData(weeklyStatsResult);
-    } catch (error) {
-      setError("failed to load dashboard data");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
   const fillerJob = 3 - recentJobs.length;
   const fillerResume = 3 - recentResumes.length;
 
@@ -208,7 +184,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="bar-chart">
-          <WeeklyBarChart data={barCharData}></WeeklyBarChart>
+          <WeeklyBarChart data={barChartData}></WeeklyBarChart>
         </div>
         <div className="recent-jobs corner-highlight left-corners-highlight right-corners-highlight">
           <div className="rj-title" style={{ borderTop: "unset" }}>
