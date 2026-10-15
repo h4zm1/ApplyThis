@@ -19,3 +19,9 @@ export interface UpdateResumeRequest {
   name?: string;
   source?: string;
 }
+export interface PostCompileAndSaveType {
+  success?: boolean;
+  pdfUrl: string;
+  thumbnailUrl: string;
+  fileName: string;
+}

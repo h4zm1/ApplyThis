@@ -1,5 +1,6 @@
 import type {
   CreateResumeRequest,
+  PostCompileAndSaveType,
   Resume,
   UpdateResumeRequest,
 } from "../types/resume";
@@ -44,13 +45,10 @@ export async function deleteResume(id: string): Promise<void> {
 export async function compileResume(
   id: string,
   source: string,
-): Promise<{ pdfUrl: string }> {
+): Promise<PostCompileAndSaveType> {
   // just making sure the server reponse has 'success and pdfUrl'
-  const response = await api.post<{ success: boolean; pdfUrl: string }>(
-    "/compile/save",
-    { source, resumeId: id },
-  );
-  return { pdfUrl: response.data.pdfUrl };
+  const response = await api.post("/compile/save", { source, resumeId: id });
+  return response.data;
 }
 
 // preview compiled pdf, this should return a blob (no saving)

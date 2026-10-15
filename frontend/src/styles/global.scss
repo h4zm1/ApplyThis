@@ -67,6 +67,19 @@ button {
   justify-content: space-evenly;
 }
 
+//=============== loading styles===========
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #eff0f3;
+}
+
 .loading-holder {
   color: #565565;
   width: 100%;

@@ -14,6 +14,7 @@ import logger from "../services/logger";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { GripVertical } from "lucide-react";
 import { useUIContext } from "../context/UIContext";
+import { invalidateResumeData } from "../services/queries";
 const Editor = () => {
   const { resumeId } = useParams<{ resumeId: string }>(); // get resume id from url params
 
@@ -86,6 +87,7 @@ const Editor = () => {
     try {
       const updated = await updateResume(resumeId, { source });
       setResume(updated);
+      invalidateResumeData(); // updating resume will move that resume to the top of the resumes list, se need to refresh cache
     } catch (error: any) {
       setError(error.response.data.error || "Failed to save");
     } finally {
@@ -127,7 +129,12 @@ const Editor = () => {
       const result = await compileResume(resumeId, source);
       // load resume to get updated pdfUrl
       // this's needed when the resume is created it doesn't have an attacheed pdfUrl to it
-      await loadResume(resumeId);
+      if (resume)
+        setResume({
+          ...resume,
+          pdfUrl: result.pdfUrl,
+          thumbnailUrl: result.thumbnailUrl,
+        });
       // also update preview
       await handlePreview();
     } catch (error: any) {

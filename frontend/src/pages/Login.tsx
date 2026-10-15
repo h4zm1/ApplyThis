@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   Link,
+  Navigate,
   useLocation,
   useNavigate,
   useSearchParams,
@@ -26,14 +27,7 @@ const Login = () => {
   const [messageType, setMessageType] = useState<"success" | "error">(
     "success",
   );
-  const [demoLoading, setDemoLoading] = useState(false);
-
-  // redirect if already logged in
-  if (isAuthenticated) {
-    const from = location.state?.from?.pathname || "/dashboard";
-    navigate(from, { replace: true });
-    return null;
-  }
+  const [demoLoading, setDemoLoading] = useState(-1);
 
   useEffect(() => {
     const stateMail = location.state?.email as string;
@@ -68,17 +62,16 @@ const Login = () => {
   async function enterPlayground() {
     console.log("time to ply");
     setError("");
-    setDemoLoading(true);
+    setDemoLoading(0);
     try {
       await startDemo();
-      navigate("/dashboard");
     } catch (error) {
       setError(
         axios.isAxiosError(error)
           ? (error.response?.data.error ?? "could not start demo") // fallback if the left side is null or undefined (better than ||)
           : "cound not start demo",
       );
-      setDemoLoading(false);
+      setDemoLoading(-1);
     }
   }
 
@@ -87,6 +80,7 @@ const Login = () => {
     setError("");
     setMessage("");
     setIsSubmitting(true);
+    setDemoLoading(1);
 
     try {
       await login({ email, password });
@@ -94,15 +88,16 @@ const Login = () => {
       logger.log("INSIDE LOGIN");
 
       // redirect to intended page (or dashboard)
-      const from = location.state?.from?.pathname || "/dashboard";
-      navigate(from, { replace: true });
+      // const from = location.state?.from?.pathname || "/dashboard";
+      // navigate(from, { replace: true });
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.data?.error === "email not verified")
+        if (error.response?.data?.error === "email not verified") {
           setError(
             "Please verify your email before logging in. Check your inbox.",
           );
-        else if (searchParams.get("error") === "code_expired") {
+          setDemoLoading(-1);
+        } else if (searchParams.get("error") === "code_expired") {
           setMessage("Verification link expired. Please log in manually.");
           setMessageType("error");
         } else setError(error.response?.data?.error ?? "login failed");
@@ -112,7 +107,24 @@ const Login = () => {
     }
   };
 
-  return (
+  // redirect if already logged in
+  if (isAuthenticated) {
+    const from = location.state?.from?.pathname || "/dashboard";
+    return <Navigate to={from} replace />;
+  }
+
+  return demoLoading >= 0 ? (
+    <div className="loading-overlay">
+      <div className="loading-holder">
+        <div className="loader-spinner"></div>
+        {demoLoading === 0 ? (
+          <span>Loading playground</span>
+        ) : (
+          <span>Loading</span>
+        )}
+      </div>
+    </div>
+  ) : (
     <div className="outer-shell">
       <div className="side-bar">
         <div className="logo-nav">applythis</div>

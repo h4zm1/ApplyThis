@@ -17,7 +17,7 @@ const rateLimitter = rateLimit({
   limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { erro: "too many demo sessions, try again later" },
+  message: { error: "too many demo sessions, try again later" },
 });
 
 // POST /api/auth/register

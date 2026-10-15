@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // POST login credentials and store returned tokens
   const login = async (data: LoginRequest) => {
     const response = await api.post<AuthTokens>("/auth/login", data);
-    setTokens(response.data.accessToken, response.data.refreshToken);
+    prefetching(response.data.accessToken, response.data.refreshToken);
   };
 
   // create new user and automaticly log them in
@@ -107,8 +107,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const startDemo = async () => {
     const response = await api.post<AuthTokens>("/auth/demo");
-    const { accessToken, refreshToken } = response.data;
+    prefetching(response.data.accessToken, response.data.refreshToken);
+  };
 
+  async function prefetching(accessToken: string, refreshToken: string) {
+    // axios request need to find these so the prefetches can be authenticated
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
 
@@ -122,8 +125,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ];
     // prefetch all queries in the list at same time
     await Promise.allSettled(prefetches);
-    setTokens(response.data.accessToken, response.data.refreshToken);
-  };
+    setTokens(accessToken, refreshToken);
+  }
 
   const setTokens = (accessToken: string, refreshToken: string) => {
     localStorage.setItem("accessToken", accessToken);
