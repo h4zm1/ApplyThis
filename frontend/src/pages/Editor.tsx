@@ -27,13 +27,36 @@ const Editor = () => {
   const [isSaving, setIsSaving] = useState(false);
   const { setPreviewAction, setCompileAndSaveAction, setHeaderTitle } =
     useAction();
-  // const { setInResume, inResume } = useUIContext();
+  const [inSync, setInSync] = useState(false);
+
   // load resume on mount
   useEffect(() => {
     if (resumeId) {
       loadResume(resumeId);
     }
   }, [resumeId]);
+
+  // change background style from resume to editor
+  useEffect(() => {
+    const mainC = document.querySelector(".main-content") as HTMLElement;
+
+    // this when inside editor
+    if (mainC) {
+      mainC.style.boxShadow = "unset";
+      mainC.style.backgroundColor = "transparent";
+      mainC.style.padding = "0";
+    }
+
+    return () => {
+      logger.log("LEAVING EDITOR");
+      // reset to default when leaving the editor
+      if (mainC) {
+        mainC.style.boxShadow = "";
+        mainC.style.backgroundColor = "";
+        mainC.style.padding = "2rem";
+      }
+    };
+  }, []);
 
   async function loadResume(resumeId: string) {
     try {
@@ -80,49 +103,31 @@ const Editor = () => {
   }, [source]);
 
   // save current source to database
-  async function handleSave() {
-    if (!resumeId || !resume) return;
+  async function handleSave(): Promise<boolean> {
+    if (!resumeId || !resume) return false;
 
     setIsSaving(true);
     try {
       const updated = await updateResume(resumeId, { source });
       setResume(updated);
       invalidateResumeData(); // updating resume will move that resume to the top of the resumes list, se need to refresh cache
+      return true;
     } catch (error: any) {
       setError(error.response.data.error || "Failed to save");
+      return false;
     } finally {
       setIsSaving(false);
     }
   }
-
-  // change background style from resume to editor
-  useEffect(() => {
-    const mainC = document.querySelector(".main-content") as HTMLElement;
-
-    // this when inside editor
-    if (mainC) {
-      mainC.style.boxShadow = "unset";
-      mainC.style.backgroundColor = "transparent";
-      mainC.style.padding = "0";
-    }
-
-    return () => {
-      logger.log("LEAVING EDITOR");
-      // reset to default when leaving the editor
-      if (mainC) {
-        mainC.style.boxShadow = "";
-        mainC.style.backgroundColor = "";
-        mainC.style.padding = "2rem";
-      }
-    };
-  }, []);
 
   // compile and save to s3
   async function handleCompileAndSave() {
     if (!resumeId) return;
 
     // first save source
-    await handleSave();
+    const saved = await handleSave();
+    // if save failed just return and don't touch current blob and pdfUrl
+    if (!saved) return;
 
     setIsCompiling(true);
     try {
@@ -135,8 +140,9 @@ const Editor = () => {
           pdfUrl: result.pdfUrl,
           thumbnailUrl: result.thumbnailUrl,
         });
-      // also update preview
-      await handlePreview();
+      // clear preview blob so PdfPreview fall back to (newer) pdfURL
+      setPdfBlob(null);
+      invalidateResumeData();
     } catch (error: any) {
       setError(error.response.data.error || "Failed to compile and save");
     } finally {

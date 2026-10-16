@@ -31,6 +31,12 @@
     border: #212121 solid 0px;
     color: green;
   }
+  .tooltip-wrapper {
+    span.tooltip-bubble.bottom {
+      left: 50%;
+    }
+    margin-left: -10px;
+  }
 }
 .editor-side {
   overflow: unset !important;
@@ -87,6 +93,9 @@ iframe {
   width: -webkit-fill-available;
   height: -webkit-fill-available;
 }
+
+// ==== preview header =======
+
 .preview-header {
   display: flex;
   padding-bottom: 0.7rem;
@@ -129,6 +138,13 @@ iframe {
   background-color: white;
   font-weight: bold;
 }
+
+.preview-btn {
+  padding: 0px;
+  margin: -12px;
+}
+
+//===================================================
 .pdf-container {
   contain: size;
   height: calc(100vh - 7.6rem);
