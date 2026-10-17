@@ -7,6 +7,7 @@ import {
   remove,
   update,
   updateOrder,
+  updateSource,
 } from "../controllers/resumeController";
 import { capResumes, capSource } from "../middleware/demoLimits";
 
@@ -23,6 +24,9 @@ router.get("/:id", getResume);
 
 // POST /api/resumes      create new resume
 router.post("/", capResumes, capSource, create);
+
+// PUT /api/resumes/:id/source
+router.put("/source/:id", capSource, updateSource);
 
 // PUT /api/resume/:id    cap source for demo users and update resume
 router.put("/:id", capSource, update);

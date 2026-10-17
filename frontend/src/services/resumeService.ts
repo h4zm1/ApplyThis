@@ -68,3 +68,7 @@ export async function updateResumeOrder(
   console.log("Sending:", { id, orderIndex: newOrderIndex });
   await api.post<Resume>("/resumes/order/" + id, { orderIndex: newOrderIndex });
 }
+
+export async function saveResumeSource(id: string, source: string) {
+  await api.put("/resumes/source/" + id, { source });
+}

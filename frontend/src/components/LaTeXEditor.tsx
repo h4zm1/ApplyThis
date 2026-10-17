@@ -30,6 +30,14 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
   // ref to store EditorView instance
   const viewRef = useRef<EditorView | null>(null);
 
+  const {
+    PreviewAction,
+    isCompiling,
+    CompileAndSaveAction,
+    saveStatus,
+    syncStatus,
+  } = useAction();
+
   // init effect, setting up editor instance
   useEffect(() => {
     if (!containerRef.current) return;
@@ -86,11 +94,12 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
       });
     }
   }, [value]);
-  const { PreviewAction, isCompiling, CompileAndSaveAction } = useAction();
 
   return (
     <div className="editor-content">
       <div className="editor-header">
+        <span>save status: {saveStatus}</span>
+        <span>sync status: {syncStatus}</span>
         <Tooltip label="Build" side="bottom">
           <button onClick={PreviewAction?.run}>
             {/* {isCompiling ? "Compiling..." : "Compile and Save"} */}

@@ -6,6 +6,7 @@ import {
   getUserResume,
   updateResume,
   updateResumeOrderInDB,
+  updateResumeSource,
 } from "../services/resumeService";
 import { AuthRequest } from "../types/auth";
 import logger from "../config/logger";
@@ -103,5 +104,26 @@ export async function updateOrder(req: AuthRequest, res: Response) {
   } catch (error) {
     logger.error(error, "Failed to update order");
     return res.status(500).json({ error: "Failed to update order" });
+  }
+}
+
+// PUT /api/resumes/:id/source
+export async function updateSource(req: AuthRequest, res: Response) {
+  try {
+    const { source } = req.body;
+
+    // allow empty text (delete all text), so need to check type instead
+    if (typeof source !== "string") {
+      return res.status(400).json({ error: "source required" });
+    }
+
+    await updateResumeSource(req.params.id, req.user!.userId, source);
+    return res.status(204).send();
+  } catch (error) {
+    if (error instanceof Error && error.message === "resume not found") {
+      return res.status(404).json({ error: "resume not found" });
+    }
+    logger.error({ err: error }, "failed to autosave source");
+    return res.status(500).json({ error: "failed to save source" });
   }
 }

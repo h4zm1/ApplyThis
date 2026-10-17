@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   compileResume,
   getResume,
   previewCompile,
+  saveResumeSource,
   updateResume,
 } from "../services/resumeService";
 import type { Resume } from "../types/resume";
@@ -13,21 +14,35 @@ import { useAction } from "../context/AppContext";
 import logger from "../services/logger";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { GripVertical } from "lucide-react";
-import { useUIContext } from "../context/UIContext";
 import { invalidateResumeData } from "../services/queries";
 const Editor = () => {
   const { resumeId } = useParams<{ resumeId: string }>(); // get resume id from url params
-
   const [resume, setResume] = useState<Resume | null>(null);
   const [source, setSource] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isCompiling, setIsCompiling] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const { setPreviewAction, setCompileAndSaveAction, setHeaderTitle } =
-    useAction();
-  const [inSync, setInSync] = useState(false);
+  const {
+    setPreviewAction,
+    setCompileAndSaveAction,
+    setHeaderTitle,
+    setSyncStatus, // track the pdf sync to storage, -1 = unknow (just loaded), 0 = off sync, 1 = in sync
+    saveStatus,
+    setSaveStatus,
+    setIsCompiling,
+  } = useAction();
+
+  const AUTOSAVE_DELAY = 1500; // ms of silence before saving
+  // using refs here cause the values will be chaning alot and keep holding latest value all the time
+  const sourceRef = useRef("");
+  // hold the last text we know in database, it's set in 3 places
+  // loadResume: the text we get from server
+  // saveNow: after successful autosave
+  // handleSave: after compile & save
+  const lastSavedRef = useRef("");
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null); // track timer
+  const savingRef = useRef(false); // track if we are currently saving
 
   // load resume on mount
   useEffect(() => {
@@ -61,13 +76,16 @@ const Editor = () => {
   async function loadResume(resumeId: string) {
     try {
       const data = await getResume(resumeId!);
+      const loadedSource = data.source || getDefaultTamplate();
       setResume(data);
       logger.log("NAME ", data.name);
       setHeaderTitle(data?.name!);
 
       // set source from feteched data
       // fallback to template if feteched source is empty
-      setSource(data.source || getDefaultTamplate());
+      setSource(loadedSource);
+      sourceRef.current = loadedSource;
+      lastSavedRef.current = loadedSource;
     } catch (error) {
       setError("failed to load resume");
     } finally {
@@ -110,6 +128,9 @@ const Editor = () => {
     try {
       const updated = await updateResume(resumeId, { source });
       setResume(updated);
+      lastSavedRef.current = source;
+      // only set "saved" if nothing got typed while updatng
+      if (sourceRef.current === source) setSaveStatus("saved");
       invalidateResumeData(); // updating resume will move that resume to the top of the resumes list, se need to refresh cache
       return true;
     } catch (error: any) {
@@ -129,6 +150,7 @@ const Editor = () => {
     // if save failed just return and don't touch current blob and pdfUrl
     if (!saved) return;
 
+    //
     setIsCompiling(true);
     try {
       const result = await compileResume(resumeId, source);
@@ -143,6 +165,10 @@ const Editor = () => {
       // clear preview blob so PdfPreview fall back to (newer) pdfURL
       setPdfBlob(null);
       invalidateResumeData();
+
+      if (sourceRef.current === source)
+        // nothing got typed while saving was happening
+        setSyncStatus(1);
     } catch (error: any) {
       setError(error.response.data.error || "Failed to compile and save");
     } finally {
@@ -157,6 +183,78 @@ const Editor = () => {
     return () => setPreviewAction(null);
   }, [handlePreview, setPreviewAction]);
 
+  // called on every keyperess
+  function handleSourceChange(newSource: string) {
+    setSource(newSource);
+    sourceRef.current = newSource;
+
+    // if typed something and undid it => do nothing
+    if (newSource === lastSavedRef.current) return;
+    if (!resumeId) return;
+
+    setSaveStatus("unsaved");
+    setSyncStatus(0); // PDF doesn't match the text
+
+    // every keypress cancel the old timer and start new one
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => saveNow(resumeId), AUTOSAVE_DELAY);
+  }
+
+  async function saveNow(id: string) {
+    // we are saving now, so clear out and stop the timer
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = null;
+
+    // leave if a save is already running
+    if (savingRef.current) return;
+
+    const textToSave = sourceRef.current;
+
+    // nothing changed (the user may have typed something and undone it)
+    if (textToSave === lastSavedRef.current) {
+      setSaveStatus("saved");
+      return;
+    }
+
+    savingRef.current = true;
+    setSaveStatus("saving");
+    try {
+      await saveResumeSource(id, textToSave);
+      lastSavedRef.current = textToSave;
+      invalidateResumeData(); // so dubplicating resumes won't carrythrough an old source
+    } catch (error: any) {
+      savingRef.current = false;
+      setSaveStatus("error"); // the next keystroke will try again
+      setError(error.response?.data?.error || "Autosave failed");
+      return;
+    }
+    savingRef.current = false;
+
+    // did the user keep typing while we were saving?
+    if (sourceRef.current !== lastSavedRef.current) {
+      setSaveStatus("unsaved");
+      timerRef.current = setTimeout(() => saveNow(id), AUTOSAVE_DELAY);
+    } else {
+      setSaveStatus("saved");
+    }
+  }
+  // leaving the editor trigger autosave
+  useEffect(() => {
+    return () => {
+      if (resumeId) saveNow(resumeId);
+    };
+  }, [resumeId]);
+
+  // confirm popup if tab get closed
+  useEffect(() => {
+    function handleTabClose(event: BeforeUnloadEvent) {
+      if (saveStatus === "saved") return; // if text is saved then do nothing
+      event.preventDefault(); // prevent default behaviour (prevent closing the tab)
+    }
+    window.addEventListener("beforeunload", handleTabClose);
+    return () => window.removeEventListener("beforeunload", handleTabClose);
+  }, [saveStatus]);
+
   if (isLoading) {
     return (
       <div>
@@ -168,7 +266,7 @@ const Editor = () => {
     <div className="editor">
       <Group className="editor-container">
         <Panel className="editor-side" minSize={400}>
-          <LateXEditor value={source} onChange={setSource} />
+          <LateXEditor value={source} onChange={handleSourceChange} />
         </Panel>
         <Separator data-separator="inactive" className="separator">
           <GripVertical className="grip-vertical" />

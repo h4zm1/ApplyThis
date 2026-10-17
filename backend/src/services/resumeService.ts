@@ -211,3 +211,20 @@ export async function resumeBelongsToUser(resumeId: string, userId: string) {
   // if it doesn't then !null => true and !!null =>false
   return !!resume;
 }
+
+// source only update for autosave (no order change)
+export async function updateResumeSource(
+  id: string,
+  userId: string,
+  source: string,
+) {
+  // updateMany instead of normal update to be able to check ownership (userId) and update in one query
+  const result = await prisma.resume.updateMany({
+    where: { id, userId },
+    data: { source },
+  });
+
+  if (result.count === 0) {
+    throw new Error("resume not found");
+  }
+}
