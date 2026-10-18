@@ -1,4 +1,11 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CloudAlert,
+  CloudBackup,
+  CloudCheck,
+  CloudOff,
+} from "lucide-react";
 import { useAction } from "../context/AppContext";
 
 const Header = () => {
@@ -8,30 +15,35 @@ const Header = () => {
     CompileAndSaveAction,
     zoomInAction,
     zoomOutAction,
+    syncStatus,
     headerTitle,
   } = useAction();
   const [t1, t2] = (headerTitle ?? "").split(" > ", 2);
+
   return (
     <div className="header">
       <div className="header-content">
-        {/* <h1>HEADER</h1> */}
-        {/* <button onClick={PreviewAction?.run}> */}
-        {/*   {isCompiling ? "Compiling..." : "Preview"} */}
-        {/* </button> */}
-        {/* <button onClick={CompileAndSaveAction?.run}> */}
-        {/*   {isCompiling ? "Compiling..." : "Compile and Save"} */}
-        {/* </button> */}
-        {/* <button className="zoom-in" onClick={zoomInAction?.run}> */}
-        {/*   + */}
-        {/* </button> */}
-        {/**/}
-        {/* <button className="zoom-out" onClick={zoomOutAction?.run}> */}
-        {/*   - */}
-        {/* </button> */}
         <div>
-          <span>{t1}</span>
-          <ChevronRight size={15}></ChevronRight>
-          <span>{t2}</span>
+          {t2 === "editor" ? (
+            <div>
+              <div className="sync-icon">
+                {syncStatus === -1 ? (
+                  <CloudBackup size={20} />
+                ) : syncStatus === 1 ? (
+                  <CloudCheck size={20} />
+                ) : (
+                  <CloudOff size={20} />
+                )}
+              </div>
+              <span>{t1}</span>
+            </div>
+          ) : (
+            <div>
+              <span>{t1}</span>
+              {t2 && <ChevronRight size={15}></ChevronRight>}
+              <span>{t2}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

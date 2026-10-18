@@ -79,7 +79,7 @@ const Editor = () => {
       const loadedSource = data.source || getDefaultTamplate();
       setResume(data);
       logger.log("NAME ", data.name);
-      setHeaderTitle(data?.name!);
+      setHeaderTitle(data?.name! + " > editor");
 
       // set source from feteched data
       // fallback to template if feteched source is empty
@@ -114,6 +114,8 @@ const Editor = () => {
             message = json.error.join("\n") || json.error || message;
           } catch {
             message = error.response.data.error || message;
+          } finally {
+            setIsCompiling(false);
           }
         }
       }
@@ -255,14 +257,14 @@ const Editor = () => {
     return () => window.removeEventListener("beforeunload", handleTabClose);
   }, [saveStatus]);
 
-  if (isLoading) {
-    return (
-      <div>
-        <h1>Loading...</h1>
+  return isLoading ? (
+    <div className="loading-overlay" style={{ background: "unset" }}>
+      <div className="loading-holder">
+        <div className="loader-spinner"></div>
+        <span>Loading editor</span>
       </div>
-    );
-  }
-  return (
+    </div>
+  ) : (
     <div className="editor">
       <Group className="editor-container">
         <Panel className="editor-side" minSize={400}>

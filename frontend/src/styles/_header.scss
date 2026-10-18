@@ -15,6 +15,10 @@ h1 {
     /* flex-direction: row; */
     align-items: center;
     padding-block: 0.5rem;
+    .sync-icon {
+      padding-right: 0.4rem;
+      padding-block: 0;
+    }
     svg {
       color: #19181f;
     }

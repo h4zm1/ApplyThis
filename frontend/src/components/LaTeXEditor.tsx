@@ -17,6 +17,14 @@ import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { searchKeymap } from "@codemirror/search";
 import { useAction } from "../context/AppContext";
 import Tooltip from "./ui/tooltip";
+import {
+  LucideSaveOff,
+  Save,
+  SaveCheckIcon,
+  SaveOff,
+  SavePen,
+  SavePenIcon,
+} from "lucide-react";
 
 interface LaTeXEditorProps {
   value: string; // latex source code
@@ -98,10 +106,25 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
   return (
     <div className="editor-content">
       <div className="editor-header">
-        <span>save status: {saveStatus}</span>
-        <span>sync status: {syncStatus}</span>
+        <div className="save-icon" style={{ paddingRight: "1rem" }}>
+          {saveStatus === "saved" ? (
+            <SaveCheckIcon size={24} />
+          ) : saveStatus === "error" ? (
+            <SaveOff size={24} />
+          ) : (
+            <SavePenIcon />
+          )}
+        </div>
+        <span>isComing: {isCompiling}</span>
+        {/* <span>sync status: {syncStatus}</span> */}
         <Tooltip label="Build" side="bottom">
-          <button onClick={PreviewAction?.run}>
+          <button
+            onClick={(e) => {
+              e.currentTarget.classList.add("is-triggered");
+              PreviewAction?.run();
+            }}
+            disabled={isCompiling}
+          >
             {/* {isCompiling ? "Compiling..." : "Compile and Save"} */}
             <svg
               viewBox="0 0 36 36"
@@ -115,7 +138,13 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
           </button>
         </Tooltip>
         <Tooltip label="Build & Sync" side="bottom">
-          <button onClick={CompileAndSaveAction?.run}>
+          <button
+            onClick={(e) => {
+              e.currentTarget.classList.add("is-triggered");
+              CompileAndSaveAction?.run();
+            }}
+            disabled={isCompiling}
+          >
             {/* {isCompiling ? "Compiling..." : "Preview"} */}
             <svg
               viewBox="0 0 36 36"

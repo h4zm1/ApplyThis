@@ -24,20 +24,31 @@
   padding-bottom: 0.8rem;
   display: flex;
   justify-content: flex-end;
+  gap: 1rem;
+  padding-inline: 1rem;
   button {
     background-color: transparent;
     padding-inline: 1rem;
     border-radius: 0.4rem;
     border: #212121 solid 0px;
     color: green;
+    &:disabled {
+      animation: blink_smooth 1s infinite;
+      color: #afafaf;
+    }
+    &.is-triggered {
+      background-color: red;
+    }
   }
   .tooltip-wrapper {
     span.tooltip-bubble.bottom {
       left: 50%;
     }
-    margin-left: -10px;
+    width: 1.6rem;
+    justify-content: center;
   }
 }
+
 .editor-side {
   overflow: unset !important;
   // border-top-left-radius: 7px;
@@ -66,6 +77,7 @@
 .separator {
   // background-color: red;
   align-content: center;
+  margin-top: 3rem;
   // cursor: col-resize !important;
   &:focus-visible {
     outline: none !important;
@@ -94,11 +106,28 @@ iframe {
   height: -webkit-fill-available;
 }
 
-// ==== preview header =======
+.save-icon {
+}
 
+@keyframes blink_smooth {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// =================================
+// ========== preview header =======
+// ==================================
 .preview-header {
   display: flex;
   padding-bottom: 0.7rem;
+  padding-inline: 1rem;
   // justify-content: center;
   .zoom-select {
     font-size: 15px;
