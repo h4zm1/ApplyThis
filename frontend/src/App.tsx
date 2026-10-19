@@ -12,6 +12,7 @@ import { ActionProvider } from "./context/AppContext";
 import { UIProvider } from "./context/UIContext";
 import { useEffect } from "react";
 import AuthCallback from "./pages/AuthCallback";
+import DemoLimitToast from "./components/ui/toast";
 
 function App() {
   useEffect(() => {
@@ -40,6 +41,7 @@ function App() {
           <ProtectedRoute>
             <UIProvider>
               <ActionProvider>
+                <DemoLimitToast />
                 <Layout />
               </ActionProvider>
             </UIProvider>

@@ -26,9 +26,10 @@ export async function capJobs(
       where: { userId: req.user.userId },
     });
     if (count >= MAX_DEMO_JOBS) {
-      return res
-        .status(403)
-        .json({ error: `demo accounts are limited to ${MAX_DEMO_JOBS} jobs` });
+      return res.status(403).json({
+        error: `demo accounts are limited to ${MAX_DEMO_JOBS} jobs`,
+        code: "DEMO_LIMIT",
+      });
     }
     next();
   } catch (error) {
@@ -49,6 +50,7 @@ export async function capResumes(
     if (count >= MAX_DEMO_RESUMES) {
       return res.status(403).json({
         error: `demo accounts are limited to ${MAX_DEMO_RESUMES} resumes`,
+        code: "DEMO_LIMIT",
       });
     }
     next();
@@ -64,7 +66,10 @@ export function capSource(req: AuthRequest, res: Response, next: NextFunction) {
     typeof req.body?.source === "string" &&
     req.body.source.length > MAX_SOURCE_CHARS
   ) {
-    return res.status(413).json({ error: "resume too large for demo mode" });
+    return res.status(413).json({
+      error: "resume source too large for demo mode",
+      code: "DEMO_LIMIT",
+    });
   }
   next();
 }
@@ -81,6 +86,7 @@ export const demoCompilePerUser = rateLimit({
   legacyHeaders: false,
   message: {
     error: "demo compile limit reached, sign up for unlimited compiles",
+    code: "DEMO_LIMIT",
   },
 });
 
@@ -92,5 +98,8 @@ export const demoCompileGlobal = rateLimit({
   skip: realUser,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "demo is busy right now, try again later" },
+  message: {
+    error: "demo is busy right now, try again later",
+    code: "DEMO_LIMIT",
+  },
 });

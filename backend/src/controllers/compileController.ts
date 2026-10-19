@@ -10,7 +10,6 @@ import {
 } from "../services/resumeService";
 import { pdfToPng } from "pdf-to-png-converter";
 
-// TODO: limit page compilation to 3 pages max
 // compile only endpoint, return pdf
 export async function compile(req: Request, res: Response) {
   const { source } = req.body;
@@ -21,20 +20,20 @@ export async function compile(req: Request, res: Response) {
     return res.status(400).json({ error: "latex source is required" });
   }
 
-  // call service
-  const result = await compilationLatex(source);
+  try {
+    // call service
+    const result = await compilationLatex(source);
 
-  if (result.success && result.pdf) {
-    // return pdf (like ResponseEntity<Byte[]> with content type header in spring)
-    // res.setHeader("Content-Type", "application/pdf");
-    // json instead of pdf to prevent IDM from picking this up
-    // res.setHeader("Content-Disposition", 'inline; filename="resume.pdf"');
-    res.setHeader("Content-Type", "application/json");
+    if (result.success && result.pdf) {
+      // return pdf (like ResponseEntity<Byte[]> with content type header in spring)
+      res.setHeader("Content-Type", "application/json");
 
-    return res.send(result.pdf);
-  } else {
-    // return errors as JSON
+      return res.send(result.pdf);
+    }
     return res.status(400).json({ error: result.errors });
+  } catch (error) {
+    logger.error({ err: error }, "compilation error: ");
+    return res.status(500).json({ error: "failed to compile pdf" });
   }
 }
 

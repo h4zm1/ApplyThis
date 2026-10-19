@@ -18,18 +18,27 @@ import { searchKeymap } from "@codemirror/search";
 import { useAction } from "../context/AppContext";
 import Tooltip from "./ui/tooltip";
 import {
+  Bold,
   LucideSaveOff,
+  Percent,
   Save,
   SaveCheckIcon,
   SaveOff,
   SavePen,
   SavePenIcon,
+  Underline,
 } from "lucide-react";
 
 interface LaTeXEditorProps {
   value: string; // latex source code
   onChange: (value: string) => void; // callback when contnet change
 }
+
+const FORMATS = {
+  bold: { before: "\\textbf{", after: "}" },
+  italic: { before: "\\textit{", after: "}" },
+  underline: { before: "\\underline{", after: "}" },
+};
 
 const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
   // ref to the container div that codeMirror will attach to
@@ -45,6 +54,10 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
     saveStatus,
     syncStatus,
   } = useAction();
+
+  // hold newest OnChange, so the listener won't call an old one
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   // init effect, setting up editor instance
   useEffect(() => {
@@ -66,7 +79,7 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
 
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            onChange(update.state.doc.toString());
+            onChangeRef.current(update.state.doc.toString());
           }
         }),
       ],
@@ -106,6 +119,39 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
   return (
     <div className="editor-content">
       <div className="editor-header">
+        <Tooltip label="Toggle comment" side="bottom">
+          <button
+            onClick={(e) => {
+              e.currentTarget.classList.add("is-triggered");
+              PreviewAction?.run();
+            }}
+          >
+            <Percent />
+          </button>
+        </Tooltip>
+
+        <Tooltip label="Toggle underlined text" side="bottom">
+          <button
+            onClick={(e) => {
+              e.currentTarget.classList.add("is-triggered");
+              PreviewAction?.run();
+            }}
+          >
+            <Underline />
+          </button>
+        </Tooltip>
+
+        <Tooltip label="Toggle strong /bold text" side="bottom">
+          <button
+            onClick={(e) => {
+              e.currentTarget.classList.add("is-triggered");
+              PreviewAction?.run();
+            }}
+          >
+            <Bold strokeWidth={3} />
+          </button>
+        </Tooltip>
+
         <div className="save-icon" style={{ paddingRight: "1rem" }}>
           {saveStatus === "saved" ? (
             <SaveCheckIcon size={24} />
@@ -115,7 +161,7 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
             <SavePenIcon />
           )}
         </div>
-        <span>isComing: {isCompiling}</span>
+        {/* <span>isComing: {isCompiling}</span> */}
         {/* <span>sync status: {syncStatus}</span> */}
         <Tooltip label="Build" side="bottom">
           <button
@@ -125,7 +171,6 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
             }}
             disabled={isCompiling}
           >
-            {/* {isCompiling ? "Compiling..." : "Compile and Save"} */}
             <svg
               viewBox="0 0 36 36"
               className="custom-play-icon"
@@ -145,7 +190,6 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
             }}
             disabled={isCompiling}
           >
-            {/* {isCompiling ? "Compiling..." : "Preview"} */}
             <svg
               viewBox="0 0 36 36"
               className="custom-play-icon"
@@ -159,7 +203,7 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
         </Tooltip>
       </div>
       <div className="latex-editor-wrapper">
-        <div ref={containerRef} className="latex-editor"></div>;
+        <div ref={containerRef} className="latex-editor"></div>
       </div>
     </div>
   );

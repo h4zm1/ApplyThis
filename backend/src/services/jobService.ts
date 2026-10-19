@@ -395,7 +395,7 @@ export async function getBarData(userId: string) {
       },
     },
   });
-  if (jobs.length === 0) return {};
+  if (jobs.length === 0) return [];
 
   const weeklyData: { dayName: string; thisWeek: number; lastWeek: number }[] =
     [

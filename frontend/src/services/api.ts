@@ -1,4 +1,5 @@
 import axios from "axios";
+import { notifyDemoLimit } from "./demoLimit";
 
 // axios use import.meta.env for env variables (not process.env) and the var need to start with VITE_ to be visible by import.meta.env
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
@@ -22,15 +23,36 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// this made for previewCompile, which return Blob, but when limit is hit the endpoint will return json body
+async function parseBlobBody(blob: Blob) {
+  try {
+    const text = await blob.text();
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
 // run after every response
-// response interceptor (handle 401 ands refresh token)
+// response interceptor (handle 401, refresh token and demo limits)
 // catch failed api call (cause token expired), swap old token for new one, and try original request
 api.interceptors.response.use(
   // success, if respose is 2xx then pass it through (internal axios decision)
   (response) => response,
 
-  // error, if respojse is error
+  // error, if response is error
   async (error) => {
+    let body = error.response.data;
+
+    // if body is pdf
+    if (body instanceof Blob) {
+      body = await parseBlobBody(body);
+      if (body) error.response.data = body;
+    }
+
+    // this push (broadcast!!) the message into the bridge (demolimit)
+    if (body?.code === "DEMO_LIMIT") notifyDemoLimit(body.error);
+
     // save the original request so we can retry it later
     const originalRequest = error.config;
 

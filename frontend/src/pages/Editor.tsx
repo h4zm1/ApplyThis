@@ -105,20 +105,15 @@ const Editor = () => {
     } catch (error: any) {
       // try extract error message
       let message = "Compilation failed";
-      if (error.response.data) {
-        // if error response is blob, read it as text
-        if (error.response.data instanceof Blob) {
-          const text = await error.response.data.text();
-          try {
-            const json = await JSON.parse(text);
-            message = json.error.join("\n") || json.error || message;
-          } catch {
-            message = error.response.data.error || message;
-          } finally {
-            setIsCompiling(false);
-          }
-        }
+      const errorBody = error.response.data;
+      if (errorBody.error) {
+        if (Array.isArray(errorBody.error))
+          message = errorBody.error.join("\n");
+        else message = errorBody.eror;
       }
+      setError(message);
+    } finally {
+      setIsCompiling(false);
     }
   }, [source]);
 

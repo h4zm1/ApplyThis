@@ -274,7 +274,7 @@ const Dashboard = () => {
           className="filler-div"
           style={{
             gridArea: "midRight2",
-            borderLeft: "1px dashed var(--border-color);",
+            borderLeft: "1px dashed var(--border-color)",
             borderBottom: "unset",
             borderTop: "unset",
           }}
