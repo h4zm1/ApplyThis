@@ -1,19 +1,19 @@
 import { JobStatus } from "@prisma/client";
 
-export const SAMPLE_LATEX = String.raw`\\documentclass{article}
+export const SAMPLE_LATEX = String.raw`\documentclass{article}
 
-    \\begin{document}
+    \begin{document}
 
-    \\section* {NAME}
+    \section* {NAME}
     Contact info.
 
-    \\section* {Experience}
+    \section* {Experience}
     Experience here.
 
-    \\section* {Education}
+    \section* {Education}
     Education here.
 
-\\end{document}
+\end{document}
     `;
 
 type DemoJob = {

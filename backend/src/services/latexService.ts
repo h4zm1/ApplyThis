@@ -1,9 +1,34 @@
 import { pdfToPng } from "pdf-to-png-converter";
 import { CompileResule } from "../types/latex";
+import logger from "../config/logger";
 
 const LATEX_API = process.env.LATEX_API!;
 const TIMEOUT_MS = 30000; // 30 secs
 
+const MAX_ERRORS = 10;
+
+// get a readable error from the latex compiler response
+function extractLatexErrors(errorText: string): string[] {
+  try {
+    const data = JSON.parse(errorText);
+    const log: string = data.log_files?.["__main_document__.log"] ?? "";
+
+    // error lines look like: ./__main_document__.tex:12: LaTeX Error: ...
+    const errorLines = log.split("\n").filter((line) => line.includes(".tex:"));
+
+    // turn "./__main_document__.tex:12:" into "Line 12:"
+    const readable = errorLines.map((line) =>
+      line.replace("./__main_document__.tex:", "Line "),
+    );
+
+    // remove duplicates, and keep only the first few
+    const unique = [...new Set(readable)];
+    return unique.slice(0, 5);
+  } catch {
+    // the response wasn't json
+    return [];
+  }
+}
 export async function compilationLatex(source: string): Promise<CompileResule> {
   // create abort controller for timeout
   const controller = new AbortController();
@@ -45,9 +70,22 @@ export async function compilationLatex(source: string): Promise<CompileResule> {
       // not a pdf, must be an error
       // convert buffer to string and parse
       const errorText = buffer.toString("utf8");
+      const errors = extractLatexErrors(errorText);
+
+      if (errors.length === 0) {
+        // can't read it, just log it
+        logger.warn(
+          { status: response.status, body: errorText.slice(0, 500) },
+          "latex compile failed without readable errors",
+        );
+        return {
+          success: false,
+          errors: ["compilation failed, please check your LaTeX"],
+        };
+      }
       return {
         success: false,
-        errors: [JSON.stringify(errorText)],
+        errors,
       };
     }
   } catch (error) {
