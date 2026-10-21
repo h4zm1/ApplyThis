@@ -1,8 +1,10 @@
 import { type ReactNode, createContext, useContext, useState } from "react";
 
 interface UIContextType {
-  inResume: boolean;
-  setInResume: (val: boolean) => void;
+  recentResume: string;
+  setRecentResume: (val: string) => void;
+  recentResumeName: string;
+  setRecentResumeName: (val: string) => void;
   accentColor: string;
   setAccentColor: (val: string) => void;
   staleCount: number;
@@ -14,15 +16,18 @@ interface UIContextType {
 const UIContext = createContext<UIContextType | undefined>(undefined);
 
 export function UIProvider({ children }: { children: ReactNode }) {
-  const [inResume, setInResume] = useState(false);
+  const [recentResume, setRecentResume] = useState("");
+  const [recentResumeName, setRecentResumeName] = useState("");
   const [accentColor, setAccentColor] = useState("");
   const [staleCount, setStaleCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   return (
     <UIContext.Provider
       value={{
-        inResume,
-        setInResume,
+        recentResume,
+        setRecentResume,
+        recentResumeName,
+        setRecentResumeName,
         accentColor,
         setAccentColor,
         staleCount,

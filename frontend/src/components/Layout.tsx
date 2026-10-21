@@ -20,11 +20,17 @@ import { getStaleJobsCount } from "../services/jobService";
 // main layout wrapper
 const Layout = () => {
   const { user, logout } = useAuth();
-  const { staleCount, setStaleCount } = useUIContext();
   const { headerTitle } = useAction();
   const insideEditor = location.pathname.includes("editor");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const { accentColor, setAccentColor } = useUIContext();
+  const {
+    accentColor,
+    setAccentColor,
+    recentResumeName,
+    recentResume,
+    staleCount,
+    setStaleCount,
+  } = useUIContext();
   const [tabColor, setTabColor] = useState("");
   const [tabHoverColor, setTabHoverColor] = useState("");
   // const [staleCount, setStaleCount] = useState("0");
@@ -47,7 +53,7 @@ const Layout = () => {
 
   useEffect(() => {
     if (accentColor) {
-      const bgColor = `color-mix(in srgb, ${accentColor} 20%, transparent`;
+      const bgColor = `color-mix(in srgb, ${accentColor} 60%, transparent`;
       setTabColor(`color-mix(in srgb, ${accentColor} 100%, transparent`);
       setTabHoverColor(`color-mix(in srgb, ${accentColor} 60%, transparent`);
       document.body.style.setProperty("--body-bg", bgColor);
@@ -122,6 +128,33 @@ const Layout = () => {
               )}
             </NavLink>
           </Tooltip>
+          {recentResume !== "" ? (
+            <Tooltip label={`go back to ${recentResumeName}`} side="right">
+              <NavLink
+                className={({ isActive }) =>
+                  `side-btn${isActive ? " active" : ""}`
+                }
+                to={`/editor/${recentResume}`}
+                style={
+                  {
+                    "--active-btn-bg": tabColor,
+                    "--hover-btn-bg": tabHoverColor,
+                  } as React.CSSProperties
+                }
+              >
+                <Briefcase size={21} />
+                {staleCount > 0 ? (
+                  <div className="stale-jobs-notif">
+                    <span>{staleCount}</span>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+              </NavLink>
+            </Tooltip>
+          ) : (
+            ""
+          )}
         </nav>
 
         <div className="logout-holder">

@@ -23,29 +23,72 @@
   background-color: transparent;
   padding-bottom: 0.8rem;
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding-inline: 1rem;
+  // justify-content: flex-start;
+  gap: 0.5rem;
+  // padding-inline: 1rem;
   button {
-    background-color: transparent;
+    background-color: white;
     padding-inline: 1rem;
     border-radius: 0.4rem;
-    border: #212121 solid 0px;
     color: green;
+    border: 1px solid #cccccc;
     &:disabled {
       animation: blink_smooth 1s infinite;
       color: #afafaf;
     }
     &.is-triggered {
-      background-color: red;
+      // background-color: red;
     }
   }
   .tooltip-wrapper {
+    // background-color: white;
     span.tooltip-bubble.bottom {
       left: 50%;
     }
-    width: 1.6rem;
+    // width: 1.6rem;
     justify-content: center;
+    svg {
+      margin-bottom: -2px;
+    }
+  }
+  .editor-tools {
+    height: stretch;
+    display: flex;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    // margin-right: auto;
+    button {
+      padding-inline: 0.5rem;
+      color: #252525;
+      border: unset;
+      border-radius: 0;
+    }
+    .btn1 {
+      border-radius: 5px;
+      border-right: 1px solid #cccccc !important;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .btn3 {
+      border-radius: 5px;
+      border-left: 1px solid #cccccc !important;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .btn4 {
+      border-radius: 0.4rem;
+    }
+  }
+  .run-group {
+    margin-left: auto;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .save-icon {
+    color: #3f3f3f;
+    svg {
+      margin-bottom: -11px;
+    }
   }
 }
 
@@ -66,7 +109,7 @@
 }
 .latex-editor {
   background-color: white;
-  height: calc(100vh - 7.1rem);
+  height: calc(100vh - 5.6rem);
   // box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
   // border-top-left-radius: 7px;
   // border-top-right-radius: 7px;
@@ -104,9 +147,6 @@
 iframe {
   width: -webkit-fill-available;
   height: -webkit-fill-available;
-}
-
-.save-icon {
 }
 
 @keyframes blink_smooth {
@@ -220,20 +260,26 @@ iframe {
 
 /* === text spans === */
 .textLayer :is(span, br) {
-  // color: transparent;
-  color: red;
+  color: transparent;
+  // color: red;
   position: absolute;
   white-space: pre;
   cursor: text;
   transform-origin: 0% 0%;
-  font-family: unset !important;
-  --font-height: 10.66px !important;
+  // font-family: unset !important;
+  // --font-height: 10.66px !important;
 }
 
 .textLayer > :not(.markedContent),
 .textLayer .markedContent span:not(.markedContent) {
+  // --font-height: 0;
+  // font-size: calc(var(--text-scale-factor) * var(--font-height));
   --font-height: 0;
   font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1;
+  --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x))
+    scale(var(--min-font-size-inv));
 }
 
 /* text selecting hightlight color*/
@@ -248,7 +294,7 @@ iframe {
   text-align: center;
 }
 
-// hiding the thin dotted line when codemirror is focused
+/* hiding the thin dotted line when codemirror is focused */
 .cm-focused {
   outline: none !important;
 }

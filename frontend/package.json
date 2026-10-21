@@ -21,6 +21,7 @@
     "@dnd-kit/react": "^0.3.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@material-symbols-svg/react": "^0.16.0",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "@mui/icons-material": "^9.4.0",

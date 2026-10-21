@@ -1,5 +1,9 @@
 import { useEffect, useRef } from "react";
 import {
+  TextSelectMoveDown,
+  TextSelectMoveUp,
+} from "@material-symbols-svg/react";
+import {
   EditorView,
   highlightActiveLine,
   highlightActiveLineGutter,
@@ -13,12 +17,21 @@ import {
   defaultHighlightStyle,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
-import { searchKeymap } from "@codemirror/search";
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  moveLineDown,
+  moveLineUp,
+  toggleLineComment,
+} from "@codemirror/commands";
+import { openSearchPanel, searchKeymap } from "@codemirror/search";
 import { useAction } from "../context/AppContext";
 import Tooltip from "./ui/tooltip";
 import {
   Bold,
+  FileSearchCorner,
+  Italic,
   LucideSaveOff,
   Percent,
   Save,
@@ -26,6 +39,7 @@ import {
   SaveOff,
   SavePen,
   SavePenIcon,
+  Search,
   Underline,
 } from "lucide-react";
 
@@ -36,7 +50,7 @@ interface LaTeXEditorProps {
 
 const FORMATS = {
   bold: { before: "\\textbf{", after: "}" },
-  comment: { before: "%", after: "" },
+  italic: { before: "\\textit{", after: "}" },
   underline: { before: "\\underline{", after: "}" },
 };
 
@@ -146,6 +160,7 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
         bracketMatching(), // hightlight brackets when near any of the two ends
         history(), // enable undo/redo
         EditorView.lineWrapping,
+        EditorState.languageData.of(() => [{ commentTokens: { line: "%" } }]),
         // keymaps
         keymap.of([
           {
@@ -154,8 +169,8 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
             preventDefault: true,
           },
           {
-            key: "Alt-c",
-            run: formatCommand(FORMATS.comment),
+            key: "Mod-/",
+            run: toggleLineComment,
             preventDefault: true,
           },
           {
@@ -212,44 +227,16 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
     toggleWrap(view, format);
     view.focus(); // give the keyboard back to the editor
   }
-
+  function applyCommand(command: (view: EditorView) => boolean) {
+    const view = viewRef.current;
+    if (!view) return;
+    command(view);
+    view.focus();
+  }
   return (
     <div className="editor-content">
       <div className="editor-header">
-        <Tooltip label="Toggle comment" side="bottom">
-          <button
-            onClick={(e) => {
-              e.currentTarget.classList.add("is-triggered");
-              applyFormat(FORMATS.comment);
-            }}
-          >
-            <Percent />
-          </button>
-        </Tooltip>
-
-        <Tooltip label="Toggle underlined text" side="bottom">
-          <button
-            onClick={(e) => {
-              e.currentTarget.classList.add("is-triggered");
-              PreviewAction?.run();
-            }}
-          >
-            <Underline />
-          </button>
-        </Tooltip>
-
-        <Tooltip label="Toggle strong /bold text" side="bottom">
-          <button
-            onClick={(e) => {
-              e.currentTarget.classList.add("is-triggered");
-              applyFormat(FORMATS.bold);
-            }}
-          >
-            <Bold strokeWidth={3} />
-          </button>
-        </Tooltip>
-
-        <div className="save-icon" style={{ paddingRight: "1rem" }}>
+        <div className="save-icon">
           {saveStatus === "saved" ? (
             <SaveCheckIcon size={24} />
           ) : saveStatus === "error" ? (
@@ -258,46 +245,139 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
             <SavePenIcon />
           )}
         </div>
-        {/* <span>isComing: {isCompiling}</span> */}
-        {/* <span>sync status: {syncStatus}</span> */}
-        <Tooltip label="Build" side="bottom">
-          <button
-            onClick={(e) => {
-              e.currentTarget.classList.add("is-triggered");
-              PreviewAction?.run();
-            }}
-            disabled={isCompiling}
-          >
-            <svg
-              viewBox="0 0 36 36"
-              className="custom-play-icon"
-              width="24"
-              height="24"
-              fill="currentColor"
+
+        <div className="editor-tools">
+          <Tooltip label="Toggle italic text" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                applyFormat(FORMATS.italic);
+              }}
+              className="btn1"
             >
-              <path d="M17.71,32a2,2,0,0,1-.86-.2A1.77,1.77,0,0,1,16,30v-6.7L5.17,31.58a1.94,1.94,0,0,1-2.06.22A2,2,0,0,1,2,30V6A2,2,0,0,1,3.11,4.2a1.93,1.93,0,0,1,2.06.22L16,12.69V6a1.77,1.77,0,0,1,.85-1.79,1.93,1.93,0,0,1,2.06.22l15.32,12a2,2,0,0,1,0,3.15l-15.32,12A2,2,0,0,1,17.71,32Z"></path>
-            </svg>
-          </button>
-        </Tooltip>
-        <Tooltip label="Build & Sync" side="bottom">
-          <button
-            onClick={(e) => {
-              e.currentTarget.classList.add("is-triggered");
-              CompileAndSaveAction?.run();
-            }}
-            disabled={isCompiling}
-          >
-            <svg
-              viewBox="0 0 36 36"
-              className="custom-play-icon"
-              width="24"
-              height="24"
-              fill="currentColor"
+              <Italic size={16} strokeWidth={2} />
+            </button>
+          </Tooltip>
+
+          <Tooltip label="Toggle underlined text" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                applyFormat(FORMATS.underline);
+              }}
+              className="btn2"
             >
-              <path d="M32.16,16.08,8.94,4.47A2.07,2.07,0,0,0,6,6.32V29.53a2.06,2.06,0,0,0,3,1.85L32.16,19.77a2.07,2.07,0,0,0,0-3.7Z"></path>
-            </svg>
-          </button>
-        </Tooltip>
+              <Underline size={16} strokeWidth={2} />
+            </button>
+          </Tooltip>
+
+          <Tooltip label="Toggle strong /bold text" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                applyFormat(FORMATS.bold);
+              }}
+              className="btn3"
+            >
+              <Bold strokeWidth={3} size={16} />
+            </button>
+          </Tooltip>
+        </div>
+        <div className="editor-tools">
+          <Tooltip label="Move line up" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                applyCommand(moveLineUp);
+              }}
+              className="btn1"
+            >
+              <TextSelectMoveUp size={19} />
+            </button>
+          </Tooltip>
+
+          <Tooltip label="Move line down" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                applyCommand(moveLineDown);
+              }}
+              className="btn3"
+              style={{ borderLeft: "unset !important" }}
+            >
+              <TextSelectMoveDown size={19} />
+            </button>
+          </Tooltip>
+        </div>
+        <div className="editor-tools">
+          <Tooltip label="Find text" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                applyCommand(openSearchPanel);
+              }}
+              className="btn4"
+            >
+              <Search size={16} strokeWidth={2} />
+            </button>
+          </Tooltip>
+        </div>
+        <div className="editor-tools">
+          <Tooltip label="Toggle comment" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                applyCommand(toggleLineComment);
+              }}
+              className="btn4"
+            >
+              <Percent size={16} strokeWidth={2} />
+            </button>
+          </Tooltip>
+        </div>
+
+        <div className="run-group">
+          {/* <span>isComing: {isCompiling}</span> */}
+          {/* <span>sync status: {syncStatus}</span> */}
+          <Tooltip label="Build" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                PreviewAction?.run();
+              }}
+              disabled={isCompiling}
+            >
+              <svg
+                viewBox="0 0 36 36"
+                className="custom-play-icon"
+                width="24"
+                height="24"
+                fill="currentColor"
+              >
+                <path d="M17.71,32a2,2,0,0,1-.86-.2A1.77,1.77,0,0,1,16,30v-6.7L5.17,31.58a1.94,1.94,0,0,1-2.06.22A2,2,0,0,1,2,30V6A2,2,0,0,1,3.11,4.2a1.93,1.93,0,0,1,2.06.22L16,12.69V6a1.77,1.77,0,0,1,.85-1.79,1.93,1.93,0,0,1,2.06.22l15.32,12a2,2,0,0,1,0,3.15l-15.32,12A2,2,0,0,1,17.71,32Z"></path>
+              </svg>
+            </button>
+          </Tooltip>
+          <Tooltip label="Build & Sync" side="bottom">
+            <button
+              onClick={(e) => {
+                e.currentTarget.classList.add("is-triggered");
+                CompileAndSaveAction?.run();
+              }}
+              disabled={isCompiling}
+            >
+              <svg
+                viewBox="0 0 36 36"
+                className="custom-play-icon"
+                width="24"
+                height="24"
+                fill="currentColor"
+              >
+                <path d="M32.16,16.08,8.94,4.47A2.07,2.07,0,0,0,6,6.32V29.53a2.06,2.06,0,0,0,3,1.85L32.16,19.77a2.07,2.07,0,0,0,0-3.7Z"></path>
+              </svg>
+            </button>
+          </Tooltip>
+        </div>
       </div>
       <div className="latex-editor-wrapper">
         <div ref={containerRef} className="latex-editor"></div>

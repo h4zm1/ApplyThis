@@ -15,6 +15,7 @@ import logger from "../services/logger";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { GripVertical } from "lucide-react";
 import { invalidateResumeData } from "../services/queries";
+import { useUIContext } from "../context/UIContext";
 const Editor = () => {
   const { resumeId } = useParams<{ resumeId: string }>(); // get resume id from url params
   const [resume, setResume] = useState<Resume | null>(null);
@@ -43,11 +44,13 @@ const Editor = () => {
   const lastSavedRef = useRef("");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null); // track timer
   const savingRef = useRef(false); // track if we are currently saving
+  const { setRecentResume, setRecentResumeName } = useUIContext();
 
   // load resume on mount
   useEffect(() => {
     if (resumeId) {
       loadResume(resumeId);
+      setRecentResume(resumeId);
     }
   }, [resumeId]);
 
@@ -80,6 +83,7 @@ const Editor = () => {
       setResume(data);
       logger.log("NAME ", data.name);
       setHeaderTitle(data?.name! + " > editor");
+      setRecentResumeName(data.name);
 
       // set source from feteched data
       // fallback to template if feteched source is empty
