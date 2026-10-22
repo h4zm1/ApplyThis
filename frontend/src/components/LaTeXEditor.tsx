@@ -9,6 +9,7 @@ import {
   highlightActiveLineGutter,
   keymap,
   lineNumbers,
+  drawSelection,
 } from "@codemirror/view";
 import { EditorSelection, EditorState } from "@codemirror/state";
 import { latex } from "codemirror-lang-latex";
@@ -153,6 +154,7 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
     const state = EditorState.create({
       doc: value,
       extensions: [
+        drawSelection(),
         lineNumbers(),
         highlightActiveLine(),
         highlightActiveLineGutter(), // highlight line number

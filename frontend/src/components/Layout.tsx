@@ -132,7 +132,7 @@ const Layout = () => {
             <Tooltip label={`go back to ${recentResumeName}`} side="right">
               <NavLink
                 className={({ isActive }) =>
-                  `side-btn${isActive ? " active" : ""}`
+                  `side-btn${isActive ? " active" : ""} current-resume`
                 }
                 to={`/editor/${recentResume}`}
                 style={
@@ -142,7 +142,8 @@ const Layout = () => {
                   } as React.CSSProperties
                 }
               >
-                <Briefcase size={21} />
+                <span>{recentResumeName[0]}</span>
+                {/* <Briefcase size={21} /> */}
                 {staleCount > 0 ? (
                   <div className="stale-jobs-notif">
                     <span>{staleCount}</span>
