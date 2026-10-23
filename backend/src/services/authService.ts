@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import prisma from "../config/database";
 import logger from "../config/logger";
 import { log } from "node:console";
-import { sendVerificationEmail } from "./emailService";
+import { sendPasswordResetEmail, sendVerificationEmail } from "./emailService";
 import { DEMO_JOBS, SAMPLE_LATEX } from "../types/demoSeed";
 
 // hash password before storing
@@ -13,6 +13,10 @@ import { DEMO_JOBS, SAMPLE_LATEX } from "../types/demoSeed";
 export async function hashPassword(password: string): Promise<string> {
   const saltRounds = 10;
   return bcrypt.hash(password, saltRounds);
+}
+// for hashing reset tokens (mainly)
+export function hashToken(token: string): string {
+  return crypto.createHash("sha256").update(token).digest("hex");
 }
 
 // compare password with hash
@@ -129,6 +133,17 @@ export async function refreshTokens(refreshToken: string) {
   });
   if (!user) {
     throw new Error("User no longer exists");
+  }
+
+  // refuse refresh token if got issued after the password change
+  if (user.passwordChangedAt && payload.iat) {
+    // iat in seconds, so change passwordchangedAt to seconds
+    const changedAtSeconds = Math.floor(
+      user.passwordChangedAt.getTime() / 1000,
+    );
+    if (payload.iat < changedAtSeconds) {
+      throw new Error("password changed, please log in again");
+    }
   }
 
   // generate new token
@@ -259,4 +274,57 @@ export async function createDemoSession() {
 
   logger.info({ userId: user.id }, "demo session created");
   return generateTokens(user.id, user.email, true);
+}
+
+//======= password reset through email ================
+
+export async function requestPasswordReset(email: string) {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  // do nothing if can't find the user or unverified or demo account
+  if (!user || !user.isVerified || user.isDemo) return;
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const resetTokenExp = new Date(Date.now() + 60 * 60 * 1000); // 1hour
+
+  // give a hashed token to the user in db (so we can identify them later on by it)
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { resetTokenHash: hashToken(token), resetTokenExp },
+  });
+
+  sendPasswordResetEmail(email, token).catch((err) => {
+    logger.error(
+      { message: err.message, userId: user.id },
+      "failed to send reset mail",
+    );
+  });
+}
+
+export async function resetPasswordWithToken(
+  token: string,
+  newPassword: string,
+) {
+  const user = await prisma.user.findUnique({
+    where: { resetTokenHash: hashToken(token) },
+  });
+
+  if (!user || !user.resetTokenExp || user.resetTokenExp < new Date()) {
+    throw new Error("invalid or expired token");
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  // update password and clear token
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      passwordChangedAt: new Date(),
+      resetTokenHash: null,
+      resetTokenExp: null,
+    },
+  });
+
+  logger.info({ userId: user.id }, "password reset");
 }

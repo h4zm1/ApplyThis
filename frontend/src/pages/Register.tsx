@@ -65,81 +65,74 @@ const Register = () => {
   };
 
   return (
-    <div className="outer-shell">
-      <div className="side-bar">
-        <div className="logo-nav">applythis</div>
-      </div>
-      <div className="inner-shell">
-        <div className="auth-page">
-          {!isRegistered ? (
-            <div>
-              <h1>Sign Up</h1>
+    <div className="auth-page">
+      {!isRegistered ? (
+        <div>
+          <h1>Sign Up</h1>
 
-              <form className="auth-form" onSubmit={handleSubmit}>
-                {/* {error && <div className="auth-error">{error}</div>} */}
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {/* {error && <div className="auth-error">{error}</div>} */}
 
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                />
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              required
+            />
 
-                <PasswordField
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  required
-                />
-                <PasswordStrength password={password} />
+            <PasswordField
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              required
+            />
+            <PasswordStrength password={password} />
 
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm Password"
-                  required
-                />
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm Password"
+              required
+            />
 
-                <div className="auth-footer">
-                  <button
-                    className="auth-submit"
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "Siging up..." : "Sign up"}
-                  </button>
-                  <p>
-                    Already have an account? <Link to="/login">Log in</Link>
-                  </p>
-                </div>
-                <div className="auth-error">{error}</div>
-              </form>
+            <div className="auth-footer">
+              <button
+                className="auth-submit"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Siging up..." : "Sign up"}
+              </button>
+              <p>
+                Already have an account? <Link to="/login">Log in</Link>
+              </p>
             </div>
-          ) : (
-            <div className="reg-message">
-              <h1>REQUEST RECEIVED</h1>
-              <div className="reg-content">
-                <p> THANK YOU FOR SUBMITTING YOUR EMAIL ADDRESS. </p>
-                <p>
-                  IF YOUR EMAIL HAS BEEN RECOGNIZED, YOU WILL RECEIVE AN EMAIL
-                  <br />
-                  WITH THE INFORMATION NEEDED TO ACTIVATE YOUR ACCOUNT.
-                </p>
-
-                <p>
-                  THE EMAIL MIGHT TAKE A COUPLE OF MINUTES TO REACH YOUR <br />
-                  ACCOUNT. PLEASE CHECK YOUR JUNK MAIL TO ENSURE <br />
-                  YOU RECEIVE IT.
-                </p>
-              </div>
-            </div>
-          )}
+            <div className="auth-error">{error}</div>
+          </form>
         </div>
-      </div>
+      ) : (
+        <div className="reg-message">
+          <h1>REQUEST RECEIVED</h1>
+          <div className="reg-content">
+            <p> THANK YOU FOR SUBMITTING YOUR EMAIL ADDRESS. </p>
+            <p>
+              IF YOUR EMAIL HAS BEEN RECOGNIZED, YOU WILL RECEIVE AN EMAIL
+              <br />
+              WITH THE INFORMATION NEEDED TO ACTIVATE YOUR ACCOUNT.
+            </p>
+
+            <p>
+              THE EMAIL MIGHT TAKE A COUPLE OF MINUTES TO REACH YOUR <br />
+              ACCOUNT. PLEASE CHECK YOUR JUNK MAIL TO ENSURE <br />
+              YOU RECEIVE IT.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

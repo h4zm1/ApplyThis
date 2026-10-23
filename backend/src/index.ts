@@ -11,6 +11,7 @@ import authRoutes from "./routes/authRoutes";
 import jobRoutes from "./routes/jobRoutes";
 import testRoutes from "./routes/testRoutes";
 import resumeRoutes from "./routes/resumeRoutes";
+import accountRoutes from "./routes/accountRoutes";
 import logger from "./config/logger";
 import redis from "./config/redis";
 import { demoWorker } from "./jobs/testJob";
@@ -61,6 +62,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/resumes", resumeRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/account", accountRoutes);
 // 404 handler
 // this need to placed under all routes, if it were at the top it will catch all requests and get "not found" for all routes
 app.use(notFoundHandler);

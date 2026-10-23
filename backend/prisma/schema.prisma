@@ -15,19 +15,22 @@ datasource db {
 
 // like @Entity User in Spring Boot
 model User {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  password       String
-  resumes        Resume[] 
-  jobs           Job[]    
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  isVerified     Boolean        @default(false) // false till email confirmed
-  verifyToken    String?
-  verifyTokenExp DateTime?
-  authCode       String?   //one time code generated after mail verification
-  authCodeExp    DateTime? // 2 min expiration
-  isDemo         Boolean  @default(false)
+  id                String   @id @default(uuid())
+  email             String   @unique
+  password          String
+  resumes           Resume[] 
+  jobs              Job[]    
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  isVerified        Boolean        @default(false) // false till email confirmed
+  verifyToken       String?
+  verifyTokenExp    DateTime?
+  authCode          String?   //one time code generated after mail verification
+  authCodeExp       DateTime? // 2 min expiration
+  isDemo            Boolean  @default(false)
+  passwordChangedAt DateTime?
+  resetTokenHash    String? @unique
+  resetTokenExp     DateTime?
 }
 
 // resume document

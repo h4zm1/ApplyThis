@@ -5,6 +5,7 @@ export interface TokenPayload {
   userId: string;
   email: string;
   demo?: boolean;
+  iat?: number; // issuedAt => this will hold when the the token issued at (in seconds)
 }
 
 /*

@@ -1,5 +1,6 @@
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import s3Client from "../config/s3";
+import logger from "../config/logger";
 
 const BUCKET_NAME = process.env.S3_BUCKET_NAME!;
 const REGION = process.env.AWS_REGION!;
@@ -62,4 +63,24 @@ export async function deleteThumbnail(fileName: string): Promise<void> {
   });
 
   await s3Client.send(command);
+}
+
+function fileNameFromUrl(url: string): string {
+  const last = url.split("/").pop() ?? "";
+  return last.replace(/\.(pdf|png)$/, ""); // only remove the extensio
+}
+
+export async function deleteStoredFiles(
+  pdfUrl?: string | null,
+  thumbnailUrl?: string | null,
+) {
+  const tasks: Promise<unknown>[] = [];
+  if (pdfUrl) tasks.push(deletePdf(fileNameFromUrl(pdfUrl)));
+  if (thumbnailUrl) tasks.push(deleteThumbnail(fileNameFromUrl(thumbnailUrl)));
+  const results = await Promise.allSettled(tasks);
+  for (const r of results) {
+    if (r.status === "rejected") {
+      logger.warn({ error: r.reason }, "failed to delete file from storage");
+    }
+  }
 }

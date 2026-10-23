@@ -13,6 +13,8 @@ import { UIProvider } from "./context/UIContext";
 import { useEffect } from "react";
 import AuthCallback from "./pages/AuthCallback";
 import DemoLimitToast from "./components/ui/toast";
+import Forgot from "./pages/Forgot";
+import OuterShell from "./components/OuterShell";
 
 function App() {
   useEffect(() => {
@@ -33,8 +35,11 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route element={<OuterShell />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<Forgot />} />
+      </Route>
       <Route path="/auth-callback" element={<AuthCallback />} />
       <Route
         element={

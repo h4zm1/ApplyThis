@@ -2,7 +2,11 @@ import { versions } from "node:process";
 import prisma from "../config/database";
 import logger from "../config/logger";
 import { CreateResumeDto, UpateResumeDto } from "../types/resume";
-import { deletePdf, deleteThumbnail } from "./storageService";
+import {
+  deletePdf,
+  deleteStoredFiles,
+  deleteThumbnail,
+} from "./storageService";
 import { Prisma } from "@prisma/client";
 
 // get all resumes for a user
@@ -123,18 +127,7 @@ export async function deleteResume(id: string, userId: string) {
     where: { id },
   });
 
-  // manual clean up for s3 files
-  if (resume.pdfUrl) {
-    try {
-      // try/catch to keep on deleting if something happen (already gone) and not stop
-      // get filename from url cause deletePdf function in storage service attach file extesnsion by itself (to guarantee consistancy)
-      const filename = resume.pdfUrl.split("/").pop()?.replace(".pdf", "");
-      if (filename) await deletePdf(filename);
-    } catch (error) {
-      logger.warn({ resumeId: resume.id }, "failed to delete pdf from s3");
-    }
-  }
-
+  await deleteStoredFiles(resume.pdfUrl, resume.thumbnailUrl);
   logger.info({ resumeId: id, userId }, "resume deleted");
 }
 
@@ -151,38 +144,14 @@ export async function updateResumePdfAndThumbnailUrl(
 
   if (!resume) throw new Error("resume not found");
 
-  await Promise.all([
-    prisma.resume.update({
-      where: { id: resumeId },
-      data: { pdfUrl, thumbnailUrl },
-    }),
-  ]);
+  // delete db first, if it throw then old files don't get touched
+  await prisma.resume.update({
+    where: { id: resumeId },
+    data: { pdfUrl, thumbnailUrl },
+  });
 
-  // delete old PDF from s3 if exist (to avoid orphan files in s3)
-  if (resume.pdfUrl) {
-    try {
-      const oldPDFName = resume.pdfUrl.split("/").pop()!.replace(".pdf", "");
-      await deletePdf(oldPDFName);
-    } catch (error) {
-      logger.warn("failed to delete old pdf from s3");
-    }
-  }
-  // do the same for the thumbnail
-  if (resume.thumbnailUrl) {
-    try {
-      const oldThumbnailName = resume.thumbnailUrl
-        .split("/")
-        .pop()!
-        .replace(".png", "");
-      await deleteThumbnail(oldThumbnailName);
-    } catch (error) {
-      logger.warn("failed to delete old thumbnail from s3");
-    }
-  }
-  // await prisma.resume.update({
-  //   where: { id: resumeId },
-  //   data: { pdfUrl },
-  // });
+  await deleteStoredFiles(resume.pdfUrl, resume.thumbnailUrl);
+
   logger.info({ resumeId, pdfUrl }, "resume pdf and thumbnail url updated");
 }
 

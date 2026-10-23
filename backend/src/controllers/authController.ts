@@ -6,6 +6,8 @@ import {
   loginUser,
   refreshTokens,
   registerUser,
+  requestPasswordReset,
+  resetPasswordWithToken,
   verifyEmail,
 } from "../services/authService";
 import logger from "../config/logger";
@@ -154,5 +156,53 @@ export async function demoLogin(req: Request, res: Response) {
   } catch (error) {
     logger.error({ error }, "demo creation failed");
     res.status(500).json({ error: "could not start demo session" });
+  }
+}
+
+// POST /api/auth/forgot-password
+export async function forgotPassword(req: Request, res: Response) {
+  const { email } = req.body;
+  if (typeof email !== "string" || !email) {
+    return res.status(400).json({ error: "email required" });
+  }
+
+  try {
+    await requestPasswordReset(email);
+  } catch (error) {
+    logger.error({ err: error }, "forgot password failed");
+  }
+
+  return res.json({
+    message: "if that email has an account, we sent a reset link",
+  });
+}
+
+// POST /api/auth/reset-password
+export async function resetPassword(req: Request, res: Response) {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (typeof token !== "string" || typeof newPassword !== "string") {
+      return res.status(400).json({ error: "token and new password required" });
+    }
+    if (newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ error: "password must be at least 6 characters" });
+    }
+
+    await resetPasswordWithToken(token, newPassword);
+    return res.json({ message: "password updated" });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "invalid or expired token"
+    ) {
+      return res
+        .status(400)
+        .json({ error: "this reset link is invalid or has expired" });
+    }
+    logger.error({ err: error }, "reset password failed");
+    return res.status(500).json({ error: "failed to reset password" });
   }
 }

@@ -99,3 +99,28 @@ export async function sendVerificationEmail(
   }
   logger.info({ email }, "verification mail sent");
 }
+
+export async function sendPasswordResetEmail(
+  email: string,
+  token: string,
+): Promise<void> {
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+  const { error } = await resend.emails.send({
+    from: `"ApplyThis" <${process.env.EMAIL_FROM}>`,
+    to: email,
+    subject: "Reset your ApplyThis password",
+    text: `Reset ${resetUrl}`,
+    html: `
+      <div>
+        <p>
+        ${resetUrl}
+        </p>
+      </div>`,
+  });
+
+  if (error) {
+    throw new Error(`email send failed ${error.message}`);
+  }
+  logger.info({ email }, "reset mail sent");
+}

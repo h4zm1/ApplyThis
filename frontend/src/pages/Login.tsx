@@ -125,51 +125,40 @@ const Login = () => {
       </div>
     </div>
   ) : (
-    <div className="outer-shell">
-      <div className="side-bar">
-        <div className="logo-nav">applythis</div>
-      </div>
-      <div className="inner-shell">
-        <div className="auth-page">
-          <h1>Sign In</h1>
-          <div className="verify-message">{message && <p>{message}</p>}</div>
-          <form onSubmit={handleSubmit} className="auth-form">
-            <input
-              type="email"
-              id="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)} // two way binding
-              required
-            />
-            <PasswordField
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
+    <div className="auth-page">
+      <h1>Sign In</h1>
+      <div className="verify-message">{message && <p>{message}</p>}</div>
+      <form onSubmit={handleSubmit} className="auth-form">
+        <input
+          type="email"
+          id="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)} // two way binding
+          required
+        />
+        <PasswordField
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+        />
 
-            <div className="auth-footer">
-              <button type="submit" disabled={isSubmitting}>
-                Sign in
-                {/* {isSubmitting ? "Sigining in..." : "Sign in"} */}
-              </button>
-              <p>
-                <Link to="/forgot">Forgot your password?</Link>
-                <Link to="/register">Create new account instead</Link>
-              </p>
-            </div>
-            <button
-              type="button"
-              className="try-it-btn"
-              onClick={enterPlayground}
-            >
-              Try it yourself!
-            </button>
-            <div className="auth-error">{error}</div>
-          </form>
+        <div className="auth-footer">
+          <button type="submit" disabled={isSubmitting}>
+            Sign in
+            {/* {isSubmitting ? "Sigining in..." : "Sign in"} */}
+          </button>
+          <p>
+            <Link to="/forgot-password">Forgot your password?</Link>
+            <Link to="/register">Create new account instead</Link>
+          </p>
         </div>
-      </div>
+        <button type="button" className="try-it-btn" onClick={enterPlayground}>
+          Try it yourself!
+        </button>
+        <div className="auth-error">{error}</div>
+      </form>
     </div>
   );
 };
