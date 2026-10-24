@@ -45,16 +45,6 @@ const Register = () => {
     try {
       await register({ email, password });
       setIsRegistered(true);
-
-      // if successful go to login page with success message
-      // navigate("/login", {
-      //   replace: true,
-      //   state: {
-      //     successMessage: "Registration successful! Check your email.",
-      //     email,
-      //     password,
-      //   },
-      // });
     } catch (error: any) {
       setError(error.response?.data?.error || "registration failed");
       console.log("registration failed", error);

@@ -31,7 +31,6 @@ import {
   resumesQuery,
 } from "../services/queries";
 import { keys } from "../services/queryKeys";
-import { queryClient } from "../services/queryClient";
 
 // filter options
 export const STATUS_FILTERS: {

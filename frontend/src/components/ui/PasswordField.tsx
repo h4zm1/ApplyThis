@@ -7,7 +7,7 @@ interface passwordFieldProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
-  required: boolean;
+  required?: boolean;
 }
 export default function PasswordField({
   value,

@@ -13,7 +13,6 @@ import Tooltip from "./ui/tooltip";
 import { useEffect, useState } from "react";
 import logger from "../services/logger";
 import Popup from "../components/popUp";
-import SettingsForm from "./SettingsForm";
 import { useUIContext } from "../context/UIContext";
 import { getStaleJobsCount } from "../services/jobService";
 
@@ -160,9 +159,20 @@ const Layout = () => {
 
         <div className="logout-holder">
           <Tooltip label="settings" side="right">
-            <button onClick={openSettings}>
+            <NavLink
+              className={({ isActive }) =>
+                `side-btn${isActive ? " active" : ""}`
+              }
+              to="/settings"
+              style={
+                {
+                  "--active-btn-bg": tabColor,
+                  "--hover-btn-bg": tabHoverColor,
+                } as React.CSSProperties
+              }
+            >
               <Settings size={21} />
-            </button>
+            </NavLink>
           </Tooltip>
           <Tooltip label="logout" side="right">
             <button onClick={logout}>
@@ -188,9 +198,6 @@ const Layout = () => {
           <Outlet />
         </main>
       </div>
-      <Popup isOpen={isPopupOpen} onClose={handleClosePopup} title={"Settings"}>
-        <SettingsForm></SettingsForm>
-      </Popup>
     </div>
   );
 };

@@ -15,6 +15,7 @@ import AuthCallback from "./pages/AuthCallback";
 import DemoLimitToast from "./components/ui/toast";
 import Forgot from "./pages/Forgot";
 import OuterShell from "./components/OuterShell";
+import Settings from "./pages/Settings";
 
 function App() {
   useEffect(() => {
@@ -55,7 +56,8 @@ function App() {
       >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/resumes" element={<Resumes />} />
-        <Route path="/Jobs" element={<Jobs />} />
+        <Route path="/jobs" element={<Jobs />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/editor/:resumeId" element={<Editor />} />
       </Route>
       <Route path="*" element={<NotFound />} />
