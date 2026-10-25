@@ -2,6 +2,7 @@ import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import "./PasswordField.scss";
 import { useEffect, useRef } from "react";
+import PasswordStrength from "../PasswordStrength";
 
 interface passwordFieldProps {
   value: string;
@@ -44,6 +45,7 @@ export default function PasswordField({
           />
         </PasswordToggleField.Toggle>
       </div>
+      <PasswordStrength password={value} />
     </PasswordToggleField.Root>
   );
 }

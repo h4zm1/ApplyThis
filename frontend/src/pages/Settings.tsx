@@ -2,58 +2,61 @@ import { useEffect, useState } from "react";
 import R_ToggleGroup, { R_ToggleItem } from "../components/ui/ToggleGroup";
 import PasswordStrength from "../components/PasswordStrength";
 import PasswordField from "../components/ui/PasswordField";
+import { Cross, X } from "lucide-react";
+
+function validatePassword(
+  newPass: string,
+  confirmPass: string,
+  currentPass: string,
+) {
+  const errors = [];
+  let enabled = false;
+  let isHidden = true;
+
+  if (currentPass || newPass || confirmPass) {
+    isHidden = false;
+  } else {
+    isHidden = true;
+  }
+
+  if (newPass === confirmPass) {
+    if (newPass !== "") {
+      if (newPass.length < 6) {
+        errors.push("password must be over 6 characters");
+        enabled = false;
+      } else {
+        enabled = true;
+      }
+    } else {
+      enabled = false;
+    }
+  } else {
+    enabled = false;
+    errors.push("passwords do not match");
+
+    if (newPass.length < 6 && newPass !== "") {
+      errors.push("password must be over 6 characters");
+    } else {
+    }
+  }
+  return { errors, enabled, isHidden };
+}
 
 export default function Settings() {
   const [accent, setAccent] = useState("#e7e7e7");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isHidden, setIsHidden] = useState(true);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [error, setError] = useState<string[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem("ACCENT-COLOR");
     saved ? setAccent(saved) : setAccent("#e7e7e7");
   }, []);
-  function addError(er: string) {
-    if (error.includes(er)) {
-      return;
-    } else {
-      setError([...error, er]);
-    }
-  }
-  function removeError(er: string) {
-    setError(error.filter((er) => er.includes(er)));
-  }
-
-  useEffect(() => {
-    // if any of the field contain any text => show button
-    if (currentPassword || newPassword || confirmPassword) {
-      setIsHidden(false);
-    } else {
-      setIsHidden(true);
-    }
-    if (newPassword === confirmPassword) {
-      removeError("do not match");
-      if (newPassword !== "") {
-        if (newPassword.length < 6) {
-          addError("password must be over 6 characters");
-          setIsEnabled(false);
-        } else {
-          setIsEnabled(true);
-          removeError("must be over");
-        }
-      } else {
-        // setIsEnabled(false);
-        // addError("passwords do not match");
-      }
-    } else {
-      setIsEnabled(false);
-      addError("passwords do not match");
-    }
-  }, [currentPassword, newPassword, confirmPassword]);
-
+  const { errors, enabled, isHidden } = validatePassword(
+    newPassword,
+    confirmPassword,
+    currentPassword,
+  );
   return (
     <div className="settings">
       <div className="page-title">
@@ -89,7 +92,7 @@ export default function Settings() {
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="New password"
             />
-            <PasswordStrength password={newPassword} />
+            {/* <PasswordStrength password={newPassword} /> */}
 
             <input
               type="password"
@@ -100,15 +103,26 @@ export default function Settings() {
             />
           </div>
           {!isHidden ? (
-            <div>
-              <button disabled={!isEnabled}> Change password</button>
-              {error.map((er, index) => (
-                <span>{er}</span>
+            <div className="pw-footer">
+              {errors.map((er, index) => (
+                <span>
+                  <X size={10} strokeWidth={3} /> {er}
+                </span>
               ))}
+              <button disabled={!enabled}> Change password</button>
             </div>
           ) : (
             ""
           )}
+        </div>
+        <h1>Delete Account</h1>
+        <div className="delete-content">
+          <h1>Permanently delete this account.</h1>
+          <span>
+            This will delete all resumes, jobs and files that you created and
+            own.
+          </span>
+          <button>Delete account</button>
         </div>
       </div>
     </div>
