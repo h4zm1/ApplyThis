@@ -137,8 +137,9 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)} // two way binding
           required
         />
-        <PasswordField
+        <input
           value={password}
+          type="password"
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
           required
