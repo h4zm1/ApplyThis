@@ -58,7 +58,7 @@ export default function Settings() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { user, setTokens } = useAuth();
+  const { user, logout, setTokens } = useAuth();
   const { setHeaderTitle } = useAction();
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -102,18 +102,28 @@ export default function Settings() {
   }
 
   function handleDelete() {
+    setPassError("");
+    setDeletePassword("");
     setIsPopupOpen(true);
   }
 
   async function handleConfirmDelete() {
+    if (deletePass.length < 6) {
+      setPassError("password is incorrect");
+      return;
+    }
     try {
+      setDeletingAccount(true);
       await deleteAccount(deletePass);
+      logout();
     } catch (err) {
       setPassError(
         axios.isAxiosError(err)
           ? (err.response?.data?.error ?? "could not change password")
           : "could not change password",
       );
+    } finally {
+      setDeletingAccount(false);
     }
   }
 
@@ -259,10 +269,13 @@ export default function Settings() {
           </div>
           <div className="button-holder">
             <button onClick={() => setIsPopupOpen(false)}>Cancel</button>
-            <button disabled={deletingAccount}>Delete account</button>
+            <button disabled={deletingAccount} onClick={handleConfirmDelete}>
+              Delete account
+            </button>
           </div>
         </div>
       </Popup>
+      <a href="https://github.com/h4zm1/ApplyThis">github</a>
     </div>
   );
 }

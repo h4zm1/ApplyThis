@@ -122,9 +122,13 @@
   border-color: #a7a7a7;
   border-radius: 8px;
   cursor: default;
-  // contain: content;
+  contain: content; // been enabling and disabling this and forgot what issues it might cause
   background-color: white;
   display: grid;
+  .img-holder {
+    contain: content;
+    border-radius: 8px;
+  }
   &.list {
     height: unset;
     width: unset;
@@ -204,12 +208,11 @@
 .status {
   background-color: #afafaf;
   position: absolute;
-  /* top: 0; */
-  /* right: 0; */
   padding: 0.7rem;
   border-bottom-left-radius: 6px;
+  border-top-right-radius: 6px;
   justify-self: end;
-  // margin-top: -2.5rem;
+  z-index: 1;
 }
 .resume-title {
   h1 {

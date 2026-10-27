@@ -33,12 +33,12 @@
     color: green;
     border: 1px solid #cccccc;
     &:disabled {
-      animation: blink_smooth 1s infinite;
       color: #afafaf;
     }
-    &.is-triggered {
-      // background-color: red;
-    }
+    // &.is-triggered {
+    //   // background-color: red;
+    //   animation: blink_smooth 1s infinite;
+    // }
   }
   .tooltip-wrapper {
     // background-color: white;
@@ -94,10 +94,6 @@
 
 .editor-side {
   overflow: unset !important;
-  // border-top-left-radius: 7px;
-  // border-top-right-radius: 7px;
-  // background-color: white;
-  // box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
 }
 .latex-editor-wrapper {
   box-shadow: 0px 4px 12px rgb(89 85 101 / 34%);
@@ -108,10 +104,7 @@
 }
 .latex-editor {
   background-color: white;
-  height: calc(100vh - 5.6rem);
-  // box-shadow: 0px 4px 12px rgba(89, 85, 101, 0.2);
-  // border-top-left-radius: 7px;
-  // border-top-right-radius: 7px;
+  height: calc(100vh - 5.4rem);
   overflow: auto;
   scrollbar-width: thin;
   scrollbar-color: darkgray transparent;

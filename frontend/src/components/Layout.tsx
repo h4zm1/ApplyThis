@@ -53,8 +53,8 @@ const Layout = () => {
   useEffect(() => {
     if (accentColor) {
       const bgColor = `color-mix(in srgb, ${accentColor} 60%, transparent`;
-      setTabColor(`color-mix(in srgb, ${accentColor} 100%, transparent`);
-      setTabHoverColor(`color-mix(in srgb, ${accentColor} 60%, transparent`);
+      setTabColor(`color-mix(in srgb, ${accentColor} 50%, #a1a1a173`);
+      setTabHoverColor(`color-mix(in srgb, ${accentColor} 60%, #a1a1a13d`);
       document.body.style.setProperty("--body-bg", bgColor);
       localStorage.setItem("ACCENT-COLOR", accentColor);
     } else {
@@ -128,7 +128,7 @@ const Layout = () => {
             </NavLink>
           </Tooltip>
           {recentResume !== "" ? (
-            <Tooltip label={`go back to ${recentResumeName}`} side="right">
+            <Tooltip label={`go back to "${recentResumeName}"`} side="right">
               <NavLink
                 className={({ isActive }) =>
                   `side-btn${isActive ? " active" : ""} current-resume`

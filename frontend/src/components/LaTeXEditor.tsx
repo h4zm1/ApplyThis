@@ -344,7 +344,6 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
           <Tooltip label="Build" side="bottom">
             <button
               onClick={(e) => {
-                e.currentTarget.classList.add("is-triggered");
                 PreviewAction?.run();
               }}
               disabled={isCompiling}
@@ -363,7 +362,6 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
           <Tooltip label="Build & Sync" side="bottom">
             <button
               onClick={(e) => {
-                e.currentTarget.classList.add("is-triggered");
                 CompileAndSaveAction?.run();
               }}
               disabled={isCompiling}

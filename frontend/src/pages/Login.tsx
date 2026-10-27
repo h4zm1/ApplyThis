@@ -27,7 +27,7 @@ const Login = () => {
   const [messageType, setMessageType] = useState<"success" | "error">(
     "success",
   );
-  const [demoLoading, setDemoLoading] = useState(-1);
+  const [demoLoading, setDemoLoading] = useState(-1); // 1 for normal account loading, 0 for demo account loading screen
 
   useEffect(() => {
     const stateMail = location.state?.email as string;
@@ -75,21 +75,17 @@ const Login = () => {
     }
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  async function handleSubmit(e: React.SubmitEvent<HTMLElement>) {
     e.preventDefault();
     setError("");
     setMessage("");
     setIsSubmitting(true);
-    setDemoLoading(1);
 
     try {
       await login({ email, password });
+      setDemoLoading(1);
 
       logger.log("INSIDE LOGIN");
-
-      // redirect to intended page (or dashboard)
-      // const from = location.state?.from?.pathname || "/dashboard";
-      // navigate(from, { replace: true });
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.response?.data?.error === "email not verified") {
@@ -105,7 +101,7 @@ const Login = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }
 
   // redirect if already logged in
   if (isAuthenticated) {

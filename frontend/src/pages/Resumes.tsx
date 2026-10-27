@@ -346,7 +346,7 @@ const Resumes = () => {
                 >
                   <div className={`resume-body ${" " + layout}`}>
                     <div className="status"></div>
-                    <div>
+                    <div className="img-holder">
                       <img src={resume.thumbnailUrl!}></img>
                     </div>
                     <div className="resume-dates">

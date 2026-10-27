@@ -51,7 +51,10 @@
     margin-block: 2px;
 
     &:hover {
-      background-color: #2b90ff;
+      background-color: #006adf;
+    }
+    &:disabled {
+      background-color: #62adff;
     }
   }
   p {

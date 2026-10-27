@@ -404,11 +404,6 @@ const Jobs = () => {
                       <p>{job.company}</p>
                     </div>
 
-                    {/* {job.url && ( */}
-                    {/*   <a href={job.url} target="_blank" rel="noopener noreferrer"> */}
-                    {/*     <ExternalLink /> */}
-                    {/*   </a> */}
-                    {/* )} */}
                     <div className="context-bar">
                       <Tooltip label="Edit Job">
                         <button
@@ -454,6 +449,7 @@ const Jobs = () => {
           </DragDropProvider>
         </div>
       )}
+      <div className="under-jobs-gloss" />
       {/* create/edit popup */}
       <Popup
         isOpen={isPopupOpen}

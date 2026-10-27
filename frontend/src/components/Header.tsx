@@ -1,6 +1,7 @@
 import {
   ChevronLeft,
   ChevronRight,
+  Cloud,
   CloudAlert,
   CloudBackup,
   CloudCheck,
@@ -27,11 +28,11 @@ const Header = () => {
           <div>
             <div className="sync-icon">
               {syncStatus === -1 ? (
-                <CloudBackup size={20} />
+                <CloudBackup size={15} />
               ) : syncStatus === 1 ? (
-                <CloudCheck size={20} />
+                <Cloud size={15} />
               ) : (
-                <CloudOff size={20} />
+                <CloudOff size={15} />
               )}
             </div>
             <span>{t1}</span>

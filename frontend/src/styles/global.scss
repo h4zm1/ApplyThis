@@ -150,12 +150,13 @@ button {
   margin-top: 1rem;
   flex-wrap: wrap;
   overflow: auto;
-  height: calc(100vh - 20rem);
+  height: calc(100vh - 21.1rem);
   scrollbar-width: thin;
   border: solid 2px;
   border-color: transparent;
   align-content: flex-start;
-  // height: auto;
+  padding-bottom: 3rem;
+  margin-bottom: 0;
 
   &.dragging {
     display: flex;
