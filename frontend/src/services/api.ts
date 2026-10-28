@@ -51,7 +51,7 @@ api.interceptors.response.use(
     }
 
     // this push (broadcast!!) the message into the bridge (demolimit)
-    if (body?.code === "DEMO_LIMIT") notifyDemoLimit(body.error);
+    if (body?.code === "DEMO_LIMIT") notifyDemoLimit(body.error, "cap");
 
     // save the original request so we can retry it later
     const originalRequest = error.config;

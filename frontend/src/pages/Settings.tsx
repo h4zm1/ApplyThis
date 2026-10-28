@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import R_ToggleGroup, { R_ToggleItem } from "../components/ui/ToggleGroup";
-import PasswordStrength from "../components/PasswordStrength";
 import PasswordField from "../components/ui/PasswordField";
 import { Cross, X } from "lucide-react";
-import { useUIContext } from "../context/UIContext";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
 import Popup from "../components/popUp";

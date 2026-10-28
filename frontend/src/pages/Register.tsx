@@ -24,7 +24,7 @@ const Register = () => {
     return null; // component must return ui or nothing
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLElement>) => {
     e.preventDefault(); // prevent browser from refreshing page on submit (text fields don't get wiped out)
     setError(""); // clean up errors (if there's any up)
 
@@ -78,7 +78,6 @@ const Register = () => {
               placeholder="Password"
               required
             />
-            <PasswordStrength password={password} />
 
             <input
               type="password"

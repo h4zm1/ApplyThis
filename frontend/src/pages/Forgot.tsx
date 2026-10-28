@@ -50,6 +50,7 @@ export default function Forgot() {
             <Link to="/register">Create a new account</Link>
           </p>
         </div>
+        {message ? <span className="forgot-msg">{message}</span> : ""}
         <div className="auth-error">{error}</div>
       </form>
     </div>

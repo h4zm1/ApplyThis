@@ -1,5 +1,5 @@
 // def callback function
-type Listener = (message: string) => void;
+type Listener = (message: string, type: string) => void;
 
 // this will hold active subscriber callback
 let listener: Listener | null = null;
@@ -14,8 +14,8 @@ export function onDemoLimit(newListener: Listener) {
 }
 
 // api.ts call this when  a demo limit response comes back
-export function notifyDemoLimit(message: string) {
+export function notifyDemoLimit(message: string, type: string) {
   if (listener) {
-    listener(message);
+    listener(message, type);
   }
 }

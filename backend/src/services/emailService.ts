@@ -104,17 +104,22 @@ export async function sendPasswordResetEmail(
   email: string,
   token: string,
 ): Promise<void> {
-  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
 
   const { error } = await resend.emails.send({
     from: `"ApplyThis" <${process.env.EMAIL_FROM}>`,
     to: email,
     subject: "Reset your ApplyThis password",
-    text: `Reset ${resetUrl}`,
+    text: `Reset your password by visiting: ${resetUrl}\nThe link expires in 1 hour. If you didn't ask for this, ignore this email.`,
     html: `
-      <div>
-        <p>
-        ${resetUrl}
+      <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+        <h2 style="color: #000;">Reset your password</h2>
+        <p>Click the button below to choose a new password. The link expires in 1 hour.</p>
+        <a href="${resetUrl}" style="display: block; text-align: center; padding: 10px 28px;
+           background: black; color: white; text-decoration: none;">RESET PASSWORD</a>
+        <p style="font-size: 11px; color: #525252; margin-top: 24px;">
+          If you didn't ask for this, you can ignore this email.<br>
+          Link not working? Copy this into your browser:<br>${resetUrl}
         </p>
       </div>`,
   });

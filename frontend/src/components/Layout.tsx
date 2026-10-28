@@ -10,18 +10,16 @@ import {
 import Header from "./Header";
 import { useAction } from "../context/AppContext";
 import Tooltip from "./ui/tooltip";
-import { useEffect, useState } from "react";
-import logger from "../services/logger";
-import Popup from "../components/popUp";
+import React, { useEffect, useState } from "react";
 import { useUIContext } from "../context/UIContext";
 import { getStaleJobsCount } from "../services/jobService";
+import { notifyDemoLimit } from "../services/demoLimit";
 
 // main layout wrapper
 const Layout = () => {
   const { user, logout } = useAuth();
   const { headerTitle } = useAction();
   const insideEditor = location.pathname.includes("editor");
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const {
     accentColor,
     setAccentColor,
@@ -32,13 +30,19 @@ const Layout = () => {
   } = useUIContext();
   const [tabColor, setTabColor] = useState("");
   const [tabHoverColor, setTabHoverColor] = useState("");
-  // const [staleCount, setStaleCount] = useState("0");
-  function openSettings() {
-    setIsPopupOpen(true);
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  function settingsNavEvent(e: React.MouseEvent<HTMLElement>) {
+    if (isDisabled) {
+      e.preventDefault();
+      notifyDemoLimit(
+        "settings page is inaccessible with Demo account",
+        "block",
+      );
+      return;
+    }
   }
-  function handleClosePopup() {
-    setIsPopupOpen(false);
-  }
+
   async function getStateCount() {
     const count = await getStaleJobsCount();
     setStaleCount(count);
@@ -48,6 +52,7 @@ const Layout = () => {
     if (saved) setAccentColor(saved);
     else setAccentColor("#e7e7e7");
     getStateCount();
+    setIsDisabled(!user?.isDemo!!);
   }, []);
 
   useEffect(() => {
@@ -164,6 +169,9 @@ const Layout = () => {
                 `side-btn${isActive ? " active" : ""}`
               }
               to="/settings"
+              tabIndex={isDisabled ? -1 : 0}
+              aria-disabled={isDisabled}
+              onClick={settingsNavEvent}
               style={
                 {
                   "--active-btn-bg": tabColor,

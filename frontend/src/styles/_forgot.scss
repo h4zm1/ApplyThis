@@ -1,9 +1,26 @@
 .forgot {
+  h1 {
+    // margin-bottom: 5rem;
+  }
   input {
-    width: 30rem;
+    // width: 30rem;
   }
   p {
-    display: flex;
-    gap: 1.5rem;
+    // display: flex;
+    // gap: 1.5rem;
+  }
+  span {
+    font-size: 14px;
+    font-weight: 300;
+  }
+  .forgot-msg {
+    border: 1px solid #00b04e;
+    border-radius: 5px;
+    align-self: center;
+    padding: 5px;
+    background-color: #e6fee6;
+    font-weight: 300;
+    position: absolute;
+    margin-top: -5rem;
   }
 }

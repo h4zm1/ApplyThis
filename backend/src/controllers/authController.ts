@@ -173,7 +173,8 @@ export async function forgotPassword(req: Request, res: Response) {
   }
 
   return res.json({
-    message: "if that email has an account, we sent a reset link",
+    message:
+      "A password reset email has been sent if an account exists for this email address.",
   });
 }
 

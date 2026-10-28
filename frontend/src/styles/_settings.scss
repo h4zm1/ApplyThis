@@ -1,3 +1,13 @@
+.settings {
+  a {
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: larger;
+    font-weight: 300;
+  }
+}
+
 .settings-grid {
   display: grid;
   grid-auto-flow: row;

@@ -123,7 +123,7 @@ const Login = () => {
   ) : (
     <div className="auth-page">
       <h1>Sign In</h1>
-      <div className="verify-message">{message && <p>{message}</p>}</div>
+      {message ? <span className="verify-message">{message}</span> : ""}
       <form onSubmit={handleSubmit} className="auth-form">
         <input
           type="email"

@@ -5,14 +5,15 @@
   height: 0px;
 }
 .verify-message {
-  justify-items: end;
-  height: 20px;
-  margin-bottom: 0.3rem;
-  display: grid;
-  p {
-    margin: 0;
-    color: #15ce15;
-  }
+  border: 1px solid #00b04e;
+  border-radius: 5px;
+  align-self: center;
+  padding: 5px;
+  background-color: #e6fee6;
+  font-weight: 300;
+  position: absolute;
+  margin-top: -10rem;
+  margin-left: 4.9rem;
 }
 .try-it-btn {
   color: #ffffff;

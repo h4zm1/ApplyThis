@@ -16,6 +16,7 @@ import DemoLimitToast from "./components/ui/toast";
 import Forgot from "./pages/Forgot";
 import OuterShell from "./components/OuterShell";
 import Settings from "./pages/Settings";
+import { ResetPassword } from "./pages/ResetPassword";
 
 function App() {
   useEffect(() => {
@@ -40,6 +41,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<Forgot />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
       <Route path="/auth-callback" element={<AuthCallback />} />
       <Route

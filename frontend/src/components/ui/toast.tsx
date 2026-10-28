@@ -9,6 +9,9 @@ import "./toast.scss";
 export default function DemoLimitToast() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [type, setType] = useState("");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -16,10 +19,16 @@ export default function DemoLimitToast() {
   // start listening when mounted, stop when unmounted
   useEffect(() => {
     // give newMessage to the bridge
-    return onDemoLimit((newMessage) => {
+    return onDemoLimit((newMessage, type) => {
       // and bridge will run this (setmessage)
       setMessage(newMessage);
+      setType(type);
       setOpen(true);
+      if (type === "cap") {
+        setTitle("Demo limit reached");
+      } else if (type === "block") {
+        setTitle("Sign up");
+      }
     });
   }, []);
 
@@ -28,15 +37,26 @@ export default function DemoLimitToast() {
     navigate("/register");
   }
 
+  function handleSignIn() {
+    logout();
+    navigate("/login");
+  }
+
   return (
-    <Toast.Provider swipeDirection="right" duration={700000}>
+    <Toast.Provider swipeDirection="right" duration={7000}>
       <Toast.Root className="toast-root" open={open} onOpenChange={setOpen}>
-        <Toast.Title className="toast-title">Demo limit reached</Toast.Title>
+        <Toast.Title className="toast-title">{title}</Toast.Title>
         <Toast.Description className="toast-desc">{message}</Toast.Description>
         <Toast.Action altText="Sign up for a full account" asChild>
-          <button className="toast-action" onClick={handleSignUp}>
-            Sign up to remove limits
-          </button>
+          <div className="toast-btn-holder">
+            <button className="toast-action" onClick={handleSignUp}>
+              Sign up
+            </button>
+
+            <button className="toast-action" onClick={handleSignIn}>
+              Sign in
+            </button>
+          </div>
         </Toast.Action>
         <Toast.Close className="toast-close" aria-label="Close">
           <X size={16} />
