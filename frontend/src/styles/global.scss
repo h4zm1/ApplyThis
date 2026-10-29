@@ -204,6 +204,27 @@ button {
       color: #f9f9f9 !important;
     }
   }
+  .side-bar {
+    a {
+      height: 8rem;
+      display: flex;
+      text-decoration: none;
+      padding-bottom: 0.69rem;
+      padding-left: 1.5rem;
+    }
+    .logo-nav {
+      rotate: 270deg;
+      font-size: 2rem;
+      text-decoration: auto;
+      font-family: "Buenard";
+      font-weight: bold;
+      margin-left: 3rem;
+      pointer-events: none;
+      user-select: none;
+      padding-top: 0.2rem;
+      width: unset !important;
+    }
+  }
 }
 .inner-shell {
   width: -webkit-fill-available;

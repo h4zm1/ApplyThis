@@ -52,7 +52,7 @@ const Layout = () => {
     if (saved) setAccentColor(saved);
     else setAccentColor("#e7e7e7");
     getStateCount();
-    setIsDisabled(!user?.isDemo!!);
+    setIsDisabled(user?.isDemo!!);
   }, []);
 
   useEffect(() => {

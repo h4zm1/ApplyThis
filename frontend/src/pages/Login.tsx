@@ -30,9 +30,6 @@ const Login = () => {
   const [demoLoading, setDemoLoading] = useState(-1); // 1 for normal account loading, 0 for demo account loading screen
 
   useEffect(() => {
-    const stateMail = location.state?.email as string;
-    const statePass = location.state?.password as string;
-
     // check if we came from register page with successfull registration
     if (location.state?.successMessage) {
       setMessage(location.state.successMessage);

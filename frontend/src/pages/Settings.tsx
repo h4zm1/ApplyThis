@@ -233,7 +233,7 @@ export default function Settings() {
         onClose={handleClosePopup}
         title={"Delete account"}
       >
-        <div className="delete-popup-content">
+        <form className="delete-popup-content" onSubmit={handleConfirmDelete}>
           <p>
             This will <span style={{ fontWeight: "500" }}>permanently</span>{" "}
             delete your account, together with the following resources linked to
@@ -247,6 +247,11 @@ export default function Settings() {
             )}
             {jobsCount > 0 ? (
               <li>Tracking of {plural(jobsCount, "job")}</li>
+            ) : (
+              ""
+            )}
+            {jobsCount === 0 && resumesCount === 0 ? (
+              <li>absolutely nothing</li>
             ) : (
               ""
             )}
@@ -266,12 +271,14 @@ export default function Settings() {
             {passError ? <span className="pass-error">{passError}</span> : ""}
           </div>
           <div className="button-holder">
-            <button onClick={() => setIsPopupOpen(false)}>Cancel</button>
-            <button disabled={deletingAccount} onClick={handleConfirmDelete}>
+            <button type="button" onClick={() => setIsPopupOpen(false)}>
+              Cancel
+            </button>
+            <button type="submit" disabled={deletingAccount}>
               Delete account
             </button>
           </div>
-        </div>
+        </form>
       </Popup>
       <a href="https://github.com/h4zm1/ApplyThis">github</a>
     </div>

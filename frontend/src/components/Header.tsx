@@ -8,6 +8,7 @@ import {
   CloudOff,
 } from "lucide-react";
 import { useAction } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
   const {
@@ -19,7 +20,9 @@ const Header = () => {
     syncStatus,
     headerTitle,
   } = useAction();
-  const [t1, t2] = (headerTitle ?? "").split(" > ", 2);
+  const { user } = useAuth();
+  let [t1, t2] = (headerTitle ?? "").split(" > ", 2);
+  if (user?.isDemo) t1 = "demo_user";
 
   return (
     <div className="header">
