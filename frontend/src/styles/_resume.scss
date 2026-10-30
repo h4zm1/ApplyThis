@@ -122,7 +122,7 @@
   border-color: #a7a7a7;
   border-radius: 8px;
   cursor: default;
-  contain: content; // been enabling and disabling this and forgot what issues it might cause
+  // contain: content; // this's disabled so the tooltip of context menu items on resume won't get cut out by the body
   background-color: white;
   display: grid;
   .img-holder {

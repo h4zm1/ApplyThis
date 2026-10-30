@@ -1,26 +1,11 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  Cloud,
-  CloudAlert,
-  CloudBackup,
-  CloudCheck,
-  CloudOff,
-} from "lucide-react";
+import { ChevronRight, Cloud, CloudBackup, CloudOff } from "lucide-react";
 import { useAction } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
-  const {
-    PreviewAction,
-    isCompiling,
-    CompileAndSaveAction,
-    zoomInAction,
-    zoomOutAction,
-    syncStatus,
-    headerTitle,
-  } = useAction();
+  const { syncStatus, headerTitle } = useAction();
   const { user } = useAuth();
+
   let [t1, t2] = (headerTitle ?? "").split(" > ", 2);
   if (user?.isDemo) t1 = "demo_user";
 

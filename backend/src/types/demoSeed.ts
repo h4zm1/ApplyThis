@@ -25,14 +25,14 @@ type DemoJob = {
 
 export const DEMO_JOBS: DemoJob[] = [
   {
-    company: "A",
-    position: "Frontend Developer",
+    company: "CD PROJEKT RED",
+    position: "Senior Full-Stack Engineer",
     status: "APPLIED",
     history: [{ status: "APPLIED", daysAgo: 2 }],
   },
   {
-    company: "B",
-    position: "Full Stack Engineer",
+    company: "Hydatis",
+    position: "Backend Developer",
     status: "TECHNICAL",
     history: [
       { status: "APPLIED", daysAgo: 12 },
@@ -41,8 +41,8 @@ export const DEMO_JOBS: DemoJob[] = [
     ],
   },
   {
-    company: "C",
-    position: "Backend Developer",
+    company: "ENNOLAB",
+    position: "(HPC) Software Developer",
     status: "REJECTED",
     history: [
       { status: "APPLIED", daysAgo: 20 },
@@ -50,15 +50,14 @@ export const DEMO_JOBS: DemoJob[] = [
     ],
   },
   {
-    company: "D",
-    position: "Software Engineer",
+    company: "Veradlega Ltd",
+    position: "Software Developer",
     status: "OFFER",
     history: [
       { status: "APPLIED", daysAgo: 30 },
       { status: "INITIAL_INTERVIEW", daysAgo: 24 },
       { status: "TECHNICAL", daysAgo: 17 },
       { status: "FINAL_INTERVIEW", daysAgo: 8 },
-      { status: "OFFER", daysAgo: 1 },
     ],
   },
 ];

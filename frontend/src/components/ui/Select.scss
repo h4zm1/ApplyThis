@@ -18,7 +18,14 @@
   background-color: white;
   border: 1px solid #828282;
   cursor: pointer;
-
+  span {
+    &:first-child {
+      width: 12rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
   &:hover {
     background-color: #f4f4f4;
   }

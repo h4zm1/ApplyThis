@@ -11,6 +11,8 @@ interface UIContextType {
   setStaleCount: (val: number) => void;
   isLoading: boolean;
   setIsLoading: (val: boolean) => void;
+  minSub: number;
+  setMinSub: (val: number) => void;
 }
 
 const UIContext = createContext<UIContextType | undefined>(undefined);
@@ -21,6 +23,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [accentColor, setAccentColor] = useState("");
   const [staleCount, setStaleCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [minSub, setMinSub] = useState(0);
   return (
     <UIContext.Provider
       value={{
@@ -34,6 +37,8 @@ export function UIProvider({ children }: { children: ReactNode }) {
         setStaleCount,
         isLoading,
         setIsLoading,
+        minSub,
+        setMinSub,
       }}
     >
       {children}

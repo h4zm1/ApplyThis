@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // get user info from the token
       try {
         const payload = JSON.parse(atob(token.split(".")[1])); // atob docode base64 payload
-        setUser({ userId: payload.userId, email: payload.email });
+        setUser(userFromToken(token));
       } catch (error) {
         // if something wrong with the token, clear storage
         localStorage.removeItem("accessToken");

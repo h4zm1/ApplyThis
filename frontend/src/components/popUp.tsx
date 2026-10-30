@@ -14,8 +14,8 @@ const popup = ({ isOpen, onClose, title, children }: popUpProps) => {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="popup-overlay" onClick={onClose}>
-      <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+    <div className="popup-overlay" onMouseDown={onClose}>
+      <div className="popup-content" onMouseDown={(e) => e.stopPropagation()}>
         <div className="popup-header">
           <h1>{title}</h1>
           <button className="close-btn" onClick={onClose}>

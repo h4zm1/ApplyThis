@@ -75,6 +75,8 @@
   textarea {
     width: stretch;
     width: 100%;
+    min-width: 20rem;
+    min-height: 2rem;
   }
   .second-toggle {
     // background-color: red;
@@ -105,11 +107,12 @@
     }
     .toggle-group {
       display: flex;
-      flex-wrap: wrap;
-      // gap: 5px;
-      justify-content: space-between;
       padding: 0.4rem;
       gap: 5px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      column-gap: 2rem;
+      justify-content: flex-start;
       button {
         font-size: 13px;
         padding: 6px 5px;

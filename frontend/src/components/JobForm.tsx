@@ -3,6 +3,7 @@ import type { CreateJobRequest, Job, JobStatus } from "../types/job";
 import type { Resume } from "../types/resume";
 import R_Select from "./ui/Select";
 import R_ToggleGroup, { R_ToggleItem } from "./ui/ToggleGroup";
+import { useUIContext } from "../context/UIContext";
 
 // form for creating/editing job application
 interface JobFormProps {
@@ -55,6 +56,7 @@ const JobForm = ({
   const [subStatus, setSubStatus] = useState<JobStatus | "">(
     isSubStatus ? job!.status : "",
   );
+  const { minSub, setMinSub } = useUIContext();
   const [notes, setNotes] = useState(job?.notes || "");
   const [resumeId, setResumeId] = useState(job?.resumeId || "");
   const [followUpAt, setFollowUpAt] = useState(
@@ -75,6 +77,9 @@ const JobForm = ({
     setNotes(job?.notes || "");
     setResumeId(job?.resumeId || "");
     setFollowUpAt(job?.followUpAt ? job.followUpAt.split("T")[0] : "");
+    const index = SECOND_STATUS.findIndex((item) => item.value === subStatus);
+    // min sub is the job's current sub status index, so we can use it to prevent going behind the current sub status
+    setMinSub(index);
   }, [job]);
 
   function handleSubmit(e: SubmitEvent) {
