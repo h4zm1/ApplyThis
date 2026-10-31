@@ -56,7 +56,7 @@ const JobForm = ({
   const [subStatus, setSubStatus] = useState<JobStatus | "">(
     isSubStatus ? job!.status : "",
   );
-  const { minSub, setMinSub } = useUIContext();
+  const { minSub, setMinSub, setMinPrime } = useUIContext();
   const [notes, setNotes] = useState(job?.notes || "");
   const [resumeId, setResumeId] = useState(job?.resumeId || "");
   const [followUpAt, setFollowUpAt] = useState(
@@ -77,9 +77,13 @@ const JobForm = ({
     setNotes(job?.notes || "");
     setResumeId(job?.resumeId || "");
     setFollowUpAt(job?.followUpAt ? job.followUpAt.split("T")[0] : "");
-    const index = SECOND_STATUS.findIndex((item) => item.value === subStatus);
+    const subIndex = SECOND_STATUS.findIndex(
+      (item) => item.value === subStatus,
+    );
+    const primeIndex = primeStatus.findIndex((item) => item.value === status);
     // min sub is the job's current sub status index, so we can use it to prevent going behind the current sub status
-    setMinSub(index);
+    setMinSub(subIndex);
+    setMinPrime(primeIndex);
   }, [job]);
 
   function handleSubmit(e: SubmitEvent) {
@@ -139,6 +143,7 @@ const JobForm = ({
             }}
             items={primeStatus}
             // items={PRIME_STATUS.slice(1)}
+            type="prime"
           />
         </div>
 

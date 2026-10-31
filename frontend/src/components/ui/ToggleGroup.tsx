@@ -23,7 +23,7 @@ const R_ToggleGroup = ({
   children,
   type,
 }: ToggleGroupProps) => {
-  const { setAccentColor, minSub } = useUIContext();
+  const { setAccentColor, minSub, minPrime } = useUIContext();
 
   return (
     <ToggleGroup.Root
@@ -32,7 +32,6 @@ const R_ToggleGroup = ({
       type="single"
       onValueChange={(val) => {
         // if val is empty (deselected) and type isn't "sub", block change (bloc the deselect)
-        console.log("val ", val);
         if (!val && type !== "sub") return;
         if (val === "") return; // prevent deselection
         onChange(val);
@@ -47,16 +46,24 @@ const R_ToggleGroup = ({
       {children
         ? children
         : items?.map((item, index) => {
-            const isBehindCurrentStatus = type === "sub" && index < minSub;
+            const isBehindCurrentPrimeStatus: boolean =
+              type === "prime" && index < minPrime;
+
+            const isBehindCurrentSubStatus: boolean =
+              type === "sub" && index < minSub;
             return (
               <ToggleGroup.Item
                 className="toggle-item"
                 key={item.value}
                 value={item.value}
                 // lock button if it's behind current status
-                disabled={item.disabled || isBehindCurrentStatus}
+                disabled={
+                  item.disabled ||
+                  isBehindCurrentSubStatus ||
+                  isBehindCurrentPrimeStatus
+                }
               >
-                {item.label}
+                {item.label}{" "}
               </ToggleGroup.Item>
             );
           })}

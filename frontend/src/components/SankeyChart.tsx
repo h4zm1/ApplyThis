@@ -64,6 +64,8 @@ function CustomNode({ x, y, width, height, index, payload }: any) {
         fill={color}
         // fill="#5192ca"
         fillOpacity="0.9"
+        className="node-rectangle"
+        radius={3}
       />
       <text
         textAnchor={isOut ? "end" : "start"}

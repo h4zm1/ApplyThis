@@ -77,6 +77,7 @@ export function capSource(req: AuthRequest, res: Response, next: NextFunction) {
 // return true if the user isn't demo
 const realUser = (req: any) => !(req as AuthRequest).user?.demo;
 
+// 10 compiles per hour per demo user
 export const demoCompilePerUser = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 10,

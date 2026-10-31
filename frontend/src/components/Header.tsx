@@ -7,7 +7,7 @@ const Header = () => {
   const { user } = useAuth();
 
   let [t1, t2] = (headerTitle ?? "").split(" > ", 2);
-  if (user?.isDemo) t1 = "demo_user";
+  if (user?.isDemo) t1 = "DEMO USER";
 
   return (
     <div className="header">
@@ -27,7 +27,11 @@ const Header = () => {
           </div>
         ) : (
           <div>
-            <span>{t1}</span>
+            {user?.isDemo ? (
+              <span className="t1">{t1}</span>
+            ) : (
+              <span>{t1}</span>
+            )}
             {t2 && <ChevronRight size={15}></ChevronRight>}
             <span>{t2}</span>
           </div>

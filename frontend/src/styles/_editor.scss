@@ -175,6 +175,11 @@ iframe {
     .select-icon {
       display: none;
     }
+    span {
+      &:first-child {
+        width: unset;
+      }
+    }
   }
 }
 .zoom-element {
