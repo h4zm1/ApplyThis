@@ -53,7 +53,12 @@ function CustomNode({ x, y, width, height, index, payload }: any) {
   if (containerWidth == null) {
     return null;
   }
+  const boxWidth = 150;
+  const boxHeight = 30;
   const isOut = x + width + 6 > containerWidth;
+  const fx = isOut ? x - boxWidth - 6 : x + width + 6;
+  const fy = y + height / 2 - boxHeight / 2;
+  // const isOut = x + width + 6 > containerWidth;
   return (
     <Layer key={`CustomNode${index}`} className="custom-link">
       <Rectangle
@@ -67,18 +72,33 @@ function CustomNode({ x, y, width, height, index, payload }: any) {
         className="node-rectangle"
         radius={3}
       />
-      <text
-        textAnchor={isOut ? "end" : "start"}
-        x={isOut ? x - 6 : x + width + 6}
-        y={y + height / 2}
-        fontSize="12"
-        className="sk-status"
+      <foreignObject
+        x={fx}
+        y={fy}
+        width={boxWidth}
+        height={boxHeight}
+        className="node-text"
       >
-        <tspan>{payload.name + ":"}</tspan>
-        <tspan dx="6" fontSize="12" fill="#8a8a8a">
-          {payload.value}
-        </tspan>
-      </text>
+        <div
+          className="node-span-holder"
+          style={{ textAlign: isOut ? "right" : "left" }}
+        >
+          <span className="node-text-name">{payload.name}:</span>
+          <span className="node-text-value">{payload.value}</span>
+        </div>
+      </foreignObject>
+      {/* <text */}
+      {/*   textAnchor={isOut ? "end" : "start"} */}
+      {/*   x={isOut ? x - 6 : x + width + 6} */}
+      {/*   y={y + height / 2} */}
+      {/*   fontSize="12" */}
+      {/*   className="sk-status" */}
+      {/* > */}
+      {/*   <tspan>{payload.name + ":"}</tspan> */}
+      {/*   <tspan dx="6" fontSize="12" fill="#8a8a8a"> */}
+      {/*     {payload.value} */}
+      {/*   </tspan> */}
+      {/* </text> */}
     </Layer>
   );
 }

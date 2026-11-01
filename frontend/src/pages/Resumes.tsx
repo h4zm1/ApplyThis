@@ -200,6 +200,30 @@ const Resumes = () => {
     }
   }
 
+  async function handleDownload(resume: Resume) {
+    try {
+      const response = await fetch(resume.pdfUrl!);
+      if (!response.ok) throw new Error("network issue");
+
+      // load pdf in memory
+      const blob = await response.blob();
+      // make the url to be the same orgin as the site for the download to work
+      // otherwise it will treat different origin as normal navigatino is just open the pdf in viewer
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = resume.name;
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("download failed:", err);
+    }
+  }
+
   useEffect(() => {
     localStorage.setItem("layout", layout);
     // console.log("layout changed", layout);
@@ -342,7 +366,7 @@ const Resumes = () => {
                 <Link
                   to={`/editor/${resume.id}`}
                   draggable={false}
-                  style={{ textDecorationLine: "none" }}
+                  className="resume-body-holder"
                 >
                   <div className={`resume-body ${" " + layout}`}>
                     <div className="status"></div>
@@ -372,7 +396,7 @@ const Resumes = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleEdit(resume);
+                            handleDownload(resume);
                           }}
                         >
                           <Download />

@@ -344,6 +344,19 @@
   user-select: none;
   stroke: #3c3c3c;
 }
+.node-text {
+  background-color: #f7f7f7;
+  place-content: center;
+  justify-items: center;
+  border-radius: 0.3rem;
+  font-size: 14px;
+  font-weight: 401;
+  box-shadow: 1px 1px 4px 0px #cbcbcb;
+}
+.node-span-holder {
+  display: flex;
+  gap: 5px;
+}
 
 .chart-tooltip {
   padding: 0.25rem;
