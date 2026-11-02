@@ -20,6 +20,7 @@ const Layout = () => {
   const { user, logout } = useAuth();
   const { headerTitle } = useAction();
   const insideEditor = location.pathname.includes("editor");
+  const insideDashboard = location.pathname.includes("dashboard");
   const {
     accentColor,
     setAccentColor,
@@ -147,14 +148,6 @@ const Layout = () => {
                 }
               >
                 <span>{recentResumeName[0]}</span>
-                {/* <Briefcase size={21} /> */}
-                {staleCount > 0 ? (
-                  <div className="stale-jobs-notif">
-                    <span>{staleCount}</span>
-                  </div>
-                ) : (
-                  <div></div>
-                )}
               </NavLink>
             </Tooltip>
           ) : (
@@ -201,7 +194,7 @@ const Layout = () => {
         {/* no main content overflow in editor (make box shadow not working correctly) */}
         <main
           className="main-content"
-          style={{ overflow: insideEditor ? "unset" : "auto" }}
+          style={{ overflow: insideDashboard ? "auto" : "unset" }}
         >
           <Outlet />
         </main>

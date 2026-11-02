@@ -163,7 +163,12 @@
   position: absolute;
   width: -webkit-fill-available;
   margin-right: 3.5rem;
-  backdrop-filter: blur(5px);
   bottom: 0;
   padding-bottom: 2rem;
+  @supports (-webkit-app-region: inherit) {
+    backdrop-filter: blur(5px);
+  }
+  @supports (-moz-appearance: none) {
+    backdrop-filter: blur(3px);
+  }
 }

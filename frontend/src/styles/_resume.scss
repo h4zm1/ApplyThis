@@ -132,6 +132,8 @@
   .img-holder {
     contain: content;
     border-radius: 8px;
+    width: inherit;
+    height: inherit;
   }
   &.list {
     height: unset;
