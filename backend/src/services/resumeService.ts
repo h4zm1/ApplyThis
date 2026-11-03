@@ -34,7 +34,7 @@ export async function getUserResume(userId: string) {
 
 // get a single resume by id
 export async function getResumeById(id: string, userId: string) {
-  const resume = prisma.resume.findFirst({
+  const resume = await prisma.resume.findFirst({
     where: {
       id,
       userId, // user can only access their own resume

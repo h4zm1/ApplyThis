@@ -12,13 +12,13 @@ export async function uploadPdf(
   pdfBuffer: Buffer,
   fileName: string,
 ): Promise<string> {
-  const key = `resume/${fileName}.pdf`;
+  const key = `resume/${fileName}`;
 
   const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
     Body: pdfBuffer,
-    ContentType: "application/pdf",
+    ContentType: "application/octet-stream",
   });
 
   await s3Client.send(command);
