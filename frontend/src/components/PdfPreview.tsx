@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import logger from "../services/logger";
-import { Minus, Plus } from "lucide-react";
+import { Bug, Minus, Plus } from "lucide-react";
 import R_Select from "./ui/Select";
+import Tooltip from "./ui/tooltip";
 // import "pdfjs-dist/web/pdf_viewer.css";
 // worker runs pdf parsing in a separate thread so UI doesn't freeze
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -342,6 +343,11 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
             <Plus style={{ verticalAlign: "text-bottom" }}></Plus>
           </button>
         </div>
+        <Tooltip label="Errors" side="bottom">
+          <button className="error-btn">
+            <Bug></Bug>1
+          </button>
+        </Tooltip>
       </div>
       <div
         ref={containerRef}

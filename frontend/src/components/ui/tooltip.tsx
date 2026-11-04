@@ -1,5 +1,5 @@
 import "./tooltip.scss";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface TooltipProps {
   label: string;
@@ -17,18 +17,29 @@ export default function Tooltip({
   const timeRef = useRef<ReturnType<typeof setTimeout>>(null);
   const [isMouseInside, setIsMouseInside] = useState(false);
 
+  useEffect(() => {
+    // this made mainly for compiler select that keep the tooltip open after selecting item outside of "select" comp
+    const handleGlobalClick = () => {
+      if (timeRef.current) {
+        clearTimeout(timeRef.current);
+        timeRef.current = null;
+      }
+      setVisible(false);
+      setIsMouseInside(false);
+    };
+
+    // listen for global clicks when tooltip is open or a timer is running
+    if (visible || isMouseInside) {
+      window.addEventListener("click", handleGlobalClick);
+    }
+
+    return () => {
+      window.removeEventListener("click", handleGlobalClick);
+    };
+  }, [visible, isMouseInside]);
+
   const handleMouseMove = (e: React.MouseEvent) => {
-    // hid and trigger tooltip whenever mouse move
-    // handleMouseLeave();
-    // handleMouseEnter();
     setCoords({ x: e.clientX, y: e.clientY });
-    // move the tooltip bit to the left when on the right helf of the screen to fix the clipping issue
-    // const onRightSide = e.clientX > window.innerWidth / 2;
-    //
-    // setCoords({
-    //   x: onRightSide ? e.clientX - 120 : e.clientX + 62,
-    //   y: e.clientY + 16,
-    // });
   };
   const handleMouseEnter = () => {
     setIsMouseInside(true);

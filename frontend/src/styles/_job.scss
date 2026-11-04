@@ -87,7 +87,7 @@
   display: flex;
   align-self: end;
   justify-content: flex-end;
-  margin-bottom: -5.4rem;
+  margin-bottom: -5.1rem;
   justify-self: end;
   // height: 5.4rem;
   flex-direction: column;
@@ -128,8 +128,8 @@
     // position: absolute;
     // top: 0;
     // right: 0;
-    padding-inline: 0.7rem;
-    padding-block: 0.4rem;
+    padding-inline: 0.5rem;
+    padding-block: 0.25rem;
     border-bottom-left-radius: 6px;
     border-top-right-radius: 7px;
     width: 100%;
@@ -147,6 +147,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-align-last: center;
+    font-weight: 500;
   }
 }
 .bottomline {

@@ -122,7 +122,6 @@ const Editor = () => {
   // useCallback to memorize the function and prepare it for later (unlike useEffect that run immidiatly on component render)
   // any change to "source" will
   const handlePreview = useCallback(async () => {
-    logger.log("inside handlePreviiew");
     setIsCompiling(true);
     try {
       const blob = await previewCompile(source, compiler);
@@ -140,7 +139,7 @@ const Editor = () => {
     } finally {
       setIsCompiling(false);
     }
-  }, [source]);
+  }, [source, compiler]);
 
   // save current source to database
   async function handleSave(): Promise<boolean> {
@@ -164,7 +163,7 @@ const Editor = () => {
   }
 
   // compile and save to s3
-  async function handleCompileAndSave() {
+  async function handleCompileAndSave(freshCompiler: string) {
     if (!resumeId) return;
 
     // first save source
@@ -201,7 +200,6 @@ const Editor = () => {
   // everytime handlePreview change (due to [source]), update the context
   useEffect(() => {
     setPreviewAction({ run: handlePreview });
-    setCompileAndSaveAction({ run: handleCompileAndSave });
     return () => setPreviewAction(null);
   }, [handlePreview, setPreviewAction]);
 
@@ -293,6 +291,7 @@ const Editor = () => {
             onChange={handleSourceChange}
             compiler={compiler}
             setCompiler={setCompiler}
+            compileAndSave={handleCompileAndSave}
           />
         </Panel>
         <Separator data-separator="inactive" className="separator">

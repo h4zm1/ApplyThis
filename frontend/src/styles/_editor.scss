@@ -26,6 +26,9 @@
   // justify-content: flex-start;
   gap: 0.5rem;
   // padding-inline: 1rem;
+  * {
+    outline: none;
+  }
   button {
     background-color: white;
     padding-inline: 1rem;
@@ -169,7 +172,11 @@ iframe {
 .preview-header {
   display: flex;
   padding-bottom: 0.7rem;
-  padding-inline: 1rem;
+  padding-inline: 0.5rem;
+  justify-content: space-between;
+  * {
+    outline: none;
+  }
   // justify-content: center;
   .zoom-select {
     font-size: 15px;
@@ -192,6 +199,11 @@ iframe {
         width: unset;
       }
     }
+  }
+  .error-btn {
+    color: red;
+    background-color: black;
+    border-radius: 7px;
   }
 }
 .zoom-element {

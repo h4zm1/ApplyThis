@@ -52,6 +52,7 @@ interface LaTeXEditorProps {
   onChange: (value: string) => void; // callback when contnet change
   compiler: string;
   setCompiler: (value: string) => void;
+  compileAndSave: (compiler: string) => void;
 }
 
 const FORMATS = {
@@ -138,6 +139,7 @@ const LateXEditor = ({
   onChange,
   compiler,
   setCompiler,
+  compileAndSave,
 }: LaTeXEditorProps) => {
   // ref to the container div that codeMirror will attach to
   const containerRef = useRef<HTMLDivElement>(null);
@@ -383,7 +385,7 @@ const LateXEditor = ({
           <Tooltip label="Build & Sync" side="bottom">
             <button
               onClick={(e) => {
-                CompileAndSaveAction?.run();
+                compileAndSave(compiler);
               }}
               disabled={isCompiling}
             >

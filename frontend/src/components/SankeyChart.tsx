@@ -187,7 +187,9 @@ export const CustomTooltip = ({ active, payload }: any) => {
 function SankeyChart({ data, width = 800, height = 200 }: Props) {
   // don't render if no transitions yet
   if (!data.links.length) {
-    return <div>start applying to see your journey</div>;
+    return (
+      <div>&gt;&gt;keep updating job status to see your journey&lt;&lt;</div>
+    );
   }
   return (
     // seems like increasing aspect reduce the height of the chart

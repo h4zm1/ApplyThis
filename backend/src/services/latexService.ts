@@ -36,7 +36,6 @@ export async function compilationLatex(
   // create abort controller for timeout
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
   try {
     // call latex api
     const response = await fetch(LATEX_API, {
