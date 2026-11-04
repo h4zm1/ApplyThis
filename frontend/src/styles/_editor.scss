@@ -83,6 +83,16 @@
     margin-left: auto;
     display: flex;
     gap: 0.5rem;
+    .compiler-select {
+      width: 8rem;
+      color: #292929;
+      font-size: 1rem;
+      font-weight: 500;
+      height: unset;
+    }
+  }
+  button:hover {
+    background-color: #e8e8e8;
   }
   .save-icon {
     color: #3f3f3f;
@@ -172,6 +182,8 @@ iframe {
     height: unset;
     padding: revert; // this will ignore the padding from select-trigger and use default html element padding (6px)
     font-variant-numeric: tabular-nums;
+    width: 4rem;
+    justify-content: center;
     .select-icon {
       display: none;
     }

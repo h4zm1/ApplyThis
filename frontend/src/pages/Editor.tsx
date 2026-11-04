@@ -16,6 +16,18 @@ import { Group, Panel, Separator } from "react-resizable-panels";
 import { GripVertical } from "lucide-react";
 import { invalidateResumeData } from "../services/queries";
 import { useUIContext } from "../context/UIContext";
+
+export const COMPILERS: {
+  label: string;
+  value: string;
+}[] = [
+  { label: "pdflatex", value: "pdflatex" },
+  { label: "xelatex", value: "xelatex" },
+  { label: "lualatex", value: "lualatex" },
+  { label: "platex", value: "platex" },
+  { label: "uplatex", value: "uplatex" },
+];
+
 const Editor = () => {
   const { resumeId } = useParams<{ resumeId: string }>(); // get resume id from url params
   const [resume, setResume] = useState<Resume | null>(null);
@@ -46,6 +58,11 @@ const Editor = () => {
   const savingRef = useRef(false); // track if we are currently saving
   const { setRecentResume, setRecentResumeName } = useUIContext();
 
+  const [compiler, setCompiler] = useState(() => {
+    const saved = localStorage.getItem("COMPILER");
+    return saved !== null ? saved : "pdflatex";
+  });
+
   // load resume on mount
   useEffect(() => {
     if (resumeId) {
@@ -53,6 +70,10 @@ const Editor = () => {
       setRecentResume(resumeId);
     }
   }, [resumeId]);
+
+  useEffect(() => {
+    localStorage.setItem("COMPILER", compiler);
+  }, [compiler]);
 
   // change background style from resume to editor
   useEffect(() => {
@@ -104,7 +125,7 @@ const Editor = () => {
     logger.log("inside handlePreviiew");
     setIsCompiling(true);
     try {
-      const blob = await previewCompile(source);
+      const blob = await previewCompile(source, compiler);
       setPdfBlob(blob);
     } catch (error: any) {
       // try extract error message
@@ -154,7 +175,7 @@ const Editor = () => {
     //
     setIsCompiling(true);
     try {
-      const result = await compileResume(resumeId, source);
+      const result = await compileResume(resumeId, source, compiler);
       // load resume to get updated pdfUrl
       // this's needed when the resume is created it doesn't have an attacheed pdfUrl to it
       if (resume)
@@ -267,7 +288,12 @@ const Editor = () => {
     <div className="editor">
       <Group className="editor-container">
         <Panel className="editor-side" minSize={400}>
-          <LateXEditor value={source} onChange={handleSourceChange} />
+          <LateXEditor
+            value={source}
+            onChange={handleSourceChange}
+            compiler={compiler}
+            setCompiler={setCompiler}
+          />
         </Panel>
         <Separator data-separator="inactive" className="separator">
           <GripVertical className="grip-vertical" />

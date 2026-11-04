@@ -43,10 +43,15 @@ import {
   Search,
   Underline,
 } from "lucide-react";
+import R_ToggleGroup from "./ui/ToggleGroup";
+import { COMPILERS } from "../pages/Editor";
+import R_Select from "./ui/Select";
 
 interface LaTeXEditorProps {
   value: string; // latex source code
   onChange: (value: string) => void; // callback when contnet change
+  compiler: string;
+  setCompiler: (value: string) => void;
 }
 
 const FORMATS = {
@@ -128,7 +133,12 @@ function formatCommand(format: Format) {
   };
 }
 
-const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
+const LateXEditor = ({
+  value,
+  onChange,
+  compiler,
+  setCompiler,
+}: LaTeXEditorProps) => {
   // ref to the container div that codeMirror will attach to
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -339,6 +349,17 @@ const LateXEditor = ({ value, onChange }: LaTeXEditorProps) => {
         </div>
 
         <div className="run-group">
+          <Tooltip label="Compiler" side="bottom">
+            <R_Select
+              value={compiler}
+              onChange={(e) => {
+                setCompiler(e as string);
+              }}
+              options={COMPILERS}
+              className="compiler-select"
+            />
+          </Tooltip>
+
           {/* <span>isComing: {isCompiling}</span> */}
           {/* <span>sync status: {syncStatus}</span> */}
           <Tooltip label="Build" side="bottom">

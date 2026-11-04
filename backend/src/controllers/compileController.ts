@@ -12,17 +12,17 @@ import { pdfToPng } from "pdf-to-png-converter";
 
 // compile only endpoint, return pdf
 export async function compile(req: Request, res: Response) {
-  const { source } = req.body;
+  let { source, compiler } = req.body;
   logger.info("calling compile");
 
   // validate input (like @valid in spring, but manual)
   if (!source) {
     return res.status(400).json({ error: "latex source is required" });
   }
-
+  if (!compiler) compiler = "pdflatex";
   try {
     // call service
-    const result = await compilationLatex(source);
+    const result = await compilationLatex(source, compiler);
 
     if (result.success && result.pdf) {
       // return pdf (like ResponseEntity<Byte[]> with content type header in spring)
@@ -58,11 +58,13 @@ export async function generateThumbnail(pdfBuffer: Buffer): Promise<Buffer> {
 
 // compile, save to s3, update resume
 export async function compileAndSave(req: AuthRequest, res: Response) {
-  const { source, resumeId } = req.body;
+  let { source, resumeId, compiler } = req.body;
   logger.info("callig compile and save");
   if (!source) {
     return res.status(400).json({ error: "latex source is required" });
   }
+  if (!compiler) compiler = "pdflatex";
+
   if (!resumeId) {
     return res.status(400).json({ error: "resumeId requied to save" });
   }
@@ -82,7 +84,7 @@ export async function compileAndSave(req: AuthRequest, res: Response) {
     : randomUUID();
   try {
     // compile the latex
-    const result = await compilationLatex(source);
+    const result = await compilationLatex(source, compiler);
 
     if (!result.success || !result.pdf) {
       return res.status(400).json({ error: result.errors });

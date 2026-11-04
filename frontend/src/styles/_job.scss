@@ -43,7 +43,10 @@
   contain: layout;
   background-color: white;
   display: grid; // needed to make context bar work right in ff
-
+  position: relative !important;
+  &:hover {
+    z-index: 50; // this to make sure the tooltip won't get behind other jobs in the list
+  }
   .context-bar {
     margin-top: 4.8rem;
   }
@@ -61,6 +64,8 @@
   width: min-content;
   padding-top: 0.1rem;
   // align-self: center;
+  // position: relative;
+  // z-index: 50;
 }
 
 .context-bar {

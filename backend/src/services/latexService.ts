@@ -29,7 +29,10 @@ function extractLatexErrors(errorText: string): string[] {
     return [];
   }
 }
-export async function compilationLatex(source: string): Promise<CompileResule> {
+export async function compilationLatex(
+  source: string,
+  compiler: string,
+): Promise<CompileResule> {
   // create abort controller for timeout
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -41,7 +44,7 @@ export async function compilationLatex(source: string): Promise<CompileResule> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        compiler: "pdflatex",
+        compiler: compiler,
         resources: [
           {
             main: true,

@@ -45,17 +45,25 @@ export async function deleteResume(id: string): Promise<void> {
 export async function compileResume(
   id: string,
   source: string,
+  compiler: string,
 ): Promise<PostCompileAndSaveType> {
   // just making sure the server reponse has 'success and pdfUrl'
-  const response = await api.post("/compile/save", { source, resumeId: id });
+  const response = await api.post("/compile/save", {
+    source,
+    resumeId: id,
+    compiler,
+  });
   return response.data;
 }
 
 // preview compiled pdf, this should return a blob (no saving)
-export async function previewCompile(source: string): Promise<Blob> {
+export async function previewCompile(
+  source: string,
+  compiler: string,
+): Promise<Blob> {
   const response = await api.post(
     "/compile",
-    { source },
+    { source, compiler },
     { responseType: "blob" }, // this needed so axios will know that we recieving a pdf file
   );
   return response.data;
