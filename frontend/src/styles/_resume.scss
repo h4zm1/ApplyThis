@@ -35,6 +35,7 @@
   // width: 10rem;
   // background-color: white;
   height: fit-content;
+  contain: layout; // for prevent resume tag and context menu from moving while scroling a resume list
   button {
     scale: 0.6;
     background-color: transparent;

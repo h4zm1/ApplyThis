@@ -52,6 +52,18 @@
     align-content: center;
     margin: 0;
   }
+  .tooltip-wrapper {
+    margin-left: auto;
+    padding-right: 1rem;
+  }
+  .clear-error-btn {
+    background-color: unset;
+    border: unset;
+    margin-left: auto;
+    &:hover {
+      color: #3784ff;
+    }
+  }
 }
 
 .close-btn {

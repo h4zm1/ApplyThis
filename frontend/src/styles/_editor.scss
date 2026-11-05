@@ -201,9 +201,19 @@ iframe {
     }
   }
   .error-btn {
-    color: red;
-    background-color: black;
     border-radius: 7px;
+    border: unset;
+    display: flex;
+    gap: 5px;
+    svg {
+      padding-top: 2px;
+    }
+    span {
+      height: fit-content;
+      font-size: 22px;
+      color: red;
+      font-weight: 800;
+    }
   }
 }
 .zoom-element {
@@ -232,6 +242,34 @@ iframe {
 .preview-btn {
   padding: 0px;
   margin: -12px;
+}
+
+// ============ error popup==============
+
+.error-holder {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  max-height: 20rem;
+  scrollbar-width: thin;
+  gap: 0.5rem;
+  .error-instance {
+    display: flex;
+    flex-direction: column;
+  }
+  .error-index {
+    text-align: start;
+    font-weight: 500;
+  }
+  .error-area {
+    min-width: 30rem;
+    min-height: 4rem;
+    scrollbar-width: thin;
+  }
+  span {
+    width: 30rem;
+    text-align: center;
+  }
 }
 
 //===================================================

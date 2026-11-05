@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import logger from "../services/logger";
+import Popup from "../components/popUp";
+
 import { Bug, Minus, Plus } from "lucide-react";
 import R_Select from "./ui/Select";
 import Tooltip from "./ui/tooltip";
@@ -14,6 +16,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 interface Props {
   pdfUrl?: string | null;
   pdfBlob?: Blob | null;
+  errors?: string[] | null;
+  clearErrors?: () => void;
 }
 
 export const ZOOM_OPTIONS: { value: string; label: string }[] = [
@@ -26,7 +30,12 @@ export const ZOOM_OPTIONS: { value: string; label: string }[] = [
   { value: "5", label: "500%" },
 ];
 
-export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
+export default function PdfPreview({
+  pdfUrl,
+  pdfBlob,
+  errors,
+  clearErrors,
+}: Props) {
   // this will hold all the page canvases
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -40,6 +49,8 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
   // make sure that render calls don't happen together
   // we queue the new scale and handle it later after current renfer finish
   const pendingScaleRef = useRef<number | null>(null);
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const pageTextLayersRef = useRef<Map<number, HTMLDivElement>>(new Map());
   const renderingRef = useRef(false);
@@ -308,6 +319,9 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
     return () => container.removeEventListener("wheel", handleZoom);
   }, []);
 
+  function handleClosePopup() {
+    setIsPopupOpen(false);
+  }
   const hasContent = pdfBlob || pdfUrl;
 
   return (
@@ -344,8 +358,9 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
           </button>
         </div>
         <Tooltip label="Errors" side="bottom">
-          <button className="error-btn">
-            <Bug></Bug>1
+          <button className="error-btn" onClick={(e) => setIsPopupOpen(true)}>
+            <Bug></Bug>
+            <span>{errors?.length}</span>
           </button>
         </Tooltip>
       </div>
@@ -366,6 +381,26 @@ export default function PdfPreview({ pdfUrl, pdfBlob }: Props) {
       />
 
       {!hasContent && <div className="no-preview">No preview available</div>}
+      <Popup
+        isOpen={isPopupOpen}
+        onClose={handleClosePopup}
+        clearErrors={clearErrors}
+        title={"Errors"}
+      >
+        <div className="error-holder">
+          {errors?.map((err, index) => (
+            <div className="error-instance">
+              <span className="error-index">
+                {index + 1}/{errors.length}
+              </span>
+              <textarea className="error-area" readOnly>
+                {err}
+              </textarea>
+            </div>
+          ))}
+          {errors?.length === 0 ? <span>no errors</span> : ""}
+        </div>
+      </Popup>
     </div>
   );
 }

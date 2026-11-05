@@ -82,7 +82,7 @@ export async function compilationLatex(
         );
         return {
           success: false,
-          errors: ["compilation failed, please check your LaTeX"],
+          errors: [errorText.slice(0, 500)],
         };
       }
       return {

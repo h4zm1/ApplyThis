@@ -1,15 +1,23 @@
-import { X } from "lucide-react";
+import { BrushCleaning, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
+import Tooltip from "./ui/tooltip";
 
 interface popUpProps {
   isOpen: boolean;
   onClose: () => void;
+  clearErrors?: () => void;
   title: string;
   children: ReactNode;
 }
 
-const popup = ({ isOpen, onClose, title, children }: popUpProps) => {
+const popup = ({
+  isOpen,
+  onClose,
+  clearErrors,
+  title,
+  children,
+}: popUpProps) => {
   // don't render anything it's not open
   if (!isOpen) return null;
 
@@ -18,6 +26,15 @@ const popup = ({ isOpen, onClose, title, children }: popUpProps) => {
       <div className="popup-content" onMouseDown={(e) => e.stopPropagation()}>
         <div className="popup-header">
           <h1>{title}</h1>
+          {title === "Errors" ? (
+            <Tooltip label="Clear errors" side="bottom">
+              <button className="clear-error-btn" onClick={clearErrors}>
+                <BrushCleaning size={18}></BrushCleaning>
+              </button>
+            </Tooltip>
+          ) : (
+            ""
+          )}
           <button className="close-btn" onClick={onClose}>
             <X size={18} />
           </button>

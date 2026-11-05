@@ -63,6 +63,8 @@ const Editor = () => {
     return saved !== null ? saved : "pdflatex";
   });
 
+  const [errors, setErrors] = useState<string[]>([]);
+
   // load resume on mount
   useEffect(() => {
     if (resumeId) {
@@ -133,9 +135,10 @@ const Editor = () => {
       if (errorBody.error) {
         if (Array.isArray(errorBody.error))
           message = errorBody.error.join("\n");
-        else message = errorBody.eror;
+        else message = errorBody.error;
       }
       setError(message);
+      setErrors((prevErrList) => [...prevErrList, message]);
     } finally {
       setIsCompiling(false);
     }
@@ -275,6 +278,10 @@ const Editor = () => {
     return () => window.removeEventListener("beforeunload", handleTabClose);
   }, [saveStatus]);
 
+  function handleClearErrors() {
+    setErrors([]);
+  }
+
   return isLoading ? (
     <div className="loading-overlay" style={{ background: "unset" }}>
       <div className="loading-holder">
@@ -299,7 +306,12 @@ const Editor = () => {
         </Separator>
         {/* <div data-separator="active" /> */}
         <Panel className="preview-side" minSize={400}>
-          <PdfPreview pdfBlob={pdfBlob} pdfUrl={resume?.pdfUrl}></PdfPreview>
+          <PdfPreview
+            pdfBlob={pdfBlob}
+            pdfUrl={resume?.pdfUrl}
+            errors={errors}
+            clearErrors={handleClearErrors}
+          ></PdfPreview>
         </Panel>
       </Group>
     </div>
