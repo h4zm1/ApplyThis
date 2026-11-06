@@ -441,7 +441,18 @@ const Resumes = () => {
                     </div>
                   </div>
                 </Link>
-                <div className="resume-title">
+                <div
+                  className="resume-title"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleEdit(resume);
+                  }}
+                >
                   {resume.id == editingResume?.id ? (
                     <input
                       autoFocus={true}

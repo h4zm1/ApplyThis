@@ -45,6 +45,11 @@ const NODE_OPACITY: Record<string, number> = {
   Withdrawn: 100,
 };
 
+// only one for now because of the overlap
+const TRANSITION_COLORS: Record<string, string> = {
+  "Applied -> Rejected": "#d2c9c9",
+};
+
 // apperently recharts need x, y, width, height, index ,payload for custom nodes
 function CustomNode({ x, y, width, height, index, payload }: any) {
   const { accentColor } = useUIContext();
@@ -53,8 +58,8 @@ function CustomNode({ x, y, width, height, index, payload }: any) {
   if (containerWidth == null) {
     return null;
   }
-  const boxWidth = 150;
-  const boxHeight = 30;
+  const boxWidth = 110;
+  const boxHeight = 20;
   const isOut = x + width + 6 > containerWidth;
   const fx = isOut ? x - boxWidth - 6 : x + width + 6;
   const fy = y + height / 2 - boxHeight / 2;
@@ -119,7 +124,15 @@ function CustomLink({
     const opacity = NODE_OPACITY[nodeName] ?? 60;
     return `color-mix(in srgb, ${accentColor} ${opacity}%, #1a1a1a)`;
   }
-  const color = getNodeColor(payload.source.name);
+
+  // same structure as in trans color record
+  const transitionKey = `${payload.source.name} -> ${payload.target.name}`;
+
+  // if the none of the transition colors match this transition fallback to normal node color
+  const color =
+    TRANSITION_COLORS[transitionKey] ?? getNodeColor(payload.source.name);
+
+  // const color = getNodeColor(payload.source.name);
   return (
     <Layer key={`link-${index}`}>
       <path

@@ -181,6 +181,8 @@
 }
 .resume-dates {
   opacity: 0;
+  user-select: none;
+  pointer-events: none;
   span {
     font-variant: tabular-nums;
     /* font-weight: 700; */
