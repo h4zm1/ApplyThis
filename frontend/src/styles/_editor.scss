@@ -52,6 +52,7 @@
     justify-content: center;
     svg {
       margin-bottom: -2px;
+      padding-block: 1px;
     }
   }
   .editor-tools {
@@ -90,7 +91,7 @@
       width: 8rem;
       color: #292929;
       font-size: 1rem;
-      font-weight: 500;
+      font-weight: 401;
       height: unset;
     }
   }
@@ -117,7 +118,7 @@
 }
 .latex-editor {
   background-color: white;
-  height: calc(100vh - 5.4rem);
+  height: calc(100vh - 5.2rem);
   overflow: auto;
   scrollbar-width: thin;
   scrollbar-color: darkgray transparent;
@@ -275,7 +276,7 @@ iframe {
 //===================================================
 .pdf-container {
   contain: size;
-  height: calc(100vh - 7.6rem);
+  height: calc(100vh - 7.1rem);
   scrollbar-width: thin;
   background-color: #e6eaed !important;
   border-top-left-radius: 7px;

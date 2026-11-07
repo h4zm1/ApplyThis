@@ -240,7 +240,7 @@ const Dashboard = () => {
                     <span>
                       {resume.pdfUrl ? "PDF compiled" : "Not compiled"}
                     </span>
-                    <span>{resume.updatedAt}</span>
+                    <span>{resume.updatedAt.substring(0, 10)}</span>
                   </div>
                 </div>
               ))}

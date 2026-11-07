@@ -337,7 +337,7 @@ export default function PdfPreview({
             }
             style={{ borderRadius: "6px 0px 0px 6px" }}
           >
-            <Minus style={{ verticalAlign: "text-bottom" }}></Minus>
+            <Minus size={19} style={{ verticalAlign: "text-bottom" }}></Minus>
           </button>
 
           <R_Select
@@ -354,7 +354,7 @@ export default function PdfPreview({
             }
             style={{ borderRadius: "0px 6px 6px 0px" }}
           >
-            <Plus style={{ verticalAlign: "text-bottom" }}></Plus>
+            <Plus size={19} style={{ verticalAlign: "text-bottom" }}></Plus>
           </button>
         </div>
         <Tooltip label="Errors" side="bottom">
