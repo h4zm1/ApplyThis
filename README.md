@@ -50,7 +50,7 @@ The Firefox extension adds a posting to your tracker in one click.
 | Data | PostgreSQL (Supabase), Supabase Storage (S3-compatible) |
 | Services | Resend (email), latex.ytotech.com (LaTeX compilation) |
 | Infrastructure | AWS EC2, Nginx, GitHub Actions |
-| Extension | Firefox WebExtension [manifest version] |
+| Extension | Firefox WebExtension [manifest v3] |
 
 ## Architecture
 
@@ -80,4 +80,4 @@ Nginx serves the React app and proxies `/api` to Express. The API compiles LaTeX
 <br>
 <br>
 <br>
-<sub>Developed without the use of child labor</sub>
+<sub>developed without the use of child labor</sub>
