@@ -15,9 +15,12 @@
     }
   },
 
-  "permissions": ["contextMenus", "storage", "notifications", "activeTab"],
+  "permissions": ["contextMenus", "storage", "notifications", "activeTab", "scripting"],
 
-  "host_permissions": ["https://hazmimosbah.com/*"],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://hazmimosbah.com/*"
+  ],
 
   "background": {
     "scripts": ["background.js"],
@@ -26,8 +29,8 @@
 
   "content_scripts": [
     {
-      "matches": ["*://*.linkedin.com/jobs/*"],
-      "js": ["content/linkedin.js"],
+      "matches": ["*://*.linkedin.com/jobs/*","*://*.tanitjobs.com/*"],
+      "js": ["content/sites.js", "content/content.js"],
       "run_at": "document_idle"
     }
   ],
@@ -46,7 +49,7 @@
   "web_accessible_resources": [
     {
       "resources": ["icons/bitmap.svg"],
-      "matches": ["*://*.linkedin.com/*"]
+      "matches": ["<all_urls>"]
     }
   ]
 }

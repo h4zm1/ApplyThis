@@ -94,9 +94,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ---- open applythis site (local for now) ----
 
   openSiteBtn.addEventListener("click", () => {
-	// %%APP_URL%% will be replaced by the build script
+	// http://localhost:5173 will be replaced by the build script
     // dev build => http://localhost:5173
     // prod build => https://hazmimosbah.com/applythis
-    browser.tabs.create({ url: "%%APP_URL%%" });
+    browser.tabs.create({ url: "%%API_URL%%" });
   });
 });

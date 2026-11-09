@@ -114,10 +114,10 @@ async function isAuthenticated() {
 
 browser.contextMenus.removeAll().then(() => {
   browser.contextMenus.create({
-    id: "applythis-track-job",
-    title: "Track This Job",
-    contexts: ["page"],
-    documentUrlPatterns: ["*://*.linkedin.com/jobs/*"],
+    id: "applythis-toggle-widget",
+    title: "Show / Hide ApplyThis widget",
+    // "selection" so it also shows when text is highlighted
+    contexts: ["page", "selection"],
   });
   console.log("[ApplyThis] Context menu created");
 });
@@ -125,52 +125,28 @@ browser.contextMenus.removeAll().then(() => {
 // ---- context menu click handler ----
 
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
-  console.log("[ApplyThis] Context menu clicked!", info.menuItemId);
-
-  if (info.menuItemId !== "applythis-track-job") return;
+  if (info.menuItemId !== "applythis-toggle-widget") return;
 
   try {
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
-      showNotification(
-        "Not Logged In",
-        "Please log in to ApplyThis extension first.",
-      );
-      return;
-    }
-
-    console.log("[ApplyThis] Sending scrape request to tab:", tab.id);
-
-    const jobData = await browser.tabs.sendMessage(tab.id, {
-      action: "SCRAPE_JOB_DATA",
-    });
-
-    console.log("[ApplyThis] Got job data:", jobData);
-
-    if (!jobData || !jobData.company) {
-      showNotification(
-        "Couldn't Parse Job",
-        "Couldn't extract job details from this page.",
-      );
-      return;
-    }
-
-    const created = await createJob({
-      company: jobData.company,
-      position: jobData.position || "Unknown Position",
-      url: jobData.url,
-      status: "APPLIED",
-    });
-
-    console.log("[ApplyThis] job created:", created);
-
-    showNotification(
-      "Job Tracked",
-      `${created.position} at ${created.company}`,
-    );
+    // the content script is already on this page
+    await browser.tabs.sendMessage(tab.id, { action: "TOGGLE_WIDGET" });
   } catch (error) {
-    console.error("[ApplyThis] Error:", error);
-    showNotification("Error", error.message);
+    // the script isn't on this page yet so inject it
+    try {
+      await browser.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ["content/sites.js", "content/content.js"],
+      });
+
+      // forceShow: the script may have built its own widget on load
+      await browser.tabs.sendMessage(tab.id, {
+        action: "TOGGLE_WIDGET",
+        forceShow: true,
+      });
+    } catch (injectError) {
+      console.error("[ApplyThis] Could not inject widget:", injectError);
+      showNotification("Error", "Can't show the widget on this page.");
+    }
   }
 });
 

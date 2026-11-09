@@ -7,72 +7,6 @@
 
   console.log("[ApplyThis] LinkedIn content script loaded");
 
-  function scrapeJobData() {
-    const company = scrapeCompany();
-    const position = scrapePosition();
-    const url = window.location.href;
-
-    console.log("[ApplyThis] SCRAPPED:", { company, position, url });
-
-    return {
-      company: company,
-      position: position,
-      url: url,
-      source: "linkedin",
-    };
-  }
-
-  // rip meaningful classes
-  function scrapePosition() {
-    // look for <a> with href containign /jobs/view/
-    const jobLink = document.querySelector('a[href*="/jobs/view/"]');
-    if (jobLink) {
-      // make sure it's long and doesn't have apply or save
-      const text = jobLink.textContent.trim();
-      if (text.length > 5 && !text.match(/^(apply|save)/i)) {
-        return cleanText(text);
-      }
-    }
-
-    // if the above fail just get it from the title (job title | companyname | linkedin)
-    const titleMatch = document.title.match(/^(.+?)\s*[|]/);
-    if (titleMatch) {
-      const text = titleMatch[1].trim();
-      // just skip if it's "jobs" or "linkedin"
-      if (text.length > 5 && !text.match(/^(jobs|linkedin)/i)) {
-        return text;
-      }
-    }
-
-    return null;
-  }
-
-  function scrapeCompany() {
-    // look for href that has /company/
-    const companyLinks = document.querySelectorAll('a[href*="/company/"]');
-    for (const link of companyLinks) {
-      const text = link.textContent.trim();
-      // filter out noise — company name should be short-ish and not a generic link
-      if (
-        text.length > 1 &&
-        text.length < 100 &&
-        !text.match(/^(follow|see more|view|company page)/i)
-      ) {
-        return cleanText(text);
-      }
-    }
-
-    // just get it from the title
-    const titleParts = document.title.split(/[|]/);
-    if (titleParts.length >= 2) {
-      const company = titleParts[1].trim();
-      if (company && !company.match(/^linkedin/i)) {
-        return company;
-      }
-    }
-
-    return null;
-  }
 
   function cleanText(raw) {
     if (!raw) return null;
@@ -83,7 +17,7 @@
   // api functions
   //===============
 
-  // const API_BASE = "http://localhost:3000/api";
+  // const API_BASE = "%%API_BASE%%";
   //
   // async function getTokens() {
   //   const result = await browser.storage.local.get([
@@ -98,7 +32,6 @@
 
   async function checkIfApplied(company, position) {
     try {
-      console.error("INSIDE CHECKIFAPPLIED");
       const response = await browser.runtime.sendMessage({
         action: "CHECK_JOB_STATUS",
         data: { company, position },
@@ -123,7 +56,7 @@
     // don't reposition if it got dragged already
     if (wDragged) return;
 
-    const titleElement = document.querySelector('a[href*="/jobs/view/"]');
+    const titleElement = getTitleElement();
 
     if (titleElement) {
       const targetRect = titleElement.getBoundingClientRect();
@@ -144,6 +77,8 @@
       widget.style.zIndex = "9999";
     }
   }
+  // true while the user has the widget hidden from the right-click menu
+  let widgetHidden = false;
 
   function createWidget() {
     // remove existing widget if any
@@ -156,7 +91,9 @@
     // create container
     const widget = document.createElement("div");
     widget.id = "applythis-widget";
-    widget.textContent = `
+	// stay hidden if we intentionally hide it (cause linkedin rebuild widget on every job)
+	if (widgetHidden) widget.style.display = "none";
+    widget.innerHTML = `
       <style>
         #applythis-widget {
           /* display:inline-flex; */
@@ -171,8 +108,18 @@
           box-sizing: border-box;
           margin: 0;
           padding: 0;
+		  margin-bottom: 0.3rem;
         }
-
+		#applythis-widget .at-input {
+          width: 100%;
+          padding: 8px 10px;
+          margin-bottom: 8px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          font-size: 13px;
+          color: #202020;
+          background: white;
+        }
         .at-popup {
           position:absolute;
           background: white;
@@ -288,6 +235,7 @@
           font-weight: 500;
           cursor: pointer;
           transition: opacity 0.15s;
+		  height: 2rem;
         }
 
         .at-btn:hover {
@@ -414,6 +362,26 @@
     updateToggleDot();
   }
 
+  function toggleWidget(forceShow) {
+    const widget = document.getElementById("applythis-widget");
+
+    // no widget on this page (unlisted site)
+    if (!widget) {
+      widgetHidden = false;
+      createWidget();
+      return;
+    }
+
+    if (forceShow) {
+      widgetHidden = false;
+    } else {
+      widgetHidden = !widgetHidden;
+    }
+
+    // "" will puts back the default display
+    widget.style.display = widgetHidden ? "none" : "";
+  }
+
   function makeDraggable(widget) {
     const toggle = document.getElementById("applythis-toggle");
     let isDragging = false;
@@ -474,6 +442,33 @@
     });
   }
 
+  function setToggleDot(color) {
+    const toggle = document.getElementById("applythis-toggle");
+    if (!toggle) return;
+
+    // remove old dot to prevent stacking
+    const oldDot = toggle.querySelector(".at-toggle-dot");
+    if (oldDot) oldDot.remove();
+
+    const dot = document.createElement("div");
+    dot.className = "at-toggle-dot";
+    dot.style.background = color;
+    toggle.appendChild(dot);
+  }
+
+  async function updateToggleDot() {
+    const jobData = scrapeJobData();
+    const status = await checkIfApplied(jobData.company, jobData.position);
+
+    if (!status.authenticated) {
+      setToggleDot("#eab308"); // yellow: not logged in
+    } else if (status.applied) {
+      setToggleDot("#22c55e"); // green: already tracked
+    } else {
+      setToggleDot("#a3a3a3"); // gray: not tracked yet
+    }
+  }
+  
   // quick indicator for login status, applied/not status
   async function updateToggleDot() {
     const toggle = document.getElementById("applythis-toggle");
@@ -501,20 +496,14 @@
 
   async function updateWidget() {
     const body = document.getElementById("applythis-body");
-    const toggle = document.getElementById("applythis-toggle");
     const jobData = scrapeJobData();
 
     // check auth and applied status
     const status = await checkIfApplied(jobData.company, jobData.position);
 
-    // add indicator dot to toggle button
-    const dot = document.createElement("div");
-    dot.className = "at-toggle-dot";
-
+    // --- not logged in ---
     if (!status.authenticated) {
-      // not logged in
-      dot.style.background = "#eab308";
-      toggle.appendChild(dot);
+      setToggleDot("#eab308");
 
       body.innerHTML = `
         <div class="at-status">
@@ -528,92 +517,116 @@
       return;
     }
 
+    // --- already tracked ---
     if (status.applied) {
-      // already applied
-      dot.style.background = "#22c55e";
-      toggle.appendChild(dot);
+      setToggleDot("#22c55e");
 
-      body.textContent = `
+      // the template is empty on purpose, the text is filled in below
+      body.innerHTML = `
         <div class="at-status">
           <div class="at-dot at-applied"></div>
           <span class="at-status-text">Already tracked</span>
         </div>
         <div class="at-job-info">
-          <strong>${status.job.company}</strong><br>
-          ${status.job.position || ""}
-          ${status.job.status ? `<br>Status: ${status.job.status}` : ""}
+          <strong id="applythis-job-company"></strong><br>
+          <span id="applythis-job-position"></span>
+          <div id="applythis-job-status"></div>
         </div>
         <button class="at-btn at-btn-open" id="applythis-open">
           Open Dashboard
         </button>
       `;
 
-      document
-        .getElementById("applythis-open")
-        .addEventListener("click", () => {
-          window.open("%%APP_URL%%", "_blank");
-        });
-    } else {
-      // not applied yet
-      dot.style.background = "#a3a3a3";
-      toggle.appendChild(dot);
-
-      body.textContent  = `
-        <div class="at-status">
-          <div class="at-dot at-not-applied"></div>
-          <span class="at-status-text">Not tracked yet</span>
-        </div>
-        <div class="at-job-info">
-          <strong>${jobData.company || "Unknown Company"}</strong><br>
-          ${jobData.position || "Unknown Position"}
-        </div>
-        <button class="at-btn at-btn-track" id="applythis-track">
-          Track This Job
-        </button>
-        <button class="at-btn at-btn-open" id="applythis-open">
-          Open Dashboard
-        </button>
-      `;
-
-      document
-        .getElementById("applythis-track")
-        .addEventListener("click", async () => {
-          const trackBtn = document.getElementById("applythis-track");
-          trackBtn.disabled = true;
-          trackBtn.textContent = "Tracking...";
-
-          try {
-            // send message to background script to create the job
-            await browser.runtime.sendMessage({
-              action: "TRACK_JOB",
-              data: {
-                company: jobData.company || "Unknown Company",
-                position: jobData.position || "Unknown Position",
-                url: jobData.url,
-                status: "APPLIED",
-              },
-            });
-
-            // show success
-            trackBtn.textContent = "✓ Tracked!";
-            trackBtn.style.background = "#22c55e";
-
-            // update widget after a short delay
-            setTimeout(() => updateWidget(), 1000);
-          } catch (error) {
-            console.error("[ApplyThis] Track failed:", error);
-            trackBtn.textContent = "Failed — try again";
-            trackBtn.disabled = false;
-            trackBtn.style.background = "#dc2626";
-          }
-        });
+      // textContent means the text is never parsed as HTML
+      document.getElementById("applythis-job-company").textContent =
+        status.job.company;
+      document.getElementById("applythis-job-position").textContent =
+        status.job.position || "";
+      if (status.job.status) {
+        document.getElementById("applythis-job-status").textContent =
+          "Status: " + status.job.status;
+      }
 
       document
         .getElementById("applythis-open")
         .addEventListener("click", () => {
           window.open("%%APP_URL%%", "_blank");
         });
+      return;
     }
+
+    // --- not tracked yet: editable fields ---
+    setToggleDot("#a3a3a3");
+
+    body.innerHTML = `
+      <div class="at-status">
+        <div class="at-dot at-not-applied"></div>
+        <span class="at-status-text">Not tracked yet</span>
+      </div>
+      <input class="at-input" id="applythis-company" placeholder="Company" />
+      <input class="at-input" id="applythis-position" placeholder="Job title" />
+      <button class="at-btn at-btn-track" id="applythis-track" disabled>
+        Track This Job
+      </button>
+      <button class="at-btn at-btn-open" id="applythis-open">
+        Open Dashboard
+      </button>
+    `;
+
+    const companyInput = document.getElementById("applythis-company");
+    const positionInput = document.getElementById("applythis-position");
+    const trackBtn = document.getElementById("applythis-track");
+
+    // prefill with .value instead of putting the text inside the HTML string,
+    // so quotes or tags in a job title can't break the markup
+    companyInput.value = jobData.company || "";
+    positionInput.value = jobData.position || "";
+
+    // the track button only works when both fields have text
+    function updateTrackButton() {
+      const hasCompany = companyInput.value.trim() !== "";
+      const hasPosition = positionInput.value.trim() !== "";
+      trackBtn.disabled = !(hasCompany && hasPosition);
+    }
+
+    companyInput.addEventListener("input", updateTrackButton);
+    positionInput.addEventListener("input", updateTrackButton);
+    updateTrackButton(); // run once for the prefilled values
+
+    trackBtn.addEventListener("click", async () => {
+      trackBtn.disabled = true;
+      trackBtn.textContent = "Tracking...";
+
+      try {
+        // send what is in the fields (not the raw scrape)
+        await browser.runtime.sendMessage({
+          action: "TRACK_JOB",
+          data: {
+            company: companyInput.value.trim(),
+            position: positionInput.value.trim(),
+            url: jobData.url,
+            status: "APPLIED",
+          },
+        });
+
+        trackBtn.textContent = "✓ Tracked!";
+        trackBtn.style.background = "#22c55e";
+
+        // update widget after a short delay
+        setTimeout(() => updateWidget(), 1000);
+      } catch (error) {
+        console.error("[ApplyThis] Track failed:", error);
+        trackBtn.textContent = "Failed — try again";
+        trackBtn.disabled = false;
+        trackBtn.style.background = "#dc2626";
+      }
+    });
+
+    document
+      .getElementById("applythis-open")
+      .addEventListener("click", () => {
+        window.open("%%APP_URL%%", "_blank");
+      });
   }
 
   // listener from background script
@@ -624,6 +637,11 @@
       const data = scrapeJobData();
       sendResponse(data);
     }
+	
+	if (message.action === "TOGGLE_WIDGET") {
+      toggleWidget(message.forceShow);
+    }
+	
     return false;
   });
 
@@ -631,9 +649,10 @@
 
   // wait for linkedin to load job title before creating the widget
   function waitForTitleAndInit() {
-    const titleElement = document.querySelector('a[href*="/jobs/view/"]');
+    // unlisted sites don't get an automatic widget, the right-click menu shows it
+    if (!isKnownSite()) return;
 
-    if (titleElement) {
+    if (getTitleElement()) {
       console.log("[ApplyThis] title found, creating widget");
       createWidget();
     } else {
@@ -641,17 +660,14 @@
       let attempts = 0;
       const interval = setInterval(() => {
         attempts++;
-        const title = document.querySelector('a[href*="/jobs/view/"]');
 
-        if (title) {
+        if (getTitleElement()) {
           clearInterval(interval);
           console.log("[ApplyThis] title found after waiting, creating widget");
           createWidget();
         } else if (attempts >= 20) {
           clearInterval(interval);
-          console.log(
-            "[ApplyThis] title not found after 10s, widget at right corner",
-          );
+          console.log("[ApplyThis] title not found after 10s, widget at right corner");
           createWidget();
         }
       }, 500);
@@ -665,6 +681,11 @@
   const observer = new MutationObserver(() => {
     if (location.href !== lastUrl) {
       lastUrl = location.href;
+
+      // only rebuild the widget if it belongs on this page
+      const widgetExists = document.getElementById("applythis-widget");
+      if (!isKnownSite() && !widgetExists) return;
+
       console.log("[ApplyThis] URL changed, reloading widget");
       setTimeout(() => {
         createWidget();
