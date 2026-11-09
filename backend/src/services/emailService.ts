@@ -1,6 +1,5 @@
 import logger from "../config/logger";
 import resend from "./mailer";
-import transporter from "./mailer";
 
 export async function sendVerificationEmail(
   email: string,
