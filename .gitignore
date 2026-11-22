@@ -33,3 +33,5 @@ frontend/.env.production
 extension/dist-dev/
 
 extension/dist-prod/
+
+backend/.env.test
