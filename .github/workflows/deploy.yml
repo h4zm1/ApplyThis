@@ -5,8 +5,60 @@ on:
     branches: [main]
 
 jobs:
+  # backend test, any faild test stop the deploy
+  test-backend:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: applythis_test
+        ports:
+          - 5432:5432
+        # wait for database to accept connection before the steps start
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:test@localhost:5432/applythis_test
+      DIRECT_URL: postgresql://postgres:test@localhost:5432/applythis_test
+      S3_BUCKET_NAME: test-bucket
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate prisma client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Apply migrations to the test database
+        working-directory: backend
+        run: npx prisma migrate deploy
+
+      - name: Run tests
+        working-directory: backend
+        run: npm test
+
   # deploy Express backend
   deploy-backend:
+    needs: test-backend
     runs-on: ubuntu-latest
 
     steps:
@@ -70,6 +122,7 @@ jobs:
 
   # deploy React frontend
   deploy-frontend:
+    needs: test-backend
     runs-on: ubuntu-latest
 
     steps:
